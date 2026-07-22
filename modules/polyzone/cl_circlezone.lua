@@ -13,7 +13,7 @@ function CircleZone:draw(forceDraw)
             false, false, 2, nil, nil, false)
     else
         local diameter = self.diameter
-        DrawMarker(1, center.x, center.y, -200.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, diameter, diameter, 400.0, r, g, b, 96,
+        DrawMarker(27, center.x, center.y, -200.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, diameter, diameter, 400.0, r, g, b, 96,
             false, false, 2, nil, nil, false)
     end
 end

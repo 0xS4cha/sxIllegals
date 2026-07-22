@@ -13,6 +13,7 @@ import {
 
 import type { GroupCategory, GroupDetail } from '../../../types/group'
 import { fetchNui } from '../../../utils/fetchNui'
+import { useTranslation } from '../../../hooks/useTranslation'
 
 interface GroupSidebarProps {
   group: GroupDetail
@@ -36,26 +37,28 @@ export function GroupSidebar({
   collapsed,
   onToggleCollapse,
 }: GroupSidebarProps) {
+  const { t } = useTranslation()
+
   const navItems: NavItem[] = [
     {
       id: 'overview',
-      label: 'Accueil Groupe',
+      label: t('group_sidebar_overview'),
       icon: LayoutDashboard,
     },
     {
       id: 'members',
-      label: 'Membres & Rôles',
+      label: t('group_sidebar_members'),
       icon: Users,
       badge: group.members.length,
     },
     {
       id: 'ranks',
-      label: 'Rangs & Permissions',
+      label: t('group_sidebar_ranks'),
       icon: ShieldHalf,
     },
     {
       id: 'stats',
-      label: 'Statistiques Groupe',
+      label: t('group_sidebar_statistics'),
       icon: BarChart3,
     },
   ]
@@ -117,7 +120,7 @@ export function GroupSidebar({
         <div className="mb-2 px-2">
           {!collapsed && (
             <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-500">
-              Espace Faction
+              {t('group_space')}
             </span>
           )}
         </div>
@@ -167,7 +170,7 @@ export function GroupSidebar({
       <div className="border-t border-zinc-800/80 p-3 space-y-2">
         {!collapsed && (
           <div className="rounded-lg border border-zinc-800/60 bg-zinc-900/40 p-2.5 flex items-center justify-between text-xs">
-            <span className="text-zinc-400">Votre Rang</span>
+            <span className="text-zinc-400">{t('group_your_rank')}</span>
             <span className="font-semibold text-zinc-200 rounded bg-zinc-800 px-2 py-0.5 text-[11px]">
               {group.myRole.rank}
             </span>
@@ -180,10 +183,10 @@ export function GroupSidebar({
           className={`flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/80 py-2 text-xs font-medium text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white ${
             collapsed ? 'px-2' : 'px-3'
           }`}
-          title="Fermer le panel"
+          title={t('btn_close')}
         >
           <X className="h-4 w-4 text-zinc-400" />
-          {!collapsed && <span>Fermer (ESC)</span>}
+          {!collapsed && <span>{t('btn_close')} (ESC)</span>}
         </button>
       </div>
     </aside>

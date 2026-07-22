@@ -148,8 +148,8 @@ Citizen.CreateThread(function()
                         DrawMarker(27, lab.coords.x, lab.coords.y, lab.coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
                             1.0, 1.0, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
 
-                        if dist < 1.5 then
-                            ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour entrer dans le ~g~laboratoire~s~.")
+                         if dist < 1.5 then
+                            ShowHelpNotification(GetPhrase('enter_in_lab'))
                             if IsControlJustReleased(0, 38) then
                                 local data = TriggerServerCallback('core:labs:GetDataFromLabs', lab.id)
                                 if data then
@@ -170,11 +170,10 @@ Citizen.CreateThread(function()
                 local dist = #(pPos - exit)
                 if dist < 15.0 then
                     wait = 0
-                    DrawMarker(27, exit.x, exit.y, exit.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 231, 76,
-                        60, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, exit.x, exit.y, exit.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 231, 76, 60, 100, false, false, 2, false, nil, nil, false)
 
                     if dist < 1.5 then
-                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour sortir du ~r~laboratoire~s~.")
+                        ShowHelpNotification(GetPhrase('exit_out_lab'))
                         if IsControlJustReleased(0, 38) then
                             Labs:exit()
                         end

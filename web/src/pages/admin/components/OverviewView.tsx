@@ -9,6 +9,7 @@ import {
   Users,
 } from 'lucide-react'
 import type { AdminCategory, AdminStats, GroupItem, TerritoryItem } from '../../../types/admin'
+import { useTranslation } from '../../../hooks/useTranslation'
 
 interface OverviewViewProps {
   stats: AdminStats
@@ -23,30 +24,32 @@ export function OverviewView({
   territories,
   onSelectCategory,
 }: OverviewViewProps) {
+  const { t } = useTranslation()
+
   const kpiCards = [
     {
-      title: 'Groupes Totaux',
+      title: t('overview_card_groups'),
       value: stats.totalGroups,
       subtitle: `${stats.officialGroups} officiels • ${stats.unofficialGroups} non-officiels`,
       icon: Users,
       actionCat: 'groups' as AdminCategory,
     },
     {
-      title: 'Territoires',
+      title: t('overview_card_territories'),
       value: stats.totalTerritories,
       subtitle: `${stats.contestedTerritories} en conflit d'influence`,
       icon: MapPin,
       actionCat: 'territories' as AdminCategory,
     },
     {
-      title: 'Ventes 24h',
+      title: t('stats_sales_evolution').replace('Evolution des ', ''),
       value: `${stats.totalDrugSales24h.toLocaleString('fr-FR')} $`,
       subtitle: '+14.2% par rapport à hier',
       icon: DollarSign,
       actionCat: 'statistics' as AdminCategory,
     },
     {
-      title: 'Laboratoires Actifs',
+      title: t('overview_card_labs'),
       value: stats.activeLabsCount,
       subtitle: 'Coke, Meth & Weed sous tension',
       icon: FlaskConical,
@@ -95,7 +98,7 @@ export function OverviewView({
             <div className="flex items-center justify-between pb-4 border-b border-zinc-800/60">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-zinc-300" />
-                <h3 className="text-sm font-semibold text-zinc-200">Aperçu des Groupes</h3>
+                <h3 className="text-sm font-semibold text-zinc-200">{t('groups_title')}</h3>
               </div>
               <button
                 type="button"

@@ -14,6 +14,8 @@ dependencies {
 
 shared_scripts {
     '@es_extended/imports.lua',
+    'core/sh_translation.lua',
+    'translations/*.lua',
     'core/sh_logger.lua',
     'core/sh_modules.lua',
     'core/sh_class.lua',

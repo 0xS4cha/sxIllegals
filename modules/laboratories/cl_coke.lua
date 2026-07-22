@@ -38,20 +38,20 @@ function Labs.Coke:GetTrayStatus(key)
     end
     
     local keroseneRemaining = math.max((_LABS.Coke.KeroseneDuration - (os.time() - t.kerosene.start)), 0.0)
-    if keroseneRemaining ~= 0.0 then  return 2, string.format("Temps restant : %s", Labs.Coke:DisplayDuration(keroseneRemaining + 1.0)) end
+    if keroseneRemaining ~= 0.0 then  return 2, GetPhrase('weed_msg_timer', Labs.Coke:DisplayDuration(keroseneRemaining + 1.0)) end
 
     if not t.coca or t.coca.start == 0 then 
         return 3 
     end
     local cocaRemaining = math.max((_LABS.Coke.CocaDuration - (os.time() - t.coca.start)), 0.0)
     if cocaRemaining ~= 0.0 then 
-        return 4, string.format("Temps restant : %s", Labs.Coke:DisplayDuration(cocaRemaining + 1.0)) 
+        return 4, GetPhrase('weed_msg_timer', Labs.Coke:DisplayDuration(cocaRemaining + 1.0)) 
     end
 
     if not t.whitewash or t.whitewash.start == 0 then return 5 end
     local whitewashRemaining = math.max((_LABS.Coke.WhitewashDuration - (os.time() - t.whitewash.start)), 0.0)
     if whitewashRemaining ~= 0.0 then 
-        return 6, string.format("Temps restant : %s", Labs.Coke:DisplayDuration(whitewashRemaining + 1.0)) 
+        return 6, GetPhrase('weed_msg_timer', Labs.Coke:DisplayDuration(whitewashRemaining + 1.0)) 
     end    
 
     return 7
@@ -80,7 +80,7 @@ function Labs.Coke:ActionOnCoke(key)
     if math.max((_LABS.Coke.CocaDuration - (os.time() - t.coca.start)), 0.0) ~= 0.0 then return end
     if not t.whitewash or t.whitewash.start == 0 then
         local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['coke'].spots[key].x, _LABS.Shell['coke'].spots[key].y, _LABS.Shell['coke'].spots[key].z)
-        Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000, 3000, "~g~Ajout de la chaux.")
+        Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000, 3000, GetPhrase('coke_add_whitewash_success'))
         Rsv("core:labs:CheckWhitewash", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
         Labs.Coke.working = false
         return
@@ -91,7 +91,7 @@ function Labs.Coke:ActionOnCoke(key)
     TaskTurnPedToFaceCoord(ped, pos.x, pos.y, pos.z, 500)
     Rsv("core:labs:takeCokeTray", Labs.LabosIndex.id, key, GetTerritoryFromCoords(Labs.LabosIndex.coords))
     Citizen.Wait(500)
-    ShowNotification("~g~Récupération du bac de cocaïne.")
+    ShowNotification(GetPhrase('coke_take_tray_success'))
     if not Labs.Coke.hasTray then
         Labs.Coke.hasTray = true
         Citizen.CreateThread(function()
@@ -102,7 +102,7 @@ function Labs.Coke:ActionOnCoke(key)
             AttachEntityToEntity(object, ped, GetPedBoneIndex(ped, 28422), 0.05, -0.35, -0.17,  316.0, 403.0, -261.0, true, true, false, true, 1, true)
             
             while Labs.Coke.hasTray do                                    
-                Utils.ShowHelpNotification("Appuyez sur ~INPUT_ENTER~ pour ~y~ranger~s~.")
+                Utils.ShowHelpNotification(GetPhrase('press_to_store'))
                 if IsControlJustPressed(0, 23) then
                     Labs.Coke.hasTray = false
                 end
@@ -130,13 +130,13 @@ function Labs:StartCoke()
     
     local function GetActionLabel(status)
         if status == 1 then
-            return "verser du kérosène"
+            return GetPhrase('coke_pour_kerosene')
         elseif status == 3 then
-            return "ajouter des feuilles de coca"
+            return GetPhrase('coke_add_coca')
         elseif status == 5 then
-            return "verser de la chaux"
+            return GetPhrase('coke_pour_whitewash')
         elseif status == 7 then
-            return "récupérer le bac de cocaïne"
+            return GetPhrase('coke_take_tray')
         end
         return ""
     end
@@ -155,21 +155,21 @@ function Labs:StartCoke()
                 
                 if dist < 5.0 then
                     wait = 0
-                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 52, 152, 219, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 52, 152, 219, 100, false, false, 2, false, nil, nil, false)
                     
                     if dist < 1.3 then
                         local status, text = Labs.Coke:GetTrayStatus(i)
                         if status == 1 or status == 3 or status == 5 or status == 7 then
-                            ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~" .. GetActionLabel(status) .. "~s~.")
+                            ShowHelpNotification(GetPhrase('press_to_action', GetActionLabel(status)))
                             if IsControlJustReleased(0, 38) then
                                 if Labs.Coke.working then
-                                    ShowNotification("Vous êtes déjà en train de faire une action.")
+                                    ShowNotification(GetPhrase('action_in_progress'))
                                 else
                                     Labs.Coke:ActionOnCoke(i)
                                 end
                             end
                         elseif status == 2 or status == 4 or status == 6 then
-                            ShowHelpNotification(text or "En cours de traitement...")
+                            ShowHelpNotification(text or GetPhrase('processing'))
                         end
                     end
                 end
@@ -183,13 +183,13 @@ function Labs:StartCoke()
                 
                 if dist < 5.0 then
                     wait = 0
-                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
                     
                     if dist < 1.3 then
-                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Empocher la cocaïne~s~.")
+                        ShowHelpNotification(GetPhrase('coke_pocket'))
                         if IsControlJustReleased(0, 38) then
                             if Labs.Coke.working then
-                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                                ShowNotification(GetPhrase('action_in_progress'))
                             else
                                 Labs.Coke.hasTray = false
                                 local ped = PlayerPedId()
@@ -197,7 +197,7 @@ function Labs:StartCoke()
                                 Citizen.Wait(500)
                                 Labs:PlayAnimation(ped, "anim@amb@board_room@stenographer@paper@", "break_01_left_amy_skater_01", 3000)
                                 Citizen.Wait(3000)
-                                ShowNotification("Vous avez empoché ~g~" .. _LABS.Coke.CountCocaine .. " cocaïnes~s~.")
+                                ShowNotification(GetPhrase('coke_pocket_success', _LABS.Coke.CountCocaine))
                                 Labs.Coke.working = false
                                 Rsv("core:labs:GetEmpocheCoke", GetTerritoryFromCoords(Labs.LabosIndex.coords))
                             end

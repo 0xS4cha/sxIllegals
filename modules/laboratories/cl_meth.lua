@@ -60,13 +60,12 @@ function Labs.Meth:GetSynthesisPanelStatus(key)
             local minutes = math.floor(remaining / 60)
             local seconds = math.floor(remaining - minutes * 60)
             if minutes == 0 and seconds == 0 then
-                return "L'envoyer à la réduction", true
+                return GetPhrase('meth_send_to_reduction'), true
             end
-            return string.format('Temps restant : %02d:%02d', minutes, seconds)
+            return GetPhrase('weed_msg_timer', string.format('%02d:%02d', minutes, seconds))
         end
         local max = _LABS.Meth.Tanks[Labs.LabosIndex.level]
-        return string.format('En attente de Phénylacétone (%0d/%0d) et Méthylamine (%0d/%0d)', s.phenylacetone, max,
-            s.methylamine, max)
+        return GetPhrase('meth_waiting_chemicals', s.phenylacetone, max, s.methylamine, max)
     else
         return ""
     end
@@ -75,17 +74,17 @@ end
 function Labs.Meth:GetReductionPanelStatus(key)
     local r = Labs.Meth.circuits[key].reduction
     if not r.working then
-        if r.plates > 0 then return string.format("%0d plateaux en attente de réduction", r.plates) end
-        return 'En attente de la synthèse'
+        if r.plates > 0 then return GetPhrase('meth_plates_waiting', r.plates) end
+        return GetPhrase('meth_waiting_synthesis')
     end
     local remaining = math.max((_LABS.Meth.ReductionDuration - (os.time() - r.start)) + 1.0, 0.0)
     local minutes = math.floor(remaining / 60)
     local seconds = math.floor(remaining - minutes * 60)
     if minutes == 0 and seconds == 0 then
         TriggerServerEvent("core:labs:FinishReduction", Labs.LabosIndex.id, key, false, r.plates)
-        return 'Terminé'
+        return GetPhrase('meth_completed')
     end
-    return string.format('Temps restant : %02d:%02d', minutes, seconds)
+    return GetPhrase('weed_msg_timer', string.format('%02d:%02d', minutes, seconds))
 end
 
 local function ShowHelpNotification(text)
@@ -107,19 +106,18 @@ function Labs:StartMeth()
             local pPed = PlayerPedId()
             local pPos = GetEntityCoords(pPed)
 
-            -- 1. Synthesis components spots
             for i = 1, #_LABS.Shell['meth'].Synthesis do
                 local spot = _LABS.Shell['meth'].Synthesis[i]
                 local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
                 local dist = #(pPos - coords)
                 if dist < 5.0 then
                     wait = 0
-                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
                     if dist < 1.3 then
-                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Ajouter 5x de Phénylacétone et 5x de Méthylamine~s~.")
+                        ShowHelpNotification(GetPhrase('meth_add_components'))
                         if IsControlJustReleased(0, 38) then
                             if Labs.Meth.working then
-                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                                ShowNotification(GetPhrase('action_in_progress'))
                             else
                                 Labs.Meth.working = true
                                 Labs:PlayLabosAnimation(spot, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000)
@@ -131,19 +129,18 @@ function Labs:StartMeth()
                 end
             end
 
-            -- 2. Synthesis panels
             for i = 1, #_LABS.Shell['meth'].SynthesisPanels do
                 local spot = _LABS.Shell['meth'].SynthesisPanels[i]
                 local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
                 local dist = #(pPos - coords)
                 if dist < 5.0 then
                     wait = 0
-                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
                     if dist < 1.3 then
-                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Lancer l'image de synthèse~s~.")
+                        ShowHelpNotification(GetPhrase('meth_start_synthesis'))
                         if IsControlJustReleased(0, 38) then
                             if Labs.Meth.working then
-                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                                ShowNotification(GetPhrase('action_in_progress'))
                             else
                                 Labs.Meth.working = true
                                 Labs:PlayLabosAnimation(spot, "anim@amb@business@meth@meth_monitoring_cooking@monitoring@", "button_press_monitor", 3000)
@@ -162,14 +159,14 @@ function Labs:StartMeth()
                 local dist = #(pPos - coords)
                 if dist < 5.0 then
                     wait = 0
-                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
                     if dist < 1.3 then
                         local statusStr, actionable = Labs.Meth:GetSynthesisPanelStatus(i)
                         if actionable then
-                            ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~" .. statusStr .. "~s~.")
+                            ShowHelpNotification(GetPhrase('press_to_action', statusStr))
                             if IsControlJustReleased(0, 38) then
                                 if Labs.Meth.working then
-                                    ShowNotification("Vous êtes déjà en train de faire une action.")
+                                    ShowNotification(GetPhrase('action_in_progress'))
                                 else
                                     Labs.Meth.working = true
                                     TriggerServerEvent("core:labs:sendToReduction", Labs.LabosIndex.id, i)
@@ -179,7 +176,7 @@ function Labs:StartMeth()
                                 end
                             end
                         else
-                            ShowHelpNotification(statusStr or "Calcul en cours...")
+                            ShowHelpNotification(statusStr or GetPhrase('processing'))
                         end
                     end
                 end
@@ -192,10 +189,10 @@ function Labs:StartMeth()
                 local dist = #(pPos - coords)
                 if dist < 5.0 then
                     wait = 0
-                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
                     if dist < 1.3 then
                         local statusStr = Labs.Meth:GetReductionPanelStatus(i)
-                        ShowHelpNotification(statusStr or "Attente...")
+                        ShowHelpNotification(statusStr or GetPhrase('waiting'))
                     end
                 end
             end
@@ -207,29 +204,29 @@ function Labs:StartMeth()
                 local dist = #(pPos - coords)
                 if dist < 5.0 then
                     wait = 0
-                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
                     if dist < 1.3 then
                         local platesCount = (Labs.Meth.circuits[i] and Labs.Meth.circuits[i].reduction) and Labs.Meth.circuits[i].reduction.plates or 0
-                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Récupérer " .. platesCount .. " plateau(x)~s~.")
+                        ShowHelpNotification(GetPhrase('meth_take_plates', platesCount))
                         if IsControlJustReleased(0, 38) then
                             if not Labs.Meth.circuits[i].reduction.working then
                                 yCore.TriggerServerCallback("core:labs:TakePlateMeth", function(done)
                                     if done then
                                         if Labs.Meth.working then
-                                            ShowNotification("Vous êtes déjà en train de faire une action.")
+                                            ShowNotification(GetPhrase('action_in_progress'))
                                         else
                                             Labs.Meth.working = true
                                             local ped = PlayerPedId()
                                             TaskTurnPedToFaceCoord(ped, coords.x, coords.y, coords.z, 1000)
                                             Citizen.Wait(1000)
-                                            ShowNotification("~g~Récupération d'un plateau~s~.")
+                                            ShowNotification(GetPhrase('meth_take_plate_success'))
                                             if not Labs.Meth.hasPlate then
                                                 Labs.Meth.hasPlate = true
                                                 Citizen.CreateThread(function()
                                                     Labs:PlayAnimation(ped, "anim@heists@box_carry@", "idle", -1, 49)
                                                     local object = Labs:AttachEntityToEntity(ped, "bkr_prop_meth_tray_01a", vector3(0.0, -0.23, -0.21), vector3(0.0, -0.23, -0.21), vector3(16.0, -4.0, 1.0))
                                                     while Labs.Meth.hasPlate do
-                                                        ShowHelpNotification("Appuyez sur ~INPUT_ENTER~ pour ~y~ranger~s~.")
+                                                        ShowHelpNotification(GetPhrase('press_to_store'))
                                                         if IsControlJustPressed(0, 23) then
                                                             Labs.Meth.hasPlate = false
                                                             Labs.Meth.working = false
@@ -244,11 +241,11 @@ function Labs:StartMeth()
                                             Labs.Meth.working = false
                                         end
                                     else
-                                        ShowNotification("~r~Il n'y a plus de plateaux de meths~s~.")
+                                        ShowNotification(GetPhrase('meth_no_plates'))
                                     end
                                 end, Labs.LabosIndex.id, i, GetTerritoryFromCoords(Labs.LabosIndex.coords))
                             else
-                                ShowNotification("~r~La synthèse n'est pas terminée~s~.")
+                                ShowNotification(GetPhrase('meth_synthesis_not_done'))
                             end
                         end
                     end
@@ -262,12 +259,12 @@ function Labs:StartMeth()
                 local dist = #(pPos - coords)
                 if dist < 5.0 then
                     wait = 0
-                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
                     if dist < 1.3 then
-                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Briser la meth~s~.")
+                        ShowHelpNotification(GetPhrase('meth_break'))
                         if IsControlJustReleased(0, 38) then
                             if Labs.Meth.working then
-                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                                ShowNotification(GetPhrase('action_in_progress'))
                             else
                                 Labs.Meth.working = true
                                 Labs.Meth.hasPlate = false
@@ -290,12 +287,12 @@ function Labs:StartMeth()
                 local dist = #(pPos - coords)
                 if dist < 5.0 then
                     wait = 0
-                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
+                    DrawMarker(27, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
                     if dist < 1.3 then
-                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Empocher la meth~s~.")
+                        ShowHelpNotification(GetPhrase('meth_pocket'))
                         if IsControlJustReleased(0, 38) then
                             if Labs.Meth.working then
-                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                                ShowNotification(GetPhrase('action_in_progress'))
                             else
                                 Labs.Meth.working = true
                                 TaskTurnPedToFaceCoord(pPed, coords.x, coords.y, coords.z, 500)

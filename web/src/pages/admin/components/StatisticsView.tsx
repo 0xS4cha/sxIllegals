@@ -8,6 +8,7 @@ import {
   Zap,
 } from 'lucide-react'
 import type { AdminStats } from '../../../types/admin'
+import { useTranslation } from '../../../hooks/useTranslation'
 
 export type TimeFrame = '24h' | '7d' | '30d'
 
@@ -18,6 +19,7 @@ interface StatisticsViewProps {
 }
 
 export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: StatisticsViewProps) {
+  const { t } = useTranslation()
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null)
 
   const points = stats.timeSeriesData
@@ -45,10 +47,10 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
         <div>
           <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-zinc-300" />
-            Statistiques & Tendances
+            {t('stats_title')}
           </h3>
           <p className="text-xs text-zinc-400">
-            Analyse des revenus illégaux, de la production et des luttes de territoire
+            {t('stats_subtitle')}
           </p>
         </div>
 
@@ -62,7 +64,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
               : 'text-zinc-400 hover:text-zinc-200'
               }`}
           >
-            24 Heures
+            {t('stats_time_24h')}
           </button>
           <button
             type="button"
@@ -72,7 +74,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
               : 'text-zinc-400 hover:text-zinc-200'
               }`}
           >
-            7 Jours
+            {t('stats_time_7d')}
           </button>
           <button
             type="button"
@@ -82,7 +84,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
               : 'text-zinc-400 hover:text-zinc-200'
               }`}
           >
-            30 Jours
+            {t('stats_time_30d')}
           </button>
         </div>
       </div>
@@ -95,7 +97,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
         <div className="flex items-center justify-between">
           <div>
             <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-              Évolution des Ventes ($)
+              {t('stats_sales_evolution')}
             </span>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold text-zinc-100">
@@ -110,7 +112,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
           <div className="flex items-center gap-4 text-xs">
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-full bg-zinc-300" />
-              <span className="text-zinc-400">Ventes ($)</span>
+              <span className="text-zinc-400">{t('stats_sales_evolution').replace('Evolution des ', '')}</span>
             </div>
           </div>
         </div>
@@ -201,7 +203,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
         >
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
-              <Zap className="h-4 w-4 text-zinc-300" /> Production par Catégorie
+              <Zap className="h-4 w-4 text-zinc-300" /> {t('stats_prod_category')}
             </h4>
             <span className="text-xs text-zinc-500">Volume total</span>
           </div>
@@ -236,13 +238,13 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
           className="rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-6 space-y-4"
         >
           <h4 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
-            <Activity className="h-4 w-4 text-zinc-300" /> Métriques Synthétiques
+            <Activity className="h-4 w-4 text-zinc-300" /> {t('stats_synthetic')}
           </h4>
 
           <div className="grid grid-cols-2 gap-3 pt-2">
             <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5">
               <span className="text-[11px] text-zinc-500 uppercase tracking-wider">
-                Panier Moyen Vente
+                {t('stats_avg_cart')}
               </span>
               <p className="mt-1 text-lg font-bold text-zinc-100">1,537 $</p>
               <p className="mt-0.5 text-[10px] text-zinc-400">Pochon street level</p>
@@ -250,7 +252,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
 
             <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5">
               <span className="text-[11px] text-zinc-500 uppercase tracking-wider">
-                Heure de Pic
+                {t('stats_peak_hour')}
               </span>
               <p className="mt-1 text-lg font-bold text-zinc-100">20:00 - 22:00</p>
               <p className="mt-0.5 text-[10px] text-zinc-400">Activité maximale</p>
@@ -258,7 +260,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
 
             <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5">
               <span className="text-[11px] text-zinc-500 uppercase tracking-wider">
-                Top Groupe Vendeur
+                {t('stats_top_seller')}
               </span>
               <p className="mt-1 text-lg font-bold text-zinc-100">Vagos</p>
               <p className="mt-0.5 text-[10px] text-zinc-400">2,100 pts influence</p>
@@ -266,7 +268,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
 
             <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5">
               <span className="text-[11px] text-zinc-500 uppercase tracking-wider">
-                Ratio Succès Labo
+                {t('stats_success_ratio')}
               </span>
               <p className="mt-1 text-lg font-bold text-emerald-400">98.4 %</p>
               <p className="mt-0.5 text-[10px] text-zinc-400">Rendement optimal</p>

@@ -12,10 +12,18 @@ export interface SetLocaleData {
   locale: string
 }
 
+export type PhraseDictionary = Record<string, string>
+
+export interface SetTranslationsData {
+  locale: string
+  translations: PhraseDictionary
+}
+
 export type NuiMessageData =
   | SetVisibleData
   | SetRouteData
   | SetLocaleData
+  | SetTranslationsData
   | Record<string, unknown>
 
 export interface NuiMessage<T = NuiMessageData> {

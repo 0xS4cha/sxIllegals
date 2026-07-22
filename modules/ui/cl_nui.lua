@@ -17,9 +17,16 @@ function SX.UI:Open(panel)
         return
     end
 
+    local locale = GetPreferredLanguageId()
+
     currentPanel = panel
     isOpen = true
     SetNuiFocus(true, true)
+    self:Send('setTranslations', {
+        locale = locale,
+        translations = GetLanguageTable(locale)
+    })
+    self:Send('setLocale', { locale = locale })
     self:Send('setRoute', { route = panel })
     self:Send('setVisible', { visible = true })
 end

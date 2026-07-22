@@ -13,6 +13,7 @@ import {
 
 import type { AdminCategory } from '../../../types/admin'
 import { fetchNui } from '../../../utils/fetchNui'
+import { useTranslation } from '../../../hooks/useTranslation'
 
 interface AdminSidebarProps {
   activeCategory: AdminCategory
@@ -41,22 +42,24 @@ export function AdminSidebar({
   collapsed,
   onToggleCollapse,
 }: AdminSidebarProps) {
+  const { t } = useTranslation()
+
   const navItems: NavItem[] = [
     {
       id: 'overview',
-      label: 'Vue globale',
+      label: t('admin_sidebar_overview'),
       icon: LayoutDashboard,
     },
     {
       id: 'groups',
-      label: 'Liste des Groupes',
+      label: t('admin_sidebar_groups'),
       icon: Users,
       badge: groupsCount,
       badgeColor: 'bg-zinc-800 text-zinc-300 border border-zinc-700',
     },
     {
       id: 'territories',
-      label: 'Liste des Territoires',
+      label: t('admin_sidebar_territories'),
       icon: MapPin,
       badge: contestedCount > 0 ? contestedCount : territoriesCount,
       badgeColor:
@@ -66,12 +69,12 @@ export function AdminSidebar({
     },
     {
       id: 'laboratories',
-      label: 'Laboratoires',
+      label: t('admin_sidebar_laboratories'),
       icon: FlaskConical,
     },
     {
       id: 'statistics',
-      label: 'Statistiques',
+      label: t('admin_sidebar_statistics'),
       icon: BarChart3,
     },
   ]
@@ -100,7 +103,7 @@ export function AdminSidebar({
                 sxIllegals
               </span>
               <span className="truncate text-sm font-bold text-zinc-100">
-                Admin Panel
+                {t('admin_sidebar_title')}
               </span>
             </motion.div>
           )}
@@ -120,7 +123,7 @@ export function AdminSidebar({
         <div className="mb-2 px-2">
           {!collapsed && (
             <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-500">
-              Catégories principales
+              {t('admin_sidebar_subtitle')}
             </span>
           )}
         </div>
@@ -187,10 +190,10 @@ export function AdminSidebar({
           onClick={handleClose}
           className={`flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/80 py-2 text-xs font-medium text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white ${collapsed ? 'px-2' : 'px-3'
             }`}
-          title="Fermer le panel"
+          title={t('btn_close')}
         >
           <X className="h-4 w-4 text-zinc-400" />
-          {!collapsed && <span>Fermer (ESC)</span>}
+          {!collapsed && <span>{t('btn_close')} (ESC)</span>}
         </button>
       </div>
     </aside>
