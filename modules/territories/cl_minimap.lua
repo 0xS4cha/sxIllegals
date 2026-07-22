@@ -20,7 +20,7 @@ function ShowTerritories(bool)
 
                     if isInside and not territory.isInside then
                         Territories.SetAlpha(territory.id, 75)
-                        local data = ensureBlipInfoTerritory(TerritoriesList[territoriesId].id)
+                        local data = EnsureBlipInfoTerritory(TerritoriesList[territoriesId].id)
                         N_0xec9264727eec0f28()
                         ClearDisplayTerritory()
                         SetTitleTerritory(data.title, data.rockstarVerified, data.rp, data.money, data.dict, data.tex)

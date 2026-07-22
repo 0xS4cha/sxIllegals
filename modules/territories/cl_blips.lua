@@ -1,7 +1,7 @@
 local BLIP_INFO_DATA = {}
 
 
-function ensureBlipInfoTerritory(zone)
+function EnsureBlipInfoTerritory(zone)
     if not BLIP_INFO_DATA[zone] then BLIP_INFO_DATA[zone] = {} end
     if not BLIP_INFO_DATA[zone].title then BLIP_INFO_DATA[zone].title = "" end
     if not BLIP_INFO_DATA[zone].rockstarVerified then BLIP_INFO_DATA[zone].rockstarVerified = false end
@@ -18,30 +18,30 @@ function ResetBlipInfoTerritory(blip)
 end
 
 function SetBlipInfoTitleTerritory(zone, title, rockstarVerified)
-    local data = ensureBlipInfoTerritory(zone)
+    local data = EnsureBlipInfoTerritory(zone)
     data.title = title or ""
     data.rockstarVerified = rockstarVerified or false
 end
 
 function SetBlipInfoImageTerritory(blip, dict, tex)
-    local data = ensureBlipInfoTerritory(blip)
+    local data = EnsureBlipInfoTerritory(blip)
     data.dict = dict or ""
     data.tex = tex or ""
 end
 
 function SetBlipInfoEconomyTerritory(blip, rp, money)
-    local data = ensureBlipInfoTerritory(blip)
+    local data = EnsureBlipInfoTerritory(blip)
     data.money = tostring(money) or ""
     data.rp = tostring(rp) or ""
 end
 
 function SetBlipInfoTerritory(blip, info)
-    local data = ensureBlipInfoTerritory(blip)
+    local data = EnsureBlipInfoTerritory(blip)
     data.info = info
 end
 
 function AddBlipInfoTextTerritory(blip, leftText, rightText)
-    local data = ensureBlipInfoTerritory(blip)
+    local data = EnsureBlipInfoTerritory(blip)
     if rightText then
         table.insert(data.info, {1, leftText or "", rightText or ""})
     else
@@ -50,17 +50,17 @@ function AddBlipInfoTextTerritory(blip, leftText, rightText)
 end
 
 function AddBlipInfoNameTerritory(blip, leftText, rightText)
-    local data = ensureBlipInfoTerritory(blip)
+    local data = EnsureBlipInfoTerritory(blip)
     table.insert(data.info, {3, leftText or "", rightText or ""})
 end
 
 function AddBlipInfoHeaderTerritory(blip, leftText, rightText)
-    local data = ensureBlipInfoTerritory(blip)
+    local data = EnsureBlipInfoTerritory(blip)
     table.insert(data.info, {4, leftText or "", rightText or ""})
 end
 
 function AddBlipInfoIconTerritory(blip, leftText, rightText, iconId, iconColor, checked)
-    local data = ensureBlipInfoTerritory(blip)
+    local data = EnsureBlipInfoTerritory(blip)
     table.insert(data.info, {2, leftText or "", rightText or "", iconId or 0, iconColor or 0, checked or false})
 end
 
