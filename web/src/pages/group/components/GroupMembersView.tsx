@@ -38,7 +38,6 @@ export function GroupMembersView({
 
   return (
     <div className="space-y-6">
-      {/* Top Header & Invite Button */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
@@ -63,7 +62,6 @@ export function GroupMembersView({
         )}
       </div>
 
-      {/* Members Grid / List */}
       <div className="grid grid-cols-1 gap-3">
         {filteredMembers.map((member, idx) => (
           <motion.div
@@ -73,7 +71,6 @@ export function GroupMembersView({
             transition={{ delay: idx * 0.03 }}
             className="flex flex-col sm:flex-row sm:items-center justify-between rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-4 gap-4 hover:border-zinc-700 transition"
           >
-            {/* Left: Info */}
             <div className="flex items-center gap-3.5">
               <span
                 className={`h-3 w-3 rounded-full shrink-0 ${
@@ -95,7 +92,6 @@ export function GroupMembersView({
               </div>
             </div>
 
-            {/* Middle: Rank & Stats */}
             <div className="flex flex-wrap items-center gap-4 text-xs">
               <div className="rounded border border-zinc-700/80 bg-zinc-800 px-2.5 py-1 text-zinc-200 font-semibold">
                 {member.rank}
@@ -113,7 +109,6 @@ export function GroupMembersView({
               </div>
             </div>
 
-            {/* Right: Actions */}
             {canManageMembers && !member.isLeader && (
               <div className="flex items-center gap-1.5 self-end sm:self-auto">
                 <button

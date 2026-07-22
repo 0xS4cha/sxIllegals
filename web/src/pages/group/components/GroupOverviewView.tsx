@@ -55,7 +55,6 @@ export function GroupOverviewView({
 
   return (
     <div className="space-y-6">
-      {/* Top Banner Devise & Identity */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -99,7 +98,6 @@ export function GroupOverviewView({
         </div>
       </motion.div>
 
-      {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((card, idx) => {
           const Icon = card.icon
@@ -127,9 +125,7 @@ export function GroupOverviewView({
         })}
       </div>
 
-      {/* Main Grid: Online Members List & Activity Timeline */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Members Quick List */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,7 +177,6 @@ export function GroupOverviewView({
           </div>
         </motion.div>
 
-        {/* Activity Stream */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

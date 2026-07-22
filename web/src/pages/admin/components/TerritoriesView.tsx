@@ -7,6 +7,7 @@ import {
   RotateCcw,
   Search,
   ShieldCheck,
+  Plus,
   Zap,
 } from 'lucide-react'
 import type { TerritoryItem } from '../../../types/admin'
@@ -43,7 +44,6 @@ export function TerritoriesView({
 
   return (
     <div className="space-y-6">
-      {/* Search & Filter Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[220px]">
@@ -92,10 +92,16 @@ export function TerritoriesView({
               Contestés ({territories.filter((t) => t.attackState === 2).length})
             </button>
           </div>
+          <button
+            type="button"
+            className="flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 transition hover:bg-white hover:shadow-md"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Créer un Territoire</span>
+          </button>
         </div>
       </div>
 
-      {/* Territory Cards Grid */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {filteredTerritories.map((territory, idx) => (
           <motion.div
@@ -106,7 +112,6 @@ export function TerritoriesView({
             className="flex flex-col justify-between rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-5 space-y-4 hover:border-zinc-700 transition"
           >
             <div>
-              {/* Header */}
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -141,7 +146,6 @@ export function TerritoriesView({
                 </div>
               </div>
 
-              {/* Total Points & Coords */}
               <div className="mt-4 flex items-center justify-between rounded-lg border border-zinc-800/60 bg-zinc-950/60 px-3.5 py-2 text-xs">
                 <span className="text-zinc-400">
                   Influence Totale:{' '}
@@ -154,14 +158,12 @@ export function TerritoriesView({
                 </span>
               </div>
 
-              {/* Influence Breakdown Bars */}
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between text-xs text-zinc-400">
                   <span>Répartition d'influence</span>
                   <span>{territory.influences.length} groupes présents</span>
                 </div>
 
-                {/* Progress bar container */}
                 <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-800 flex">
                   {territory.influences.map((inf) => (
                     <div
@@ -172,7 +174,6 @@ export function TerritoriesView({
                   ))}
                 </div>
 
-                {/* Legend list */}
                 <div className="grid grid-cols-2 gap-2 pt-1">
                   {territory.influences.map((inf) => (
                     <div key={inf.groupId} className="flex items-center gap-2 text-xs">
@@ -190,7 +191,6 @@ export function TerritoriesView({
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex items-center justify-between pt-3 border-t border-zinc-800/60">
               <button
                 type="button"

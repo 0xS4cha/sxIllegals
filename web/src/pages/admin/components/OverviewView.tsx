@@ -56,7 +56,6 @@ export function OverviewView({
 
   return (
     <div className="space-y-6">
-      {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((card, idx) => {
           const Icon = card.icon
@@ -85,11 +84,8 @@ export function OverviewView({
         })}
       </div>
 
-      {/* Main Grid Section */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left 2 Cols: Top Groups & Territories summary */}
         <div className="space-y-6 lg:col-span-2">
-          {/* Top Groups Preview */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -144,7 +140,6 @@ export function OverviewView({
             </div>
           </motion.div>
 
-          {/* Territories Preview */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -190,7 +185,6 @@ export function OverviewView({
                     </span>
                   </div>
 
-                  {/* Multi-Group Influence Bar */}
                   <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800 flex">
                     {territory.influences.map((inf) => (
                       <div
@@ -207,7 +201,6 @@ export function OverviewView({
           </motion.div>
         </div>
 
-        {/* Right 1 Col: Live Activity Stream */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

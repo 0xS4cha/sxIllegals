@@ -42,7 +42,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
 
   return (
     <div className="space-y-6">
-      {/* Top Bar with Timeframe Switcher */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
@@ -92,7 +91,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
         </div>
       </div>
 
-      {/* Main Graph Card: Line Graph of Drug Sales over Time */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -121,7 +119,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
           </div>
         </div>
 
-        {/* Animated SVG Line Chart */}
         <div className="relative w-full overflow-x-auto py-2">
           <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-48 overflow-visible">
             <defs>
@@ -131,12 +128,10 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
               </linearGradient>
             </defs>
 
-            {/* Grid horizontal lines */}
             <line x1="0" y1={padding} x2={width} y2={padding} stroke="#27272a" strokeDasharray="4 4" />
             <line x1="0" y1={height / 2} x2={width} y2={height / 2} stroke="#27272a" strokeDasharray="4 4" />
             <line x1="0" y1={height - padding} x2={width} y2={height - padding} stroke="#27272a" />
 
-            {/* Filled Area */}
             <motion.path
               d={areaPathD}
               fill="url(#areaGradient)"
@@ -145,7 +140,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
               transition={{ duration: 0.6 }}
             />
 
-            {/* Animated Line Path */}
             <motion.path
               d={linePathD}
               fill="none"
@@ -158,7 +152,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
               transition={{ duration: 1, ease: 'easeInOut' }}
             />
 
-            {/* Interactive Data Points */}
             {chartPoints.map((pt, idx) => (
               <g key={pt.label}>
                 <motion.circle
@@ -174,7 +167,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
                   transition={{ delay: 0.5 + idx * 0.05 }}
                 />
 
-                {/* X Axis Labels */}
                 <text
                   x={pt.x}
                   y={height - 2}
@@ -187,7 +179,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
             ))}
           </svg>
 
-          {/* Hover Tooltip display */}
           {hoveredPointIndex !== null && (
             <motion.div
               initial={{ opacity: 0, y: 4 }}
@@ -205,9 +196,7 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
         </div>
       </motion.div>
 
-      {/* Grid: Bar Chart & Donut Chart */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* SVG Bar Chart: Production & Volume */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -244,7 +233,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
           </div>
         </motion.div>
 
-        {/* Key Performance Indicators Summary */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

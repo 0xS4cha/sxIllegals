@@ -63,7 +63,6 @@ export function GroupPanel() {
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-zinc-950">
-      {/* Sidebar */}
       <GroupSidebar
         group={group}
         activeCategory={activeCategory}
@@ -72,9 +71,7 @@ export function GroupPanel() {
         onToggleCollapse={() => setCollapsedSidebar((prev) => !prev)}
       />
 
-      {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top Header */}
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-zinc-950/60 px-6 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300">
@@ -100,7 +97,6 @@ export function GroupPanel() {
           </div>
         </header>
 
-        {/* Dynamic Category View */}
         <main className="flex-1 overflow-auto p-6">
           <AnimatePresence mode="wait">
             <motion.div
@@ -144,7 +140,6 @@ export function GroupPanel() {
         </main>
       </div>
 
-      {/* Modals */}
       <InviteMemberModal
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}

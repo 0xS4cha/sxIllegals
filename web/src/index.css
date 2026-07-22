@@ -11,3 +11,22 @@ body,
   background: transparent;
   font-family: system-ui, -apple-system, sans-serif;
 }
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(29,29,29,.75);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(49, 49, 49, 0.75);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(29, 29, 29, 0.75);
+}
