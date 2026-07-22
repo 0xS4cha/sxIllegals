@@ -47,6 +47,7 @@ function group:new(data)
     self.members = data.members or {}
     self.ranks = data.ranks or {}
     self.is_official = data.is_official or false
+    self.slots = data.slots
     GroupList[self.id] = self
     return self
 end
@@ -256,7 +257,8 @@ function group:getNeedSave()
 end
 
 function group:recruitPlayer(identifier, rank)
-    if #self.members + 1 < _GROUP.Slots[self.is_official] then
+    local maxSlots = self.slots or _GROUP.Slots[self.is_official]
+    if #self.members < maxSlots then
         local pResult = MySQL.Sync.fetchAll("SELECT * FROM users WHERE identifier = @identifier", {
             ["@identifier"] = identifier
         })
@@ -289,13 +291,14 @@ end
 function group:saveGroup()
     MySQL.Async.execute([[
         UPDATE group_list
-        SET name = ?, devise = ?, rgb = ?, is_official = ?
+        SET name = ?, devise = ?, rgb = ?, is_official = ?, slots = ?
         WHERE id = ?
     ]], {
         self.name,
         self.devise,
         json.encode(self.rgb),
-        self.is_official,
+        self.is_official and 1 or 0,
+        self.slots,
         self.id
     })
 
@@ -353,15 +356,50 @@ local function LoadGroup()
             v.ranks[i].perms = json.decode(v.ranks[i].perms)
         end
         v.rgb = json.decode(v.rgb)
-        groups:new(v)
+        group:new(v)
     end
     Logger:info('LOAD', "All group have been loaded.")
 end
 
 MySQL.ready(function()
-    Wait(1000)
-    LoadGroup()
-    groupLoaded = true
+    -- Check if group_list.id is varchar
+    local result = MySQL.Sync.fetchAll("SHOW COLUMNS FROM `group_list` WHERE Field = 'id'")
+    if result and result[1] and not result[1].Type:find("varchar") then
+        Logger:info('DATABASE', "Migrating group_list and labs IDs to VARCHAR(50)...")
+
+        -- Drop foreign key constraints safely
+        pcall(function() MySQL.Sync.execute("ALTER TABLE `group_grades` DROP FOREIGN KEY `group_grades_ibfk_1`") end)
+        pcall(function() MySQL.Sync.execute("ALTER TABLE `group_members` DROP FOREIGN KEY `group_members_ibfk_1`") end)
+
+        -- Modify group_list id
+        MySQL.Sync.execute("ALTER TABLE `group_list` MODIFY `id` VARCHAR(50) NOT NULL")
+
+        -- Modify group_grades and group_members groupId columns
+        MySQL.Sync.execute("ALTER TABLE `group_grades` MODIFY `groupId` VARCHAR(50) NOT NULL")
+        MySQL.Sync.execute("ALTER TABLE `group_members` MODIFY `groupId` VARCHAR(50) NOT NULL")
+
+        -- Re-add constraints with ON DELETE CASCADE
+        pcall(function()
+            MySQL.Sync.execute(
+            "ALTER TABLE `group_grades` ADD CONSTRAINT `group_grades_ibfk_1` FOREIGN KEY (`groupId`) REFERENCES `group_list` (`id`) ON DELETE CASCADE")
+        end)
+        pcall(function()
+            MySQL.Sync.execute(
+            "ALTER TABLE `group_members` ADD CONSTRAINT `group_members_ibfk_1` FOREIGN KEY (`groupId`) REFERENCES `group_list` (`id`) ON DELETE CASCADE")
+        end)
+    end
+
+    -- Check if labs.id is varchar
+    local labsResult = MySQL.Sync.fetchAll("SHOW COLUMNS FROM `labs` WHERE Field = 'id'")
+    if labsResult and labsResult[1] and not labsResult[1].Type:find("varchar") then
+        MySQL.Sync.execute("ALTER TABLE `labs` MODIFY `id` VARCHAR(50) NOT NULL")
+    end
+
+    MySQL.query("ALTER TABLE `group_list` ADD COLUMN IF NOT EXISTS `slots` INT DEFAULT NULL", {}, function()
+        Wait(1000)
+        LoadGroup()
+        groupLoaded = true
+    end)
 end)
 
 AddEventHandler("onResourceStop", function(resource)

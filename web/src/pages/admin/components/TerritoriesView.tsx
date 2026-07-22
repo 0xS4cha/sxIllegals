@@ -16,6 +16,7 @@ interface TerritoriesViewProps {
   territories: TerritoryItem[]
   onResetInfluence: (id: string) => void
   onTeleport: (coords: { x: number; y: number; z: number }) => void
+  onOpenCreateModal: () => void
 }
 
 type TerritoryFilter = 'all' | 'attack' | 'contested' | 'peaceful'
@@ -24,6 +25,7 @@ export function TerritoriesView({
   territories,
   onResetInfluence,
   onTeleport,
+  onOpenCreateModal,
 }: TerritoriesViewProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterState, setFilterState] = useState<TerritoryFilter>('all')
@@ -94,6 +96,7 @@ export function TerritoriesView({
           </div>
           <button
             type="button"
+            onClick={onOpenCreateModal}
             className="flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 transition hover:bg-white hover:shadow-md"
           >
             <Plus className="h-4 w-4" />

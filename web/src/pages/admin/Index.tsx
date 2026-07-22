@@ -11,21 +11,25 @@ import {
 
 import { useAdminData } from '../../hooks/useAdminData'
 import type { AdminCategory } from '../../types/admin'
-import { CreateGroupModal } from './components/AdminModals'
+import { CreateGroupModal, CreateTerritoryModal, CreateLaboratoryModal } from './components/AdminModals'
 import { AdminSidebar } from './components/AdminSidebar'
 import { GroupsView } from './components/GroupsView'
 import { OverviewView } from './components/OverviewView'
 import { StatisticsView } from './components/StatisticsView'
 import { TerritoriesView } from './components/TerritoriesView'
+import { LaboratoriesView } from './components/LaboratoriesView'
 
 export function AdminPanel() {
   const [activeCategory, setActiveCategory] = useState<AdminCategory>('overview')
   const [collapsedSidebar, setCollapsedSidebar] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isCreateTerritoryModalOpen, setIsCreateTerritoryModalOpen] = useState(false)
+  const [isCreateLabModalOpen, setIsCreateLabModalOpen] = useState(false)
 
   const {
     groups,
     territories,
+    labs,
     stats,
     loading,
     selectedGroup,
@@ -37,6 +41,8 @@ export function AdminPanel() {
     updateGroup,
     resetTerritoryInfluence,
     teleportToTerritory,
+    createTerritory,
+    createLaboratory,
   } = useAdminData()
 
   const contestedCount = territories.filter((t) => t.attackState > 0).length
@@ -57,15 +63,15 @@ export function AdminPanel() {
       subtitle: 'Surveillance des zones sous contrôle, conflits et réinitialisations',
       icon: MapPin,
     },
-    statistics: {
-      title: 'Statistiques & Graphiques de Ventes',
-      subtitle: 'Analyse approfondie du trafic de stupéfiants et de la rentabilité',
-      icon: BarChart3,
-    },
     laboratories: {
       title: 'Laboratoires & Production',
       subtitle: 'Suivi des laboratoires de Cocaïne, Méthamphétamine et Weed',
       icon: FlaskConical,
+    },
+    statistics: {
+      title: 'Statistiques & Graphiques de Ventes',
+      subtitle: 'Analyse approfondie du trafic de stupéfiants et de la rentabilité',
+      icon: BarChart3,
     },
   }
 
@@ -148,6 +154,7 @@ export function AdminPanel() {
                   territories={territories}
                   onResetInfluence={resetTerritoryInfluence}
                   onTeleport={teleportToTerritory}
+                  onOpenCreateModal={() => setIsCreateTerritoryModalOpen(true)}
                 />
               )}
 
@@ -156,13 +163,10 @@ export function AdminPanel() {
               )}
 
               {activeCategory === 'laboratories' && (
-                <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-zinc-800 bg-zinc-900/20 text-center p-6 space-y-2">
-                  <FlaskConical className="h-8 w-8 text-zinc-500" />
-                  <h3 className="text-sm font-semibold text-zinc-300">Section Laboratoires</h3>
-                  <p className="text-xs text-zinc-400 max-w-md">
-                    Visualisation et paramétrage des laboratoires de Weed, Cocaïne et Méthamphétamine.
-                  </p>
-                </div>
+                <LaboratoriesView
+                  labs={labs}
+                  onOpenCreateModal={() => setIsCreateLabModalOpen(true)}
+                />
               )}
             </motion.div>
           </AnimatePresence>
@@ -173,6 +177,16 @@ export function AdminPanel() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreate={createGroup}
+      />
+      <CreateTerritoryModal
+        isOpen={isCreateTerritoryModalOpen}
+        onClose={() => setIsCreateTerritoryModalOpen(false)}
+        onCreate={createTerritory}
+      />
+      <CreateLaboratoryModal
+        isOpen={isCreateLabModalOpen}
+        onClose={() => setIsCreateLabModalOpen(false)}
+        onCreate={createLaboratory}
       />
     </div>
   )

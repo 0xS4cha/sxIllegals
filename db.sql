@@ -14,54 +14,44 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
--- Listage de la structure de table islandlife. group_grades
 CREATE TABLE IF NOT EXISTS `group_grades` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `rank` int(11) NOT NULL,
   `perms` text NOT NULL,
-  `groupId` int(11) NOT NULL,
+  `groupId` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `groupId` (`groupId`),
   KEY `idx_group_grades_id` (`id`),
-  CONSTRAINT `group_grades_ibfk_1` FOREIGN KEY (`groupId`) REFERENCES `group_list` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `group_grades_ibfk_1` FOREIGN KEY (`groupId`) REFERENCES `group_list` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Les données exportées n'étaient pas sélectionnées.
-
--- Listage de la structure de table islandlife. group_list
 CREATE TABLE IF NOT EXISTS `group_list` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
   `devise` text DEFAULT NULL,
   `rgb` text DEFAULT NULL,
   `is_official` int(11) DEFAULT 0,
+  `slots` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_group_list_id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Les données exportées n'étaient pas sélectionnées.
-
--- Listage de la structure de table islandlife. group_members
 CREATE TABLE IF NOT EXISTS `group_members` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `identifier` varchar(50) DEFAULT NULL,
   `label` varchar(50) DEFAULT NULL,
   `id_grade` int(11) NOT NULL,
-  `groupId` int(11) NOT NULL,
+  `groupId` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_grade` (`id_grade`),
   KEY `groupId` (`groupId`),
   KEY `idx_group_members_id` (`id`),
-  CONSTRAINT `group_members_ibfk_1` FOREIGN KEY (`groupId`) REFERENCES `group_list` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `group_members_ibfk_1` FOREIGN KEY (`groupId`) REFERENCES `group_list` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Les données exportées n'étaient pas sélectionnées.
-
--- Listage de la structure de table islandlife. labs
 CREATE TABLE IF NOT EXISTS `labs` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(50) NOT NULL,
   `label` text DEFAULT NULL,
   `coords` longtext DEFAULT NULL,
   `type` text NOT NULL,
@@ -71,11 +61,8 @@ CREATE TABLE IF NOT EXISTS `labs` (
   `trays` longtext NOT NULL,
   `start` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Les données exportées n'étaient pas sélectionnées.
-
--- Listage de la structure de table islandlife. territories
 CREATE TABLE IF NOT EXISTS `territories` (
   `id` varchar(50) NOT NULL,
   `label` text NOT NULL,
@@ -87,8 +74,6 @@ CREATE TABLE IF NOT EXISTS `territories` (
   PRIMARY KEY (`id`),
   KEY `idx_territories_id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Les données exportées n'étaient pas sélectionnées.
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

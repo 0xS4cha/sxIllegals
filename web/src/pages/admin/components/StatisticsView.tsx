@@ -22,7 +22,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
   const points = stats.timeSeriesData
   const maxSales = Math.max(...points.map((p) => p.sales)) || 100000
 
-  // Generate SVG path for the line graph
   const width = 600
   const height = 180
   const padding = 20
@@ -33,7 +32,6 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
     return { x, y, label: p.label, sales: p.sales }
   })
 
-  // Simple SVG path builder
   const linePathD = chartPoints.reduce((acc, pt, i) => {
     return i === 0 ? `M ${pt.x} ${pt.y}` : `${acc} L ${pt.x} ${pt.y}`
   }, '')
@@ -58,33 +56,30 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
           <button
             type="button"
             onClick={() => setTimeFrame('24h')}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition ${
-              timeFrame === '24h'
-                ? 'bg-zinc-800 text-zinc-100 shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
+            className={`rounded-md px-3 py-1 text-xs font-medium transition ${timeFrame === '24h'
+              ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+              : 'text-zinc-400 hover:text-zinc-200'
+              }`}
           >
             24 Heures
           </button>
           <button
             type="button"
             onClick={() => setTimeFrame('7d')}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition ${
-              timeFrame === '7d'
-                ? 'bg-zinc-800 text-zinc-100 shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
+            className={`rounded-md px-3 py-1 text-xs font-medium transition ${timeFrame === '7d'
+              ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+              : 'text-zinc-400 hover:text-zinc-200'
+              }`}
           >
             7 Jours
           </button>
           <button
             type="button"
             onClick={() => setTimeFrame('30d')}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition ${
-              timeFrame === '30d'
-                ? 'bg-zinc-800 text-zinc-100 shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
+            className={`rounded-md px-3 py-1 text-xs font-medium transition ${timeFrame === '30d'
+              ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+              : 'text-zinc-400 hover:text-zinc-200'
+              }`}
           >
             30 Jours
           </button>

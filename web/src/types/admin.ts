@@ -14,7 +14,7 @@ export interface GroupRank {
 }
 
 export interface GroupItem {
-  id: number
+  id: string | number
   name: string
   devise: string
   rgb: { r: number; g: number; b: number }
@@ -30,7 +30,7 @@ export interface GroupItem {
 }
 
 export interface TerritoryInfluence {
-  groupId: number
+  groupId: string | number
   groupName: string
   points: number
   percentage: number
@@ -100,9 +100,33 @@ export interface CreateGroupPayload {
 }
 
 export interface UpdateGroupPayload {
-  id: number
+  id: string | number
   name?: string
   devise?: string
   is_official?: boolean
   slots?: number
+}
+
+export interface CreateTerritoryPayload {
+  label: string
+  minZ: number
+  maxZ: number
+  coords: { x: number; y: number; z: number }[]
+}
+
+export interface LaboratoryItem {
+  id: string | number
+  label: string
+  type: 'coke' | 'meth' | 'weed'
+  level: number
+  coords: { x: number; y: number; z: number }
+  territoryName: string
+  productionPercentage: number
+  productionStatus: string
+}
+
+export interface CreateLaboratoryPayload {
+  label: string
+  type: 'coke' | 'meth' | 'weed'
+  coords: { x: number; y: number; z: number }
 }

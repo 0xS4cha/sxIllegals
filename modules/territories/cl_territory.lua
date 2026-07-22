@@ -2,7 +2,7 @@ Territories = {}
 local OverlayId = 0
 
 function Territories.Load()
-    OverlayId = AddMinimapOverlay("stream/MINIMAP_LOADER.gfx")
+    OverlayId = AddMinimapOverlay("core/MINIMAP_LOADER.gfx")
     while not HasMinimapOverlayLoaded(OverlayId) do Citizen.Wait(0) end
     SetMinimapOverlayDisplay(OverlayId, 0.0, 0.0, 100.0, 100.0, 100.0)
 end
@@ -47,7 +47,6 @@ function Territories.SetAlpha(name, alpha)
     EndScaleformMovieMethod();
 end
 
-
 function Territories.SetColor(name, r, g, b)
     if OverlayId == 0 then Territories.Load() end
     CallMinimapScaleformFunction(OverlayId, "SET_TERRITORY_COLOR");
@@ -74,7 +73,6 @@ function Territories.Draw(name, color, border)
     ScaleformMovieMethodAddParamInt(border);
     EndScaleformMovieMethod();
 end
-
 
 Citizen.CreateThread(function()
     Territories.Load()

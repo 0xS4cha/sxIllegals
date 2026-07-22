@@ -6,27 +6,40 @@ import type {
   GroupItem,
   TerritoryItem,
   UpdateGroupPayload,
+  CreateTerritoryPayload,
+  LaboratoryItem,
+  CreateLaboratoryPayload,
 } from '../types/admin'
 
 import { useNuiEvent } from './useNuiEvent'
 import { fetchNui } from '../utils/fetchNui'
 import { isEnvBrowser } from '../utils/nui'
 
+const INITIAL_MOCK_LABS: LaboratoryItem[] = [
+  { id: 1, label: 'Labo Rancho meth', type: 'meth', level: 1, coords: { x: 300, y: -1500, z: 29.5 }, territoryName: 'Rancho Central', productionPercentage: 45, productionStatus: 'Synthèse en cours (1/2)' },
+  { id: 2, label: 'Labo Davis coke', type: 'coke', level: 2, coords: { x: -80, y: -1600, z: 30.2 }, territoryName: 'Davis Street', productionPercentage: 0, productionStatus: 'En attente de matière première' },
+  { id: 3, label: 'Labo Chamberlain weed', type: 'weed', level: 1, coords: { x: -200, y: -1400, z: 31.0 }, territoryName: 'Chamberlain Hills', productionPercentage: 80, productionStatus: 'Prêt à récolter (4/6)' }
+]
+
 export function useAdminData() {
   const [groups, setGroups] = useState<GroupItem[]>(INITIAL_MOCK_GROUPS)
   const [territories, setTerritories] = useState<TerritoryItem[]>(INITIAL_MOCK_TERRITORIES)
+  const [labs, setLabs] = useState<LaboratoryItem[]>(INITIAL_MOCK_LABS)
   const [stats, setStats] = useState<AdminStats>(INITIAL_MOCK_STATS)
   const [loading, setLoading] = useState(false)
   const [selectedGroup, setSelectedGroup] = useState<GroupItem | null>(null)
   const [selectedTerritory, setSelectedTerritory] = useState<TerritoryItem | null>(null)
 
-  // Listen to live NUI sync events from server
   useNuiEvent<GroupItem[]>('setGroupsData', (data) => {
     if (Array.isArray(data)) setGroups(data)
   })
 
   useNuiEvent<TerritoryItem[]>('setTerritoriesData', (data) => {
     if (Array.isArray(data)) setTerritories(data)
+  })
+
+  useNuiEvent<LaboratoryItem[]>('setLabsData', (data) => {
+    if (Array.isArray(data)) setLabs(data)
   })
 
   useNuiEvent<AdminStats>('setStatsData', (data) => {
@@ -37,7 +50,6 @@ export function useAdminData() {
     setLoading(true)
     try {
       if (isEnvBrowser()) {
-        // Retain mock data in browser
         setLoading(false)
         return
       }
@@ -47,6 +59,9 @@ export function useAdminData() {
 
       const territoriesRes = await fetchNui<TerritoryItem[]>('getAdminTerritories')
       if (territoriesRes) setTerritories(territoriesRes)
+
+      const labsRes = await fetchNui<LaboratoryItem[]>('getAdminLabs')
+      if (labsRes) setLabs(labsRes)
 
       const statsRes = await fetchNui<AdminStats>('getAdminStats')
       if (statsRes) setStats(statsRes)
@@ -61,8 +76,7 @@ export function useAdminData() {
     void refreshData()
   }, [refreshData])
 
-  // Admin Actions
-  const toggleOfficialGroup = useCallback(async (id: number) => {
+  const toggleOfficialGroup = useCallback(async (id: string | number) => {
     setGroups((prev) =>
       prev.map((g) => (g.id === id ? { ...g, is_official: !g.is_official } : g)),
     )
@@ -73,7 +87,7 @@ export function useAdminData() {
     }
   }, [])
 
-  const deleteGroup = useCallback(async (id: number) => {
+  const deleteGroup = useCallback(async (id: string | number) => {
     setGroups((prev) => prev.filter((g) => g.id !== id))
     if (selectedGroup?.id === id) setSelectedGroup(null)
 
@@ -83,7 +97,7 @@ export function useAdminData() {
   }, [selectedGroup])
 
   const createGroup = useCallback(async (payload: CreateGroupPayload) => {
-    const newId = Date.now()
+    const newId = 'GRP-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase()
     const newGroup: GroupItem = {
       id: newId,
       name: payload.name,
@@ -153,9 +167,53 @@ export function useAdminData() {
     }
   }, [])
 
+  const createTerritory = useCallback(async (payload: CreateTerritoryPayload) => {
+    if (!isEnvBrowser()) {
+      await fetchNui('createTerritory', payload)
+      setTimeout(() => {
+        void refreshData()
+      }, 500)
+    } else {
+      const newMockTerritory: TerritoryItem = {
+        id: 'TER-' + Math.floor(Math.random() * 100 + 10),
+        label: payload.label,
+        totalInfluence: 0,
+        attackState: 0,
+        coords: payload.coords[0] || { x: 0, y: 0, z: 0 },
+        minZ: payload.minZ,
+        maxZ: payload.maxZ,
+        startDate: new Date().toISOString().split('T')[0],
+        influences: []
+      }
+      setTerritories((prev) => [...prev, newMockTerritory])
+    }
+  }, [refreshData])
+
+  const createLaboratory = useCallback(async (payload: CreateLaboratoryPayload) => {
+    if (!isEnvBrowser()) {
+      await fetchNui('createLaboratory', payload)
+      setTimeout(() => {
+        void refreshData()
+      }, 500)
+    } else {
+      const newMockLab: LaboratoryItem = {
+        id: Date.now(),
+        label: payload.label,
+        type: payload.type,
+        level: 1,
+        coords: payload.coords,
+        territoryName: 'Rancho Central',
+        productionPercentage: 0,
+        productionStatus: 'Inactif'
+      }
+      setLabs((prev) => [newMockLab, ...prev])
+    }
+  }, [refreshData])
+
   return {
     groups,
     territories,
+    labs,
     stats,
     loading,
     selectedGroup,
@@ -169,5 +227,7 @@ export function useAdminData() {
     updateGroup,
     resetTerritoryInfluence,
     teleportToTerritory,
+    createTerritory,
+    createLaboratory,
   }
 }

@@ -2,7 +2,7 @@ Labs = Labs or {}
 
 function Labs:SetInteriorProp(interior, type, level)
     RefreshInterior(interior)
-    Labs:DisableAllInteriorsProp(interior)    
+    Labs:DisableAllInteriorsProp(interior)
     for _, interiorprop in pairs(Labs.ConfigurationInt[type][level] or {}) do
         EnableInteriorProp(interior, interiorprop)
     end
@@ -19,12 +19,15 @@ function Labs:DisableAllInteriorsProp(interior)
     end
 end
 
-function Labs:AttachEntityToEntity(ped, model, spawn, position, rotation, boneIndex, useSoftPinning, collision, vertexIndex, fixedRot)
+function Labs:AttachEntityToEntity(ped, model, spawn, position, rotation, boneIndex, useSoftPinning, collision,
+                                   vertexIndex, fixedRot)
     local hash = Labs:RequestModel(model)
     local object = CreateObject(hash, spawn.x, spawn.y, spawn.z, true, true, true)
     SetModelAsNoLongerNeeded(hash)
-    AttachEntityToEntity(object, ped, GetPedBoneIndex(ped, boneIndex or 28422), position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, true, useSoftPinning or true, collision or false, true, vertexIndex or 1, fixedRot or true)
-    return object    
+    AttachEntityToEntity(object, ped, GetPedBoneIndex(ped, boneIndex or 28422), position.x, position.y, position.z,
+        rotation.x, rotation.y, rotation.z, true, useSoftPinning or true, collision or false, true, vertexIndex or 1,
+        fixedRot or true)
+    return object
 end
 
 function Labs:GetClosest(points)
@@ -71,24 +74,24 @@ function Labs:PlayLabosAnimation(pos, dictionary, animation, duration, wait)
 end
 
 function Labs:RequestModel(model)
-	local modelHash = tonumber(model)
-	if modelHash == nil then modelHash = (GetHashKey(model)) end
-	if not HasModelLoaded(modelHash) then
-		RequestModel(modelHash)
-		while not HasModelLoaded(modelHash) do
-			Citizen.Wait(10)
-		end
-	end
-	return modelHash
+    local modelHash = tonumber(model)
+    if modelHash == nil then modelHash = (GetHashKey(model)) end
+    if not HasModelLoaded(modelHash) then
+        RequestModel(modelHash)
+        while not HasModelLoaded(modelHash) do
+            Citizen.Wait(10)
+        end
+    end
+    return modelHash
 end
 
 function Labs:RequestAnimDict(animDict)
     if not HasAnimDictLoaded(animDict) then
-		RequestAnimDict(animDict)
-		while not HasAnimDictLoaded(animDict) do
-			Citizen.Wait(1)
-		end
-	end
+        RequestAnimDict(animDict)
+        while not HasAnimDictLoaded(animDict) do
+            Citizen.Wait(1)
+        end
+    end
 end
 
 function Labs:PlayAnimation(ped, dict, anim, duration, flag, lock, inSpeed, outSpeed)
@@ -110,7 +113,7 @@ function Labs:DeepCopy(orig)
             copy[Labs:DeepCopy(orig_key)] = Labs:DeepCopy(orig_value)
         end
         setmetatable(copy, Labs:DeepCopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
+    else
         copy = orig
     end
     return copy

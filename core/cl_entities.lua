@@ -109,7 +109,6 @@ function Localplayer:SetNoCollision(state)
     SetEntityCompletelyDisableCollision(self.Ped, not self.NoCollide, not self.NoCollide)
 end
 
-
 function LocalPlayer()
     return Localplayer
 end
@@ -121,8 +120,6 @@ CreateThread(function()
     if IS_DEV then
         FreezeEntityPosition(Localplayer.Ped, false)
     end
-
-    local structVehRemoved = false
 
     while true do
         Localplayer.Pos = GetEntityCoords(Localplayer.Ped)
@@ -141,15 +138,8 @@ CreateThread(function()
 
         if Localplayer.InVehicle then
             Localplayer.CurrentVehicle = GetVehiclePedIsUsing(Localplayer.Ped)
-            if not structVehRemoved then
-                if GM.Settings:LoadField("removeStructVeh") == 0 then
-                    structVehRemoved = true
-                    SetPlayerSkin(PlayerStruct)
-                end
-            end
         else
             Localplayer.CurrentVehicle = nil
-            structVehRemoved = false
         end
         Wait(0)
     end

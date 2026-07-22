@@ -31,7 +31,7 @@ AddEventHandler("core:labs:CheckPlant", function(labo, weed, territory)
         TriggerClientEvent("core:labs:PlantWeed", -1, labo, weed)
         xPlayer.removeInventoryItem(_LABS.Weed.ItemGraine, _LABS.Weed.CountRequiredGraine)
         if territory then
-            addInfluence(source, territory, 'weedPlant')
+            AddInfluence(source, territory, 'weedPlant')
         end
         TriggerClientEvent("yCore:showNotification", source, "Vous avez ~g~effectué~s~ la ~g~plantation~s~.")
     else
@@ -53,7 +53,7 @@ AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territor
         TriggerClientEvent("core:labs:FertilizeWeed", -1, labo, weed)
         xPlayer.removeInventoryItem(_LABS.Weed.ItemFerti, _LABS.Weed.CountRequiredFerti)
         if territory then
-            addInfluence(source, territory, 'weedFertilize')
+            AddInfluence(source, territory, 'weedFertilize')
         end
         TriggerClientEvent("yCore:showNotification", source, "Vous avez ~g~effectué~s~ la ~g~fertilisation~s~.")
         if weed == 1 then
@@ -80,7 +80,7 @@ AddEventHandler("core:labs:WeedToJoint", function(territory)
         xPlayer.removeInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountRequiredJoint)
         xPlayer.addInventoryItem(_LABS.Weed.ItemJoint, _LABS.Weed.CountJoint)
         if territory then
-            addInfluence(source, territory, 'weedJoint')
+            AddInfluence(source, territory, 'weedJoint')
         end
         TriggerClientEvent("yCore:showNotification", source, "Vous avez roulé ~g~1 joint~s~.")
     else
@@ -103,7 +103,7 @@ AddEventHandler("core:labs:WeedToPack", function(territory)
             xPlayer.removeInventoryItem(_LABS.Weed.ItemBags, _LABS.Weed.CountRequiredBags)
             xPlayer.addInventoryItem(_LABS.Weed.ItemWeed, _LABS.Weed.CountWeed)
             if territory then
-                addInfluence(source, territory, 'weedEmpoche')
+                AddInfluence(source, territory, 'weedEmpoche')
             end
             TriggerClientEvent("yCore:showNotification", source, "Vous avez empoché ~g~5 weeds~s~.")
         else
@@ -125,7 +125,7 @@ AddEventHandler("core:labs:CheckGet", function(labo, weed, territory)
         Labs.WeedsServer[labo][weed] = { planted = false, fertilized = false, pickable = false, state = 0, previousState = -1, start = nil }
         TriggerClientEvent("core:labs:GetWeed", -1, labo, weed)
         if territory then
-            addInfluence(source, territory, 'weedCut')
+            AddInfluence(source, territory, 'weedCut')
         end
         xPlayer.addInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountFeuille)
         TriggerClientEvent("yCore:showNotification", source,
@@ -144,7 +144,7 @@ AddEventHandler("core:labs:CheckKerozen", function(labo, tray, timer, territory)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemKerozen, _LABS.Coke.CountRequiredKerozen)
         local label = yCore.GetItemLabel(_LABS.Coke.ItemKerozen) or "Nil"
         if territory then
-            addInfluence(source, territory, 'cokeKerozen')
+            AddInfluence(source, territory, 'cokeKerozen')
         end
         TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
     else
@@ -166,7 +166,7 @@ AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer, territory)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemCoca, _LABS.Coke.CountRequiredCoca)
         local label = yCore.GetItemLabel(_LABS.Coke.ItemCoca) or "Nil"
         if territory then
-            addInfluence(source, territory, 'cokeFeuille')
+            AddInfluence(source, territory, 'cokeFeuille')
         end
         TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté des ~b~" .. label .. "~s~.")
     else
@@ -188,7 +188,7 @@ AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer, territor
         xPlayer.removeInventoryItem(_LABS.Coke.ItemWhitewash, _LABS.Coke.CountRequiredWhitewash)
         local label = yCore.GetItemLabel(_LABS.Coke.ItemWhitewash) or "Nil"
         if territory then
-            addInfluence(source, territory, 'cokeWhiteWash')
+            AddInfluence(source, territory, 'cokeWhiteWash')
         end
         TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
     else
@@ -209,7 +209,7 @@ AddEventHandler("core:labs:takeCokeTray", function(labo, tray, territory)
     TriggerClientEvent("core:labs:takeCokeTray", -1, labo, tray)
     xPlayer.addInventoryItem(_LABS.Coke.ItemRecip, _LABS.Coke.CountRecip)
     if territory then
-        addInfluence(source, territory, 'cokeTray')
+        AddInfluence(source, territory, 'cokeTray')
     end
     TriggerClientEvent("yCore:showNotification", source,
         string.format("Vous avez récolté ~g~%0d~s~ de ~g~récipients de cocaine~s~.", _LABS.Coke.CountRecip))
@@ -225,7 +225,7 @@ AddEventHandler("core:labs:GetEmpocheCoke", function(territory)
         xPlayer.addInventoryItem(_LABS.Coke.ItemCoke, _LABS.Coke.CountCocaine)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemRecip, 1)
         if territory then
-            addInfluence(source, territory, 'cokeEmpoche')
+            AddInfluence(source, territory, 'cokeEmpoche')
         end
         local label = yCore.GetItemLabel(_LABS.Coke.ItemRecip) or "Nil"
         TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
@@ -285,7 +285,7 @@ AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer, territor
                 Labs.CircuitsServer[labo][spot].synthesis.start = timer
                 Labs.CircuitsServer[labo][spot].synthesis.working = true
                 if territory then
-                    addInfluence(source, territory, 'methStartSynthesis')
+                    AddInfluence(source, territory, 'methStartSynthesis')
                 end
                 TriggerClientEvent("core:labs:startSynthesis", -1, labo, spot, timer)
                 TriggerClientEvent("yCore:showNotification", source, "~g~Démarrage de la synthèse~s~.")
@@ -347,7 +347,7 @@ AddEventHandler("core:labs:startReduction", function(labo, spot, timer, territor
             Labs.CircuitsServer[labo][spot].reduction.start = timer
             Labs.CircuitsServer[labo][spot].reduction.working = true
             if territory then
-                addInfluence(source, territory, 'methStartReduction')
+                AddInfluence(source, territory, 'methStartReduction')
             end
             TriggerClientEvent("core:labs:startReduction", -1, labo, spot, timer)
             TriggerClientEvent("yCore:showNotification", source, "~g~Démarrage de la réduction~s~.")
@@ -367,7 +367,7 @@ RegisterServerCallback("core:labs:TakePlateMeth", function(source, labo, spot, t
         Labs.CircuitsServer[labo][spot].reduction.plates = Labs.CircuitsServer[labo][spot].reduction.plates - 1
         xPlayer.addInventoryItem(_LABS.Meth.ItemRecip, 1)
         if territory then
-            addInfluence(source, territory, 'methPlate')
+            AddInfluence(source, territory, 'methPlate')
         end
         TriggerClientEvent("core:labs:takePlate", -1, labo, spot, Labs.CircuitsServer[labo][spot].reduction.plates)
         TriggerClientEvent("yCore:showNotification", source, "~g~Récupération d'un plateau~s~.")
@@ -412,7 +412,7 @@ AddEventHandler("core:labs:GetEmpocheMeth", function(territory)
         xPlayer.addInventoryItem(_LABS.Meth.ItemMeth, _LABS.Meth.CountMeth)
         xPlayer.removeInventoryItem(_LABS.Meth.ItemBack, 1)
         if territory then
-            addInfluence(source, territory, 'methEmpoche')
+            AddInfluence(source, territory, 'methEmpoche')
         end
         TriggerClientEvent("yCore:showNotification", source, "~g~Vous avez empoché de la meth~s~.")
     else
@@ -422,42 +422,106 @@ AddEventHandler("core:labs:GetEmpocheMeth", function(territory)
     end
 end)
 
+local function GetLabFromId(id)
+    for k, v in pairs(Labs.Table or {}) do
+        if v.id == id then
+            return v
+        end
+    end
+    return nil
+end
+
+local function GenerateUniqueLabId()
+    local id
+    repeat
+        id = "LAB-" .. os.time() .. "-" .. Generate.Code({ includeNumbers = true, includeLetters = true, length = 4 }):upper()
+    until not GetLabFromId(id)
+    return id
+end
+
 RegisterServerEvent("sxGroup:RegisterLaboratory")
 AddEventHandler("sxGroup:RegisterLaboratory", function(data)
-    local source = source
-    local xPlayer = ESX.Player(source)
+    local src = source
+    local xPlayer = ESX.GetPlayerFromId(src)
+    if not xPlayer or (xPlayer.getGroup() ~= 'admin' and xPlayer.getGroup() ~= 'superadmin') then
+        return
+    end
 
-    if xPlayer and xPlayer:getGroup() >= _PERMISSION["TERRITORY"] then
-        local table = {}
-        if data.type == 'coke' then
-            for i = 1, #_LABS.Shell[data.type].spots do
-                table[#table + 1] = { kerosene = { start = 0 }, coca = { start = 0 }, whitewash = { start = 0 } }
-                --table[#table + 1] = { pickable = false, state = 0, previousState = -1, planted = false, fertilized = false}
-            end
-        elseif data.type == 'meth' then
-            for i = 1, #_LABS.Shell[data.type].Synthesis do
-                table[#table + 1] = { reduction = { working = false, plates = 0, start = 0, availablePlates = 0 }, synthesis = { working = false, methylamine = 0, phenylacetone = 0 } }
-            end
-        elseif data.type == 'weed' then
-            for i = 1, #_LABS.Shell[data.type].spots do
-                table[#table + 1] = { pickable = false, state = 0, previousState = -1, planted = false, fertilized = false }
-            end
+    local tab = {}
+    if data.type == 'coke' then
+        for i = 1, #_LABS.Shell[data.type].spots do
+            table.insert(tab, { kerosene = { start = 0 }, coca = { start = 0 }, whitewash = { start = 0 } })
         end
-        local weeds    = (data.type == 'weed') and json.encode(table) or json.encode({})
-        local circuits = (data.type == 'meth') and json.encode(table) or json.encode({})
-        local trays    = (data.type == 'coke') and json.encode(table) or json.encode({})
-        MySQL.Sync.insert(
-            "INSERT INTO labs (label, coords, type, level, weeds, circuits, trays, start) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            {
-                data.label,
-                json.encode(data.coords),
-                data.type,
-                1,
-                weeds,
-                circuits,
-                trays,
-                0
+    elseif data.type == 'meth' then
+        for i = 1, #_LABS.Shell[data.type].Synthesis do
+            table.insert(tab, { reduction = { working = false, plates = 0, start = 0, availablePlates = 0 }, synthesis = { working = false, methylamine = 0, phenylacetone = 0 } })
+        end
+    elseif data.type == 'weed' then
+        for i = 1, #_LABS.Shell[data.type].spots do
+            table.insert(tab, { pickable = false, state = 0, previousState = -1, planted = false, fertilized = false })
+        end
+    end
+    
+    local weeds    = (data.type == 'weed') and json.encode(tab) or json.encode({})
+    local circuits = (data.type == 'meth') and json.encode(tab) or json.encode({})
+    local trays    = (data.type == 'coke') and json.encode(tab) or json.encode({})
+    
+    local id = GenerateUniqueLabId()
+    MySQL.Sync.execute(
+        "INSERT INTO labs (id, label, coords, type, level, weeds, circuits, trays, start) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        {
+            id,
+            data.label,
+            json.encode(data.coords),
+            data.type,
+            1,
+            weeds,
+            circuits,
+            trays,
+            0
+        }
+    )
+    
+    if id then
+        if data.type == 'weed' then
+            Labs.WeedsServer[id] = tab
+            Labs.CircuitsServer[id] = {}
+            Labs.TraysServer[id] = {}
+        elseif data.type == 'meth' then
+            Labs.WeedsServer[id] = {}
+            Labs.CircuitsServer[id] = tab
+            Labs.TraysServer[id] = {}
+        elseif data.type == 'coke' then
+            Labs.WeedsServer[id] = {}
+            Labs.CircuitsServer[id] = {}
+            Labs.TraysServer[id] = tab
+        end
+        
+        local newLab = {
+            id = id,
+            label = data.label,
+            coords = data.coords,
+            type = data.type,
+            level = 1,
+            weeds = { Labs.WeedsServer[id] },
+            circuits = { Labs.CircuitsServer[id] },
+            trays = { Labs.TraysServer[id] },
+            start = 0
+        }
+        table.insert(Labs.Table, newLab)
+        
+        if AdminActivities then
+            table.insert(AdminActivities, 1, {
+                id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
+                time = os.time(),
+                title = 'Labo Créé',
+                description = string.format("Le laboratoire %s (%s) a été créé par l'administration.", data.label, data.type:upper()),
+                type = 'lab',
+                severity = 'info'
             })
+        end
+        
+        TriggerClientEvent("sxIllegals:SyncLabsTable", -1, Labs.Table)
     end
 end)
 

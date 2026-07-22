@@ -35,7 +35,6 @@ export function useGroupData() {
     void refreshGroupData()
   }, [refreshGroupData])
 
-  // Member Actions
   const promoteMember = useCallback(async (identifier: string) => {
     setGroup((prev) => {
       const updatedMembers = prev.members.map((m) => {

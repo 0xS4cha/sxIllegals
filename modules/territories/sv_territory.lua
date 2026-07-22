@@ -43,7 +43,18 @@ function territory:new(data)
     self.minZChanged = false
     self.coordsChanged = false
     self.startChanged = false
-    self.start = os.date("%Y-%m-%d", tonumber(data.start) / 1000) or '00-00-00'
+    local startVal = '00-00-00'
+    if data.start then
+        local num = tonumber(data.start)
+        if num then
+            startVal = os.date("%Y-%m-%d", math.floor(num / 1000))
+        elseif type(data.start) == 'string' and data.start:match('^%d+%-%d+%-%d+$') then
+            startVal = data.start
+        end
+    else
+        startVal = os.date("%Y-%m-%d")
+    end
+    self.start = startVal
 
     local diff = os.difftime(parseDate(self.start), os.time())
     self.date = diff and -math.floor(diff / (24 * 60 * 60)) or 0

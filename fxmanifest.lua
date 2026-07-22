@@ -18,6 +18,8 @@ shared_scripts {
     'core/sh_modules.lua',
     'core/sh_class.lua',
     'core/sh_callback.lua',
+    'core/sh_utils.lua',
+    'core/sh_generate.lua',
     'shared/*.lua',
     'modules/**/sh_*.lua',
 }
@@ -37,8 +39,7 @@ server_scripts {
 ui_page 'web/dist/index.html'
 
 files {
+    'core/MINIMAP_LOADER.gfx',
     'web/dist/index.html',
     'web/dist/**/*',
 }
-
-data_file 'SCALEFORM_DLC_FILE' 'stream/MINIMAP_LOADER.gfx'

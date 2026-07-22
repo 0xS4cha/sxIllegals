@@ -16,8 +16,8 @@ import type { CreateGroupPayload, GroupItem, UpdateGroupPayload } from '../../..
 
 interface GroupsViewProps {
   groups: GroupItem[]
-  onToggleOfficial: (id: number) => void
-  onDeleteGroup: (id: number) => void
+  onToggleOfficial: (id: string | number) => void
+  onDeleteGroup: (id: string | number) => void
   onCreateGroup: (payload: CreateGroupPayload) => void
   onUpdateGroup: (payload: UpdateGroupPayload) => void
   selectedGroup: GroupItem | null
@@ -40,7 +40,6 @@ export function GroupsView({
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all')
 
-  // Filter logic
   const filteredGroups = groups.filter((g) => {
     const matchesSearch =
       g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -73,33 +72,30 @@ export function GroupsView({
             <button
               type="button"
               onClick={() => setActiveFilter('all')}
-              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
-                activeFilter === 'all'
-                  ? 'bg-zinc-800 text-zinc-100 shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${activeFilter === 'all'
+                ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200'
+                }`}
             >
               Tous ({groups.length})
             </button>
             <button
               type="button"
               onClick={() => setActiveFilter('official')}
-              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
-                activeFilter === 'official'
-                  ? 'bg-zinc-800 text-zinc-100 shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${activeFilter === 'official'
+                ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200'
+                }`}
             >
               Officiels ({groups.filter((g) => g.is_official).length})
             </button>
             <button
               type="button"
               onClick={() => setActiveFilter('unofficial')}
-              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
-                activeFilter === 'unofficial'
-                  ? 'bg-zinc-800 text-zinc-100 shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${activeFilter === 'unofficial'
+                ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200'
+                }`}
             >
               Non-officiels ({groups.filter((g) => !g.is_official).length})
             </button>
@@ -123,11 +119,10 @@ export function GroupsView({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.04 }}
-            className={`group relative flex flex-col justify-between rounded-xl border bg-zinc-900/60 p-5 transition-all duration-200 hover:bg-zinc-900 ${
-              selectedGroup?.id === group.id
-                ? 'border-zinc-500 shadow-lg ring-1 ring-zinc-500/20'
-                : 'border-zinc-800/80 hover:border-zinc-700'
-            }`}
+            className={`group relative flex flex-col justify-between rounded-xl border bg-zinc-900/60 p-5 transition-all duration-200 hover:bg-zinc-900 ${selectedGroup?.id === group.id
+              ? 'border-zinc-500 shadow-lg ring-1 ring-zinc-500/20'
+              : 'border-zinc-800/80 hover:border-zinc-700'
+              }`}
           >
             <div>
               <div className="flex items-start justify-between">
@@ -148,11 +143,10 @@ export function GroupsView({
                   type="button"
                   onClick={() => onToggleOfficial(group.id)}
                   title={group.is_official ? 'Rétrograder en non-officiel' : 'Promouvoir en officiel'}
-                  className={`rounded-lg p-1.5 transition ${
-                    group.is_official
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
-                      : 'bg-zinc-800/60 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
-                  }`}
+                  className={`rounded-lg p-1.5 transition ${group.is_official
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
+                    : 'bg-zinc-800/60 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
+                    }`}
                 >
                   {group.is_official ? (
                     <ShieldCheck className="h-4 w-4" />
@@ -262,11 +256,10 @@ export function GroupsView({
                     <button
                       type="button"
                       onClick={() => onToggleOfficial(selectedGroup.id)}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                        selectedGroup.is_official
-                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                          : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
-                      }`}
+                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${selectedGroup.is_official
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
+                        }`}
                     >
                       {selectedGroup.is_official ? 'Officiel' : 'Non-officiel'}
                     </button>

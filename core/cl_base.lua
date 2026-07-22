@@ -3,12 +3,12 @@ SX = SX or {}
 FrameTime = GetFrameTime()
 NetworkTimeMSec = GetNetworkTimeAccurate()
 GameTime = GetGameTimer()
-
+local lastTick = GameTime
 
 function SX:Think()
     local localPlayer = LocalPlayer()
     local vehicle = localPlayer:GetVehicle()
-    
+
     self.ProfilerEnabled = ProfilerIsRecording()
 
     if GameTime - lastTick > 1000 then
@@ -16,7 +16,7 @@ function SX:Think()
         self.TickSecond = true
     end
 
-    for _, moduleName in pairs(GM.Modules.HasFunction.Think) do
+    for _, moduleName in pairs(SX.Modules.HasFunction.Think) do
         if self.ProfilerEnabled then
             ProfilerEnterScope(moduleName)
         end
@@ -32,7 +32,6 @@ function SX:Think()
         self.TickSecond = nil
     end
 end
-
 
 CreateThread(function()
     for _, module in pairs(SX.Modules.List) do

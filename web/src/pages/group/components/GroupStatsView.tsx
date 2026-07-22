@@ -16,7 +16,6 @@ export function GroupStatsView({ group }: GroupStatsViewProps) {
   const totalWeekSales = history.reduce((acc, h) => acc + h.sales, 0)
   const totalUnits = history.reduce((acc, h) => acc + h.units, 0)
 
-  // SVG Chart geometry
   const width = 600
   const height = 180
   const padding = 20

@@ -65,14 +65,14 @@ export function AdminSidebar({
           : 'bg-zinc-800 text-zinc-300 border border-zinc-700',
     },
     {
-      id: 'statistics',
-      label: 'Statistiques',
-      icon: BarChart3,
-    },
-    {
       id: 'laboratories',
       label: 'Laboratoires',
       icon: FlaskConical,
+    },
+    {
+      id: 'statistics',
+      label: 'Statistiques',
+      icon: BarChart3,
     },
   ]
 
@@ -82,9 +82,8 @@ export function AdminSidebar({
 
   return (
     <aside
-      className={`relative flex flex-col border-r border-zinc-800/80 bg-zinc-950/80 transition-all duration-300 ${
-        collapsed ? 'w-20' : 'w-64'
-      }`}
+      className={`relative flex flex-col border-r border-zinc-800/80 bg-zinc-950/80 transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'
+        }`}
     >
       <div className="flex h-16 items-center justify-between border-b border-zinc-800/80 px-4">
         <div className="flex items-center gap-3 overflow-hidden">
@@ -135,11 +134,10 @@ export function AdminSidebar({
               key={item.id}
               type="button"
               onClick={() => onSelectCategory(item.id)}
-              className={`relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'text-zinc-100 font-semibold'
-                  : 'text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200'
-              }`}
+              className={`relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${isActive
+                ? 'text-zinc-100 font-semibold'
+                : 'text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200'
+                }`}
               title={collapsed ? item.label : undefined}
             >
               {isActive && (
@@ -160,9 +158,8 @@ export function AdminSidebar({
 
               {!collapsed && item.badge !== undefined && (
                 <span
-                  className={`relative z-10 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                    item.badgeColor ?? 'bg-zinc-800 text-zinc-300'
-                  }`}
+                  className={`relative z-10 rounded-full px-2 py-0.5 text-[11px] font-semibold ${item.badgeColor ?? 'bg-zinc-800 text-zinc-300'
+                    }`}
                 >
                   {item.badge}
                 </span>
@@ -188,9 +185,8 @@ export function AdminSidebar({
         <button
           type="button"
           onClick={handleClose}
-          className={`flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/80 py-2 text-xs font-medium text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white ${
-            collapsed ? 'px-2' : 'px-3'
-          }`}
+          className={`flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/80 py-2 text-xs font-medium text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white ${collapsed ? 'px-2' : 'px-3'
+            }`}
           title="Fermer le panel"
         >
           <X className="h-4 w-4 text-zinc-400" />

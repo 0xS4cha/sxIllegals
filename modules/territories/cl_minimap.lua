@@ -47,32 +47,114 @@ function ShowTerritories(bool)
     end)
 end
 
+function InitializeTerritory(id, data)
+    if not data then return end
+    
+    local coords = {}
+    for i = 1, #data.coords do
+        local c = data.coords[i]
+        coords[i] = vector3(c.x, c.y, c.z or 0.0)
+    end
+    
+    TerritoriesList[id] = {
+        id = id,
+        label = data.label,
+        influence = data.influence or {},
+        totalInfluence = data.totalInfluence or 0,
+        coords = coords,
+        minZ = data.minZ or -100.0,
+        maxZ = data.maxZ or 100.0,
+        attackState = data.attackState or 0,
+        date = data.date or 0,
+        blips = {}
+    }
+    
+    local territory = TerritoriesList[id]
+    
+    Territories.Add(territory.id, 100)
+    Territories.SetAlpha(territory.id, 100)
+    
+    local r, g, b = 255, 255, 255
+    if territory.influence[1] and territory.influence[1].rgb then
+        r = territory.influence[1].rgb.r or 255
+        g = territory.influence[1].rgb.g or 255
+        b = territory.influence[1].rgb.b or 255
+    end
+    Territories.SetColor(territory.id, r, g, b)
+    
+    Territories.ResetPoints(territory.id)
+    for i = 1, #territory.coords do
+        Territories.AddPoint(territory.id, territory.coords[i])
+    end
+    
+    Territories.Draw(territory.id, 0xffffff, 5)
+    Territories.SetAttackState(territory.id, territory.attackState)
+    
+    territory.PolyZone = PolyZone:Create(territory.coords, {
+        name = territory.id,
+        minZ = territory.minZ,
+        maxZ = territory.maxZ,
+        debugGrid = false,
+        gridDivisions = 25
+    })
+    
+    ResetBlipInfoTerritory(territory.id)
+    SetBlipInfoTitleTerritory(territory.id, territory.label, false)
+    
+    AddBlipInfoTextTerritory(territory.id, 'Domination',
+        ('~b~<C>%s</C>~s~'):format((#territory.influence > 0 and territory.influence[1].name) or 'Aucun'))
+        
+    AddBlipInfoTextTerritory(territory.id, 'Influence',
+        ('%s'):format((territory.influence and territory.influence[1] and territory.totalInfluence and territory.totalInfluence > 0) and
+            string.format('%.1f%%', (territory.influence[1].points / territory.totalInfluence * 100)) or '0%'))
+            
+    AddBlipInfoHeaderTerritory(territory.id, "")
+    
+    AddBlipInfoTextTerritory(territory.id,
+        ('%s'):format((#territory.influence > 0 and territory.influence[1].name) or 'Aucun groupe'), 
+        ('%s jour(s)'):format(territory.date or 0))
+        
+    AddBlipInfoTextTerritory(territory.id, 'Le territoire est présentement sous contrôle')
+end
 
 RegisterNetEvent("sxGroup:RefreshTerritories")
 AddEventHandler("sxGroup:RefreshTerritories", function(data, id)
-    if TerritoriesList and TerritoriesList[id] then
+    if not TerritoriesList then return end
+    
+    if not TerritoriesList[id] then
+        InitializeTerritory(id, data)
+    else
         TerritoriesList[id].influence = data.influence
         TerritoriesList[id].date = data.date
         TerritoriesList[id].label = data.label
         ShowTerritories(false)
-        Territories.SetColor(TerritoriesList[id].id,
-            (TerritoriesList[id].influence[1] and TerritoriesList[id].influence[1].rgb and TerritoriesList[id].influence[1].rgb.r or 255),
-            (TerritoriesList[id].influence[1] and TerritoriesList[id].influence[1].rgb and TerritoriesList[id].influence[1].rgb.g or 255),
-            (TerritoriesList[id].influence[1] and TerritoriesList[id].influence[1].rgb and TerritoriesList[id].influence[1].rgb.b or 255))
+        
+        local r, g, b = 255, 255, 255
+        if TerritoriesList[id].influence[1] and TerritoriesList[id].influence[1].rgb then
+            r = TerritoriesList[id].influence[1].rgb.r or 255
+            g = TerritoriesList[id].influence[1].rgb.g or 255
+            b = TerritoriesList[id].influence[1].rgb.b or 255
+        end
+        Territories.SetColor(TerritoriesList[id].id, r, g, b)
 
         Territories.Draw(TerritoriesList[id].id, 0xffffff, 5)
         Territories.SetAttackState(TerritoriesList[id].id, TerritoriesList[id].attackState)
         ResetBlipInfoTerritory(TerritoriesList[id].id)
         SetBlipInfoTitleTerritory(TerritoriesList[id].id, TerritoriesList[id].label, false)
 
-        --AddBlipInfoText(TerritoriesList[territoriesId].id, '~b~Business~s~', ('~b~<C>%s</C>~s~'):format((TerritoriesList[id].influence and TerritoriesList[id].influence[1] and TerritoriesList[id].influence[1].name) or 'Aucun'))
-        --AddBlipInfoHeader(TerritoriesList[territoriesId].id, "")
-        AddBlipInfoTextTerritory(TerritoriesList[id].id, 'Domination', ('~b~<C>%s</C>~s~'):format((#TerritoriesList[id].influence > 0 and TerritoriesList[id].influence[1].name) or 'Aucun'))
-        AddBlipInfoTextTerritory(TerritoriesList[id].id, 'Influence', ('%s'):format((TerritoriesList[id].influence and TerritoriesList[id].influence[1] and TerritoriesList[id].totalInfluence and TerritoriesList[id].totalInfluence > 0) and string.format('%.1f%%', (TerritoriesList[id].influence[1].points / TerritoriesList[id].totalInfluence * 100)) or '0%')) 
+        AddBlipInfoTextTerritory(TerritoriesList[id].id, 'Domination',
+            ('~b~<C>%s</C>~s~'):format((#TerritoriesList[id].influence > 0 and TerritoriesList[id].influence[1].name) or
+                'Aucun'))
+        AddBlipInfoTextTerritory(TerritoriesList[id].id, 'Influence',
+            ('%s'):format((TerritoriesList[id].influence and TerritoriesList[id].influence[1] and TerritoriesList[id].totalInfluence and TerritoriesList[id].totalInfluence > 0) and
+                string.format('%.1f%%',
+                    (TerritoriesList[id].influence[1].points / TerritoriesList[id].totalInfluence * 100)) or
+                '0%'))
         AddBlipInfoHeaderTerritory(TerritoriesList[id].id, "")
-        AddBlipInfoTextTerritory(TerritoriesList[id].id, ('%s'):format((#TerritoriesList[id].influence > 0 and TerritoriesList[id].influence[1].name) or 'Aucun groupe'), ('%s jour(s)'):format(TerritoriesList[id].date or 0))
+        AddBlipInfoTextTerritory(TerritoriesList[id].id,
+            ('%s'):format((#TerritoriesList[id].influence > 0 and TerritoriesList[id].influence[1].name) or
+                'Aucun groupe'), ('%s jour(s)'):format(TerritoriesList[id].date or 0))
         AddBlipInfoTextTerritory(TerritoriesList[id].id, 'Le territoire est présentement sous contrôle')
-        
     end
 end)
 
@@ -80,55 +162,15 @@ Citizen.CreateThread(function()
     AddTextEntry('IB_POI', 'Afficher les territoires')
     AddTextEntry(GetHashKey('0x86A9740F'), 'Afficher les territoires')
     AddTextEntryByHash('0x86A9740F', 'Afficher les territoires')
-    Wait(5000)
-    yCore.TriggerServerCallback('sxGroup:getTerritoriesList', function(data)
-        TerritoriesList = data
-    end)
-    while json.encode(TerritoriesList) == '[]' do Wait(100) end
-    for territoriesId, v in pairs(TerritoriesList) do
-        local territory = TerritoriesList[territoriesId]
-        TerritoriesList[territoriesId].blips = {}
-
-        Territories.Add(TerritoriesList[territoriesId].id, 100)
-
-        Territories.SetAlpha(TerritoriesList[territoriesId].id, 100)
-        Territories.SetColor(TerritoriesList[territoriesId].id,
-            (TerritoriesList[territoriesId].influence[1] and TerritoriesList[territoriesId].influence[1].rgb and TerritoriesList[territoriesId].influence[1].rgb.r or 255),
-            (TerritoriesList[territoriesId].influence[1] and TerritoriesList[territoriesId].influence[1].rgb and TerritoriesList[territoriesId].influence[1].rgb.g or 255),
-            (TerritoriesList[territoriesId].influence[1] and TerritoriesList[territoriesId].influence[1].rgb and TerritoriesList[territoriesId].influence[1].rgb.b or 255))
-        Territories.ResetPoints(TerritoriesList[territoriesId].id)
-        for i = 1, #territory.coords do
-            Territories.AddPoint(TerritoriesList[territoriesId].id, territory.coords[i])
-        end
-        Territories.Draw(TerritoriesList[territoriesId].id, 0xffffff, 5)
-        Territories.SetAttackState(TerritoriesList[territoriesId].id, TerritoriesList[territoriesId].attackState)
-        TerritoriesList[territoriesId].PolyZone = PolyZone:Create(territory.coords, {
-            name = TerritoriesList[territoriesId].id,
-            minZ = TerritoriesList[territoriesId].minZ,
-            maxZ = TerritoriesList[territoriesId].maxZ,
-            debugGrid = false,
-            gridDivisions = 25
-        })
-
-        SetBlipInfoTitleTerritory(TerritoriesList[territoriesId].id, TerritoriesList[territoriesId].label, false)
-
-        --AddBlipInfoText(TerritoriesList[territoriesId].id, '~b~Business~s~', ('~b~<C>%s</C>~s~'):format((TerritoriesList[id].influence and TerritoriesList[id].influence[1] and TerritoriesList[id].influence[1].name) or 'Aucun'))
-        --AddBlipInfoHeader(TerritoriesList[territoriesId].id, "")
-        AddBlipInfoTextTerritory(TerritoriesList[territoriesId].id, 'Domination',
-            ('~b~<C>%s</C>~s~'):format((#TerritoriesList[territoriesId].influence > 0 and TerritoriesList[territoriesId].influence[1].name) or 'Aucun'))
-        AddBlipInfoTextTerritory(TerritoriesList[territoriesId].id, 'Influence',
-            ('%s'):format((TerritoriesList[territoriesId].influence and TerritoriesList[territoriesId].influence[1] and territory.totalInfluence and territory.totalInfluence > 0) and
-            string.format('%.1f%%', (TerritoriesList[territoriesId].influence[1].points / territory.totalInfluence * 100)) or '0%'))
-        AddBlipInfoHeaderTerritory(TerritoriesList[territoriesId].id, "")
-        AddBlipInfoTextTerritory(TerritoriesList[territoriesId].id,
-            ('%s'):format((#TerritoriesList[territoriesId].influence > 0 and TerritoriesList[territoriesId].influence[1].name) or 'Aucun groupe'),
-            ('%s jour(s)'):format(territory.date or 0))
-        AddBlipInfoTextTerritory(TerritoriesList[territoriesId].id, 'Le territoire est présentement sous contrôle')
+    
+    local list = TriggerServerCallback('sxGroup:getTerritoriesList') or {}
+    TerritoriesList = {}
+    for id, data in pairs(list) do
+        InitializeTerritory(id, data)
     end
 
     Citizen.CreateThread(function()
         local wait = 1000
-        local status = nil
         while true do
             if GetPauseMenuState() ~= 0 then
                 wait = 1
