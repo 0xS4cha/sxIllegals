@@ -1,1 +1,1 @@
-SX.Modules:Register("Laboratories")
+SX.Modules:Register("Admin")

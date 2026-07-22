@@ -22,7 +22,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckPlant")
 AddEventHandler("core:labs:CheckPlant", function(labo, weed, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemGraine)
 
@@ -33,16 +33,17 @@ AddEventHandler("core:labs:CheckPlant", function(labo, weed, territory)
         if territory then
             addInfluence(source, territory, 'weedPlant')
         end
-        TriggerClientEvent("yCore:showNotification", source,  "Vous avez ~g~effectué~s~ la ~g~plantation~s~.")
+        TriggerClientEvent("yCore:showNotification", source, "Vous avez ~g~effectué~s~ la ~g~plantation~s~.")
     else
         local label = yCore.GetItemLabel(_LABS.Weed.ItemGraine) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour planter.")
+        TriggerClientEvent("yCore:showNotification", source,
+            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour planter.")
     end
 end)
 
 RegisterServerEvent("core:labs:CheckFertilize")
 AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFerti)
 
@@ -64,13 +65,14 @@ AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territor
         end
     else
         local label = yCore.GetItemLabel(_LABS.Weed.ItemFerti) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour fertiliser.")
+        TriggerClientEvent("yCore:showNotification", source,
+            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour fertiliser.")
     end
 end)
 
 RegisterServerEvent("core:labs:WeedToJoint")
 AddEventHandler("core:labs:WeedToJoint", function(territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFeuille)
 
@@ -90,7 +92,7 @@ end)
 
 RegisterServerEvent("core:labs:WeedToPack")
 AddEventHandler("core:labs:WeedToPack", function(territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFeuille)
     local Required2 = xPlayer.getInventoryItem(_LABS.Weed.ItemBags)
@@ -118,7 +120,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckGet")
 AddEventHandler("core:labs:CheckGet", function(labo, weed, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
     if Labs.WeedsServer[labo][weed].state == 7 then
         Labs.WeedsServer[labo][weed] = { planted = false, fertilized = false, pickable = false, state = 0, previousState = -1, start = nil }
         TriggerClientEvent("core:labs:GetWeed", -1, labo, weed)
@@ -126,14 +128,15 @@ AddEventHandler("core:labs:CheckGet", function(labo, weed, territory)
             addInfluence(source, territory, 'weedCut')
         end
         xPlayer.addInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountFeuille)
-        TriggerClientEvent("yCore:showNotification", source, string.format("Vous avez récolté ~g~%0d~s~ de ~g~feuilles de weed~s~.", _LABS.Weed.CountFeuille))
+        TriggerClientEvent("yCore:showNotification", source,
+            string.format("Vous avez récolté ~g~%0d~s~ de ~g~feuilles de weed~s~.", _LABS.Weed.CountFeuille))
     end
 end)
 
 
 RegisterServerEvent("core:labs:CheckKerozen")
 AddEventHandler("core:labs:CheckKerozen", function(labo, tray, timer, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemKerozen)
     if Required.count >= _LABS.Coke.CountRequiredKerozen then
         Labs.TraysServer[labo][tray].kerosene.start = timer
@@ -153,7 +156,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckCoca")
 AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemCoca)
 
@@ -175,7 +178,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckWhitewash")
 AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemWhitewash)
 
@@ -190,13 +193,14 @@ AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer, territor
         TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
     else
         local label = yCore.GetItemLabel(_LABS.Coke.ItemWhitewash) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        TriggerClientEvent("yCore:showNotification", source,
+            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
     end
 end)
 
 RegisterServerEvent("core:labs:takeCokeTray")
 AddEventHandler("core:labs:takeCokeTray", function(labo, tray, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     Labs.TraysServer[labo][tray].whitewash.start = 0
     Labs.TraysServer[labo][tray].coca.start = 0
@@ -207,12 +211,13 @@ AddEventHandler("core:labs:takeCokeTray", function(labo, tray, territory)
     if territory then
         addInfluence(source, territory, 'cokeTray')
     end
-    TriggerClientEvent("yCore:showNotification", source, string.format("Vous avez récolté ~g~%0d~s~ de ~g~récipients de cocaine~s~.", _LABS.Coke.CountRecip))
+    TriggerClientEvent("yCore:showNotification", source,
+        string.format("Vous avez récolté ~g~%0d~s~ de ~g~récipients de cocaine~s~.", _LABS.Coke.CountRecip))
 end)
 
 RegisterServerEvent("core:labs:GetEmpocheCoke")
 AddEventHandler("core:labs:GetEmpocheCoke", function(territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemRecip)
 
@@ -226,13 +231,14 @@ AddEventHandler("core:labs:GetEmpocheCoke", function(territory)
         TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
     else
         local label = yCore.GetItemLabel(_LABS.Coke.ItemRecip) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        TriggerClientEvent("yCore:showNotification", source,
+            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
     end
 end)
 
 RegisterServerEvent("core:labs:addComponents")
 AddEventHandler("core:labs:addComponents", function(labo, spot)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemMethylamine)
     local Required2 = xPlayer.getInventoryItem(_LABS.Meth.ItemPhenylacetone)
@@ -243,13 +249,16 @@ AddEventHandler("core:labs:addComponents", function(labo, spot)
                 xPlayer.removeInventoryItem(_LABS.Meth.ItemMethylamine, _LABS.Meth.CountRequiredKMethylamine)
                 xPlayer.removeInventoryItem(_LABS.Meth.ItemPhenylacetone, _LABS.Meth.CountRequiredPhenylacetone)
 
-                Labs.CircuitsServer[labo][spot].synthesis.phenylacetone = Labs.CircuitsServer[labo][spot].synthesis.phenylacetone + _LABS.Meth.CountRequiredPhenylacetone
-                Labs.CircuitsServer[labo][spot].synthesis.methylamine = Labs.CircuitsServer[labo][spot].synthesis.methylamine + _LABS.Meth.CountRequiredKMethylamine
+                Labs.CircuitsServer[labo][spot].synthesis.phenylacetone = Labs.CircuitsServer[labo][spot].synthesis
+                    .phenylacetone + _LABS.Meth.CountRequiredPhenylacetone
+                Labs.CircuitsServer[labo][spot].synthesis.methylamine = Labs.CircuitsServer[labo][spot].synthesis
+                    .methylamine + _LABS.Meth.CountRequiredKMethylamine
                 TriggerClientEvent("core:labs:addComponents", -1, labo, spot,
                     Labs.CircuitsServer[labo][spot].synthesis.phenylacetone,
                     Labs.CircuitsServer[labo][spot].synthesis.methylamine)
 
-                TriggerClientEvent("yCore:showNotification", source, "~g~Ajout de méthylamine et phénylacétone dans la cuve~s~.")
+                TriggerClientEvent("yCore:showNotification", source,
+                    "~g~Ajout de méthylamine et phénylacétone dans la cuve~s~.")
             else
                 local label = yCore.GetItemLabel(_LABS.Meth.ItemPhenylacetone) or "Nil"
                 TriggerClientEvent("yCore:showNotification", source,
@@ -261,13 +270,14 @@ AddEventHandler("core:labs:addComponents", function(labo, spot)
                 "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
         end
     else
-        TriggerClientEvent("yCore:showNotification", source, "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
+        TriggerClientEvent("yCore:showNotification", source,
+            "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
     end
 end)
 
 RegisterServerEvent("core:labs:startSynthesis")
 AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     if not Labs.CircuitsServer[labo][spot].synthesis.start then
         if Labs.CircuitsServer[labo][spot].synthesis.phenylacetone >= _LABS.Meth.Tanks[2] then
@@ -281,7 +291,8 @@ AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer, territor
                 TriggerClientEvent("yCore:showNotification", source, "~g~Démarrage de la synthèse~s~.")
             else
                 local label = yCore.GetItemLabel(_LABS.Meth.ItemMethylamine) or "Nil"
-                TriggerClientEvent("yCore:showNotification", source,"~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la synthèse.")
+                TriggerClientEvent("yCore:showNotification", source,
+                    "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la synthèse.")
             end
         else
             local label = yCore.GetItemLabel(_LABS.Meth.ItemPhenylacetone) or "Nil"
@@ -289,13 +300,14 @@ AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer, territor
                 "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la synthèse.")
         end
     else
-        TriggerClientEvent("yCore:showNotification", source, "~r~Action impossible, une image de synthèse est déjà en cours~s~.")
+        TriggerClientEvent("yCore:showNotification", source,
+            "~r~Action impossible, une image de synthèse est déjà en cours~s~.")
     end
 end)
 
 RegisterServerEvent("core:labs:sendToReduction")
 AddEventHandler("core:labs:sendToReduction", function(labo, spot, timer)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     if xPlayer and Labs.CircuitsServer[labo][spot].reduction.plates == 0 then
         if Labs.CircuitsServer[labo][spot].synthesis.phenylacetone >= _LABS.Meth.Tanks[2] then
@@ -304,8 +316,10 @@ AddEventHandler("core:labs:sendToReduction", function(labo, spot, timer)
                 Labs.CircuitsServer[labo][spot].synthesis.methylamine = 0
                 Labs.CircuitsServer[labo][spot].synthesis.start = nil
                 Labs.CircuitsServer[labo][spot].synthesis.working = false
-                Labs.CircuitsServer[labo][spot].reduction.plates = Labs.CircuitsServer[labo][spot].reduction.plates + _LABS.Meth.CountRecip
-                TriggerClientEvent("core:labs:sendToReduction", -1, labo, spot, Labs.CircuitsServer[labo][spot].reduction.plates)
+                Labs.CircuitsServer[labo][spot].reduction.plates = Labs.CircuitsServer[labo][spot].reduction.plates +
+                    _LABS.Meth.CountRecip
+                TriggerClientEvent("core:labs:sendToReduction", -1, labo, spot,
+                    Labs.CircuitsServer[labo][spot].reduction.plates)
                 TriggerClientEvent("yCore:showNotification", source, "~g~Transfert vers la réduction effectuée~s~.")
             else
                 local label = yCore.GetItemLabel(_LABS.Meth.ItemMethylamine) or "Nil"
@@ -319,13 +333,14 @@ AddEventHandler("core:labs:sendToReduction", function(labo, spot, timer)
         end
     else
         local label = yCore.GetItemLabel(_LABS.Meth.ItemRecip) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source, "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
+        TriggerClientEvent("yCore:showNotification", source,
+            "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
     end
 end)
 
 RegisterServerEvent("core:labs:startReduction")
 AddEventHandler("core:labs:startReduction", function(labo, spot, timer, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     if xPlayer and not Labs.CircuitsServer[labo][spot].reduction.start then
         if Labs.CircuitsServer[labo][spot].reduction.plates > 0 then
@@ -340,12 +355,13 @@ AddEventHandler("core:labs:startReduction", function(labo, spot, timer, territor
             TriggerClientEvent("yCore:showNotification", source, "~r~La cuve est vide.")
         end
     else
-        TriggerClientEvent("yCore:showNotification", source, "~r~Action impossible, le processus de réduction est déjà en cours~s~.")
+        TriggerClientEvent("yCore:showNotification", source,
+            "~r~Action impossible, le processus de réduction est déjà en cours~s~.")
     end
 end)
 
-yCore.RegisterServerCallback("core:labs:TakePlateMeth", function(source, cb, labo, spot, territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+RegisterServerCallback("core:labs:TakePlateMeth", function(source, labo, spot, territory)
+    local xPlayer = ESX.Player(source)
 
     if Labs.CircuitsServer[labo][spot].reduction.plates > 0 then
         Labs.CircuitsServer[labo][spot].reduction.plates = Labs.CircuitsServer[labo][spot].reduction.plates - 1
@@ -355,12 +371,12 @@ yCore.RegisterServerCallback("core:labs:TakePlateMeth", function(source, cb, lab
         end
         TriggerClientEvent("core:labs:takePlate", -1, labo, spot, Labs.CircuitsServer[labo][spot].reduction.plates)
         TriggerClientEvent("yCore:showNotification", source, "~g~Récupération d'un plateau~s~.")
-        cb(true)
+        return { true }
     else
         Labs.CircuitsServer[labo][spot].reduction.start = nil
         Labs.CircuitsServer[labo][spot].reduction.working = false
         TriggerClientEvent("core:labs:takePlate", -1, labo, spot, Labs.CircuitsServer[labo][spot].reduction.plates)
-        cb(false)
+        return { false }
     end
 end)
 
@@ -371,7 +387,7 @@ end)
 
 RegisterServerEvent("core:labs:GetBrisseMeth")
 AddEventHandler("core:labs:GetBrisseMeth", function()
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemRecip)
 
@@ -381,13 +397,14 @@ AddEventHandler("core:labs:GetBrisseMeth", function()
         TriggerClientEvent("yCore:showNotification", source, "~g~Vous avez rempli un bac de meth~s~.")
     else
         local label = yCore.GetItemLabel(_LABS.Meth.ItemRecip) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        TriggerClientEvent("yCore:showNotification", source,
+            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
     end
 end)
 
 RegisterServerEvent("core:labs:GetEmpocheMeth")
 AddEventHandler("core:labs:GetEmpocheMeth", function(territory)
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemBack)
 
@@ -408,7 +425,7 @@ end)
 RegisterServerEvent("sxGroup:RegisterLaboratory")
 AddEventHandler("sxGroup:RegisterLaboratory", function(data)
     local source = source
-    local xPlayer = yCore.GetPlayerFromId(source)
+    local xPlayer = ESX.Player(source)
 
     if xPlayer and xPlayer:getGroup() >= _PERMISSION["TERRITORY"] then
         local table = {}
@@ -419,11 +436,11 @@ AddEventHandler("sxGroup:RegisterLaboratory", function(data)
             end
         elseif data.type == 'meth' then
             for i = 1, #_LABS.Shell[data.type].Synthesis do
-                table[#table + 1] = {reduction = { working = false, plates = 0, start = 0, availablePlates = 0}, synthesis = { working = false, methylamine = 0, phenylacetone = 0}}
+                table[#table + 1] = { reduction = { working = false, plates = 0, start = 0, availablePlates = 0 }, synthesis = { working = false, methylamine = 0, phenylacetone = 0 } }
             end
         elseif data.type == 'weed' then
             for i = 1, #_LABS.Shell[data.type].spots do
-                table[#table + 1] = { pickable = false, state = 0, previousState = -1, planted = false, fertilized = false} 
+                table[#table + 1] = { pickable = false, state = 0, previousState = -1, planted = false, fertilized = false }
             end
         end
         local weeds    = (data.type == 'weed') and json.encode(table) or json.encode({})
@@ -444,17 +461,16 @@ AddEventHandler("sxGroup:RegisterLaboratory", function(data)
     end
 end)
 
-yCore.RegisterServerCallback("core:labs:GetDataFromLabs", function(source, cb, id)
+RegisterServerCallback("core:labs:GetDataFromLabs", function(source, id)
     for k, v in pairs(Labs.Table) do
         if v.id == id then
-            cb(v, GetGameTimer())
-            break
+            return { v, GetGameTimer() }
         end
     end
 end)
 
-yCore.RegisterServerCallback("core:labs:GetDataLabs", function(source, cb)
-    cb(Labs.Table)
+RegisterServerCallback("core:labs:GetDataLabs", function(source)
+    return Labs.Table
 end)
 
 Citizen.CreateThread(function()
@@ -509,7 +525,19 @@ Citizen.CreateThread(function()
                     end
                 end
             end
-            Labs.Table[#Labs.Table + 1] = { id = v.id, label = v.label, coords = v.coords, type = v.type, level = v.level, weeds = { Labs.WeedsServer[v.id] }, circuits = { Labs.CircuitsServer[v.id] }, trays = { Labs.TraysServer[v.id] }, start = v.start }
+            Labs.Table[#Labs.Table + 1] = {
+                id = v.id,
+                label = v.label,
+                coords = v.coords,
+                type = v.type,
+                level = v
+                    .level,
+                weeds = { Labs.WeedsServer[v.id] },
+                circuits = { Labs.CircuitsServer[v.id] },
+                trays = { Labs.TraysServer[v.id] },
+                start =
+                    v.start
+            }
         end
         while true do
             Wait(5000)

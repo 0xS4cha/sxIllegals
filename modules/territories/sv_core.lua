@@ -1,10 +1,10 @@
 local influenceCooldown = {}
 
-function addInfluence(source, id, interaction)
-    local xPlayer = yCore.GetPlayerFromId(source)
+function AddInfluence(source, id, interaction)
+    local xPlayer = ESX.Player(source)
     if not xPlayer then return end
 
-    local license = xPlayer.identifier
+    local license = xPlayer.getIdentifier()
     local group = GetGroupFromLicense(license)
     local territory = GetTerritoriesFromId(id)
     local point = _TERRITORY.InfluencePoint[interaction]
@@ -21,7 +21,7 @@ function addInfluence(source, id, interaction)
         return
     end
 
-    territory:addInfluence(group:getId(), point)
+    territory:AddInfluence(group:getId(), point)
 
     influenceCooldown[license][interaction] = currentTime
 end
@@ -30,7 +30,7 @@ RegisterNetEvent("sxGroup:AddInfluence")
 AddEventHandler('sxGroup:AddInfluence', function(token, id, interaction)
     local source = source
     if CheckPlayerToken(source, token) then
-        addInfluence(source, id, interaction)
+        AddInfluence(source, id, interaction)
     end
 end)
 

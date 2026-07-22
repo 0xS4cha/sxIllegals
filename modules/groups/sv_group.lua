@@ -1,6 +1,6 @@
 local GroupList = {}
 
-groupLoaded = false 
+groupLoaded = false
 
 function GetGroupFromId(id)
     return GroupList[id]
@@ -13,7 +13,6 @@ function GetGroupInformationFromId(id)
     end
     return true, group.name, group.rgb, group.is_official
 end
-
 
 function GetGroupFromLicense(license)
     for _, group in pairs(GroupList) do
@@ -44,7 +43,7 @@ function group:new(data)
     self.id = data.id or 0
     self.name = data.name or ''
     self.devise = data.devise or ''
-    self.rgb = data.rgb  or { r = 255, g = 255, b = 255 }
+    self.rgb = data.rgb or { r = 255, g = 255, b = 255 }
     self.members = data.members or {}
     self.ranks = data.ranks or {}
     self.is_official = data.is_official or false
@@ -61,7 +60,6 @@ function group:changeDevise(str)
     self.devise = str
     return true
 end
-
 
 function group:is_official()
     return self.is_official
@@ -107,7 +105,7 @@ function group:promotePlayer(identifier)
             while not self:getRankExistFromId(newGrade) and newGrade >= 0 do
                 Wait(100)
                 newGrade = newGrade - 1
-                if newGrade > 100 then break end 
+                if newGrade > 100 then break end
             end
             if self:getRankExistFromId(newGrade) then
                 self:setNeedSave(true)
@@ -167,7 +165,7 @@ function group:prettyPlayerlist()
             end
         end
 
-        local enriched = table.clone(member) 
+        local enriched = table.clone(member)
         enriched.rankLabel = rankLabel
 
         enrichedMembers[#enrichedMembers + 1] = enriched
@@ -180,10 +178,11 @@ function group:kickPlayer(identifier)
     for i = 1, #self.members do
         local member = self.members[i]
         if member.identifier == identifier then
-            local result = MySQL.Sync.execute("DELETE FROM group_members WHERE groupId = @groupId AND identifier = @identifier", {
-                ['@groupId'] = self.id,
-                ['@identifier'] = identifier
-            })
+            local result = MySQL.Sync.execute(
+                "DELETE FROM group_members WHERE groupId = @groupId AND identifier = @identifier", {
+                    ['@groupId'] = self.id,
+                    ['@identifier'] = identifier
+                })
             if result then
                 self:setNeedSave(true)
                 self.members[i] = nil
@@ -203,7 +202,7 @@ function group:demotePlayer(identifier)
             while not self:getRankExistFromId(newGrade) and newGrade >= 0 do
                 Wait(100)
                 newGrade = newGrade + 1
-                if newGrade > 100 then break end 
+                if newGrade > 100 then break end
             end
             if newGrade then
                 member.id_grade = newGrade
@@ -260,22 +259,29 @@ function group:recruitPlayer(identifier, rank)
     if #self.members + 1 < _GROUP.Slots[self.is_official] then
         local pResult = MySQL.Sync.fetchAll("SELECT * FROM users WHERE identifier = @identifier", {
             ["@identifier"] = identifier
-        })    
+        })
         local pName = {}
         pName.Firstname = pResult[1].firstname
         pName.Lastname = pResult[1].lastname
         pName.Name = pName.Firstname .. ' ' .. pName.Lastname
         pName.rank = rank or self:getLastRank()
-        local id = MySQL.Sync.insert("INSERT INTO group_members (identifier, label, id_grade, groupId) VALUES (?, ?, ?, ?)"
-        , {
-            identifier,
-            pName.Name,
-            pName.rank,
-            self.id
-        })
-        self.members[#self.members + 1] = {identifier = identifier, label = pName.Name, id_grade = pName.rank, groupId = self.id}
+        local id = MySQL.Sync.insert(
+            "INSERT INTO group_members (identifier, label, id_grade, groupId) VALUES (?, ?, ?, ?)"
+            , {
+                identifier,
+                pName.Name,
+                pName.rank,
+                self.id
+            })
+        self.members[#self.members + 1] = {
+            identifier = identifier,
+            label = pName.Name,
+            id_grade = pName.rank,
+            groupId =
+                self.id
+        }
         return pName.Name
-    else 
+    else
         return false
     end
 end
@@ -306,7 +312,7 @@ function group:saveGroup()
             table.insert(params, json.encode(rank.perms))
         end
 
-        query = query:sub(1, -2) 
+        query = query:sub(1, -2)
         query = query .. " ON DUPLICATE KEY UPDATE name = VALUES(name), rank = VALUES(rank), perms = VALUES(perms);"
 
         MySQL.Async.execute(query, params)
@@ -350,7 +356,6 @@ local function LoadGroup()
         groups:new(v)
     end
     Logger:info('LOAD', "All group have been loaded.")
-
 end
 
 MySQL.ready(function()
@@ -372,6 +377,6 @@ AddEventHandler("onResourceStop", function(resource)
 end)
 
 
-yCore.RegisterServerCallback('sxGroup:getGroupList', function(source, cb, f)
-    cb(GetAllGroup())
+RegisterServerCallback('sxGroup:getGroupList', function(_)
+    return GetAllGroup()
 end)

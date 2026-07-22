@@ -17,7 +17,7 @@ end
 local function parseDate(date)
     if date then
         local year, month, day = date:match('(%d+)%-(%d+)%-(%d+)')
-        return os.time({year = tonumber(year), month = tonumber(month), day = tonumber(day)})
+        return os.time({ year = tonumber(year), month = tonumber(month), day = tonumber(day) })
     else
         return os.time()
     end
@@ -29,7 +29,7 @@ function territory:new(data)
     if not data.coords then return end
     local self = setmetatable({}, territory)
     self.id = data.id or Generate.Code({ includeNumbers = true, includeLetters = true, length = 6 })
-    self.influence =  data.influence or {}
+    self.influence = data.influence or {}
     self.label = data.label or self.id
     self.totalInfluence = 0
     self.coords = data.coords
@@ -109,14 +109,16 @@ function territory:getDataGroup()
             local status, name, rgb, is_official = GetGroupInformationFromId(self.influence[i].id)
 
             if not status then
-                Logger:warn('LOAD', 'Group with ID ' .. self.influence[i].id .. ' has been removed because it does not exist')
+                Logger:warn('LOAD',
+                    'Group with ID ' .. self.influence[i].id .. ' has been removed because it does not exist')
                 self.influence[i] = nil
                 self.influenceChanged = true
                 self:setNeedSave(true)
                 goto continue
             end
             if not is_official and not _GROUP.Unofficial then
-                Logger:warn('LOAD', 'Group with ID ' .. self.influence[i].id .. ' has been removed because it is not official group')
+                Logger:warn('LOAD',
+                    'Group with ID ' .. self.influence[i].id .. ' has been removed because it is not official group')
                 self.influence[i] = nil
                 self.influenceChanged = true
                 self:setNeedSave(true)
@@ -178,7 +180,6 @@ function territory:saveTerritories()
     end
 end
 
-
 function territory:getInfluence()
     return self.influence
 end
@@ -227,11 +228,10 @@ function territory:getNeedSave()
     return self.needSave
 end
 
-
 local function LoadTerritories()
     MySQL.Async.fetchAll('SELECT * FROM territories', {}, function(result)
-        for k, v in pairs(result) do
-            territories:new({
+        for _, v in pairs(result) do
+            territory:new({
                 id = v.id,
                 label = v.label,
                 coords = json.decode(v.coords),
@@ -259,7 +259,6 @@ AddEventHandler("onResourceStop", function(resource)
     end
 end)
 
-
-yCore.RegisterServerCallback('sxGroup:getTerritoriesList', function(source, cb, f)
-    cb(GetAllTerritories())
+RegisterServerCallback('sxIllegals:getTerritoriesList', function(_)
+    return GetAllTerritories()
 end)
