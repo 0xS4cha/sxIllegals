@@ -111,129 +111,100 @@ function Labs.Coke:ActionOnCoke(key)
             Labs.Coke.hasTray = false
         end)
     end
-    working = false
+ end
+
+local function ShowHelpNotification(text)
+    BeginTextCommandDisplayHelp("STRING")
+    AddTextComponentSubstringPlayerName(text)
+    EndTextCommandDisplayHelp(0, false, true, -1)
 end
 
 function Labs:StartCoke()
-    local player = GetPlayer()
     if Labs.Coke.Thread then return end
     Labs.Coke.trays = Labs:DeepCopy(Labs.LabosIndex.trays[1])
     Logger:info('LABORATORIES', 'Load coke')
-    Citizen.CreateThread(function()
-        Labs.Coke.Thread = true
-        for i = 1, #_LABS.Shell['coke'].spots do
-            
-            Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['coke'].spots[i].x, _LABS.Shell['coke'].spots[i].y, _LABS.Shell['coke'].spots[i].z),
-                distance = 2.5, 
-                interactDst = 1.5,
-                offset = vec(0.0, 0.0, 0.0),
-                options = {
-                    {
-                        label = function() return select(2, Labs.Coke:GetTrayStatus(i)) end,
-                        canInteract = function(entity, coords, args)
-                            return (player:Can() and Labs.Coke:GetTrayStatus(i) == 2 or Labs.Coke:GetTrayStatus(i) == 4 or Labs.Coke:GetTrayStatus(i) == 6)
-                        end,
-                        action = function(entity, coords, args)
-                        end,
-                    },
-                    {
-                        label = 'Verser 6x kérosène',
-                        canInteract = function(entity, coords, args)
-                            return (player:Can() and Labs.Coke:GetTrayStatus(i) == 1)
-                        end,
-                        action = function(entity, coords, args)
-                            if Labs.Coke.working then
-                                ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                            else
-                                Labs.Coke:ActionOnCoke(i)
-                            end
-                        end,
-                     },
-
-                     {
-                        label = "Ajouter 6x feuilles de coca",
-                        canInteract = function(entity, coords, args)
-                            return (player:Can() and Labs.Coke:GetTrayStatus(i) == 3)
-                        end,
-                        action = function(entity, coords, args)
-                            if Labs.Coke.working then
-                                ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                            else
-                                Labs.Coke:ActionOnCoke(i)
-                            end
-                        end,
-                     },
-
-                     {
-                        label = "Verser 6x chaux",
-                        canInteract = function(entity, coords, args)
-                            return (player:Can() and Labs.Coke:GetTrayStatus(i) == 5)
-                        end,
-                        action = function(entity, coords, args)
-                            if Labs.Coke.working then
-                                ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                            else
-                                Labs.Coke:ActionOnCoke(i)
-                            end
-                        end,
-                     },
-
-                     {
-                        label = "Récupérer 1 bac de cocaïne",
-                        canInteract = function(entity, coords, args)
-                            return (player:Can() and Labs.Coke:GetTrayStatus(i) == 7)
-                        end,
-                        action = function(entity, coords, args)
-                            if Labs.Coke.working then
-                                ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                            else
-                                Labs.Coke:ActionOnCoke(i)
-                            end
-                        end,
-                     },
-                }
-            })
+    
+    Labs.Coke.Thread = true
+    
+    local function GetActionLabel(status)
+        if status == 1 then
+            return "verser du kérosène"
+        elseif status == 3 then
+            return "ajouter des feuilles de coca"
+        elseif status == 5 then
+            return "verser de la chaux"
+        elseif status == 7 then
+            return "récupérer le bac de cocaïne"
         end
-        for i = 1, #_LABS.Shell['coke'].packs do
-            local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['coke'].packs[i].x, _LABS.Shell['coke'].packs[i].y, _LABS.Shell['coke'].packs[i].z)
-            Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                coords = coords,
-                distance = 2.5, 
-                interactDst = 1.5,
-                offset = vec(0.0, 0.0, 0.0),
-                options = {
-                    {
-                        label = GetPhrase('Empocher la cocaïne'),
-                        canInteract = function(entity, coords, args)
-                            return (player:Can())
-                        end,
-                        action = function(entity, coords, args)
+        return ""
+    end
+
+    Citizen.CreateThread(function()
+        while Labs.Coke.Thread and Labs.LabosIndex and Labs.LabosIndex.type == 'coke' do
+            local wait = 1000
+            local pPed = PlayerPedId()
+            local pPos = GetEntityCoords(pPed)
+            
+            -- Trays spots
+            for i = 1, #_LABS.Shell['coke'].spots do
+                local spot = _LABS.Shell['coke'].spots[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 52, 152, 219, 100, false, false, 2, false, nil, nil, false)
+                    
+                    if dist < 1.3 then
+                        local status, text = Labs.Coke:GetTrayStatus(i)
+                        if status == 1 or status == 3 or status == 5 or status == 7 then
+                            ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~" .. GetActionLabel(status) .. "~s~.")
+                            if IsControlJustReleased(0, 38) then
+                                if Labs.Coke.working then
+                                    ShowNotification("Vous êtes déjà en train de faire une action.")
+                                else
+                                    Labs.Coke:ActionOnCoke(i)
+                                end
+                            end
+                        elseif status == 2 or status == 4 or status == 6 then
+                            ShowHelpNotification(text or "En cours de traitement...")
+                        end
+                    end
+                end
+            end
+            
+            -- Packs spots
+            for i = 1, #_LABS.Shell['coke'].packs do
+                local pack = _LABS.Shell['coke'].packs[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, pack.x, pack.y, pack.z)
+                local dist = #(pPos - coords)
+                
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
+                    
+                    if dist < 1.3 then
+                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Empocher la cocaïne~s~.")
+                        if IsControlJustReleased(0, 38) then
                             if Labs.Coke.working then
-                                ShowNotification(GetPhrase('LABS_AlreadyInAction'))
+                                ShowNotification("Vous êtes déjà en train de faire une action.")
                             else
                                 Labs.Coke.hasTray = false
                                 local ped = PlayerPedId()
-                                local pos = coords
-                                TaskTurnPedToFaceCoord(ped, pos.x, pos.y, pos.z, 500)
+                                TaskTurnPedToFaceCoord(ped, coords.x, coords.y, coords.z, 500)
                                 Citizen.Wait(500)
                                 Labs:PlayAnimation(ped, "anim@amb@board_room@stenographer@paper@", "break_01_left_amy_skater_01", 3000)
                                 Citizen.Wait(3000)
-                                ShowNotification("Vous avez empochez ~g~" .. _LABS.Coke.CountCocaine .. " cocaïnes~s~.")
+                                ShowNotification("Vous avez empoché ~g~" .. _LABS.Coke.CountCocaine .. " cocaïnes~s~.")
                                 Labs.Coke.working = false
                                 Rsv("core:labs:GetEmpocheCoke", GetTerritoryFromCoords(Labs.LabosIndex.coords))
                             end
-                        end,
-                     },
-                }
-            })
-        end    
-    end)
-
-    Citizen.CreateThread(function()
-        Labs.Coke.Thread = true
-        while Labs.Coke.Thread and Labs.LabosIndex and Labs.LabosIndex.type == 'coke' do
-            Citizen.Wait(500)
+                        end
+                    end
+                end
+            end
+            
+            Citizen.Wait(wait)
         end
         Labs.Coke:Unload()
     end)

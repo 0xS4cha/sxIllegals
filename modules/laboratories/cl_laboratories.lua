@@ -117,8 +117,68 @@ function Labs:exit()
         end
     end
     Labs.LabosIndex = {}
+    Labs.IsInLab = false
     DoScreenFadeIn(1000)
 end
+
+local function ShowHelpNotification(text)
+    BeginTextCommandDisplayHelp("STRING")
+    AddTextComponentSubstringPlayerName(text)
+    EndTextCommandDisplayHelp(0, false, true, -1)
+end
+
+Citizen.CreateThread(function()
+    while true do
+        local wait = 1000
+        local pPed = PlayerPedId()
+        local pPos = GetEntityCoords(pPed)
+        
+        if not Labs.IsInLab then
+            for i = 1, #Labs.Labos do
+                local lab = Labs.Labos[i]
+                if lab.coords then
+                    local dist = #(pPos - vector3(lab.coords.x, lab.coords.y, lab.coords.z))
+                    if dist < 15.0 then
+                        wait = 0
+                        DrawMarker(27, lab.coords.x, lab.coords.y, lab.coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
+                        
+                        if dist < 1.5 then
+                            ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour entrer dans le ~g~laboratoire~s~.")
+                            if IsControlJustReleased(0, 38) then
+                                local data = TriggerServerCallback('core:labs:GetDataFromLabs', lab.id)
+                                if data then
+                                    for k, v in pairs(data[1] or {}) do
+                                        lab[k] = v
+                                    end
+                                end
+                                Labs.LabosIndex = lab
+                                Labs:enter()
+                            end
+                        end
+                    end
+                end
+            end
+        else
+            if Labs.LabosIndex and Labs.LabosIndex.exit then
+                local exit = Labs.LabosIndex.exit
+                local dist = #(pPos - exit)
+                if dist < 15.0 then
+                    wait = 0
+                    DrawMarker(27, exit.x, exit.y, exit.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 231, 76, 60, 100, false, false, 2, false, nil, nil, false)
+                    
+                    if dist < 1.5 then
+                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour sortir du ~r~laboratoire~s~.")
+                        if IsControlJustReleased(0, 38) then
+                            Labs:exit()
+                        end
+                    end
+                end
+            end
+        end
+        
+        Citizen.Wait(wait)
+    end
+end)
 
 Labs:Init()
 

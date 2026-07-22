@@ -86,257 +86,234 @@ function Labs.Meth:GetReductionPanelStatus(key)
     return string.format('Temps restant : %02d:%02d', minutes, seconds)
 end
 
+local function ShowHelpNotification(text)
+    BeginTextCommandDisplayHelp("STRING")
+    AddTextComponentSubstringPlayerName(text)
+    EndTextCommandDisplayHelp(0, false, true, -1)
+end
+
 function Labs:StartMeth()
-    local player = GetPlayer()
     if Labs.Meth.MethThread then return end
     Logger:info('LABORATORIES', 'Load meth')
+    
+    Labs.Meth:Load()
+    Labs.Meth.MethThread = true
+
     Citizen.CreateThread(function()
-        Labs.Meth:Load()
-        Citizen.CreateThread(function()
-            Labs.Meth.MethThread = true
+        while Labs.Meth.MethThread and Labs.LabosIndex and Labs.LabosIndex.type == 'meth' do
+            local wait = 1000
+            local pPed = PlayerPedId()
+            local pPos = GetEntityCoords(pPed)
 
+            -- 1. Synthesis components spots
             for i = 1, #_LABS.Shell['meth'].Synthesis do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['meth'].Synthesis[i].x,
-                        _LABS.Shell['meth'].Synthesis[i].y, _LABS.Shell['meth'].Synthesis[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = GetPhrase("Ajouter 5x de Phénylacétone et 5x de Méthylamine"),
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                                if Labs.Meth.working then
-                                    ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                                else
-                                    Labs.Meth.working = true
-                                    Labs:PlayLabosAnimation(_LABS.Shell['meth'].Synthesis[i], "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000)
-                                    TriggerServerEvent("core:labs:addComponents", Labs.LabosIndex.id, i)
-                                    Labs.Meth.working = false
-                                end
+                local spot = _LABS.Shell['meth'].Synthesis[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Ajouter 5x de Phénylacétone et 5x de Méthylamine~s~.")
+                        if IsControlJustReleased(0, 38) then
+                            if Labs.Meth.working then
+                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                            else
+                                Labs.Meth.working = true
+                                Labs:PlayLabosAnimation(spot, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000)
+                                TriggerServerEvent("core:labs:addComponents", Labs.LabosIndex.id, i)
+                                Labs.Meth.working = false
                             end
-                        }
-                    }
-                })
+                        end
+                    end
+                end
             end
 
+            -- 2. Synthesis panels
             for i = 1, #_LABS.Shell['meth'].SynthesisPanels do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model,
-                        _LABS.Shell['meth'].SynthesisPanels[i].x, _LABS.Shell['meth'].SynthesisPanels[i].y,
-                        _LABS.Shell['meth'].SynthesisPanels[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = GetPhrase("Lancer l'image de synthèse"),
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                                if Labs.Meth.working then
-                                    ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                                else
-                                    Labs.Meth.working = true
-                                    Labs:PlayLabosAnimation(_LABS.Shell['meth'].SynthesisPanels[i],
-                                        "anim@amb@business@meth@meth_monitoring_cooking@monitoring@",
-                                        "button_press_monitor", 3000)
-                                    TriggerServerEvent("core:labs:startSynthesis", Labs.LabosIndex.id, i, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
-                                    Labs.Meth.working = false
-                                end
+                local spot = _LABS.Shell['meth'].SynthesisPanels[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Lancer l'image de synthèse~s~.")
+                        if IsControlJustReleased(0, 38) then
+                            if Labs.Meth.working then
+                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                            else
+                                Labs.Meth.working = true
+                                Labs:PlayLabosAnimation(spot, "anim@amb@business@meth@meth_monitoring_cooking@monitoring@", "button_press_monitor", 3000)
+                                TriggerServerEvent("core:labs:startSynthesis", Labs.LabosIndex.id, i, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                Labs.Meth.working = false
                             end
-                        }
-                    }
-                })
+                        end
+                    end
+                end
             end
 
-
+            -- 3. Synthesis Status Panels
             for i = 1, #_LABS.Shell['meth'].SynthesisStatus do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model,
-                        _LABS.Shell['meth'].SynthesisStatus[i].x, _LABS.Shell['meth'].SynthesisStatus[i].y,
-                        _LABS.Shell['meth'].SynthesisStatus[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = function() return Labs.Meth:GetSynthesisPanelStatus(i) end,
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                                local status, actionable = Labs.Meth:GetSynthesisPanelStatus(i)
-                                if actionable then
-                                    if Labs.Meth.working then
-                                        ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                                    else
-                                        Labs.Meth.working = true
-                                        TriggerServerEvent("core:labs:sendToReduction", Labs.LabosIndex.id, i)
-                                        local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['meth'].SynthesisStatus[i].x, _LABS.Shell['meth'].SynthesisStatus[i].y, _LABS.Shell['meth'].SynthesisStatus[i].z)
-                                        Labs:PlayLabosAnimation(coords, "anim@amb@business@meth@meth_monitoring_cooking@monitoring@", "button_press_monitor", 3000)
-                                        TriggerServerEvent("core:labs:startReduction", Labs.LabosIndex.id, i, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
-                                        Labs.Meth.working = false
-                                    end
+                local spot = _LABS.Shell['meth'].SynthesisStatus[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        local statusStr, actionable = Labs.Meth:GetSynthesisPanelStatus(i)
+                        if actionable then
+                            ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~" .. statusStr .. "~s~.")
+                            if IsControlJustReleased(0, 38) then
+                                if Labs.Meth.working then
+                                    ShowNotification("Vous êtes déjà en train de faire une action.")
+                                else
+                                    Labs.Meth.working = true
+                                    TriggerServerEvent("core:labs:sendToReduction", Labs.LabosIndex.id, i)
+                                    Labs:PlayLabosAnimation(spot, "anim@amb@business@meth@meth_monitoring_cooking@monitoring@", "button_press_monitor", 3000)
+                                    TriggerServerEvent("core:labs:startReduction", Labs.LabosIndex.id, i, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                    Labs.Meth.working = false
                                 end
                             end
-                        }
-                    }
-                })
+                        else
+                            ShowHelpNotification(statusStr or "Calcul en cours...")
+                        end
+                    end
+                end
             end
 
-
+            -- 4. Reductions Status Panels
             for i = 1, #_LABS.Shell['meth'].ReductionsStatus do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model,
-                        _LABS.Shell['meth'].ReductionsStatus[i].x, _LABS.Shell['meth'].ReductionsStatus[i].y,
-                        _LABS.Shell['meth'].ReductionsStatus[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = function() return Labs.Meth:GetReductionPanelStatus(i) end,
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                            end
-                        }
-                    }
-                })
+                local spot = _LABS.Shell['meth'].ReductionsStatus[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        local statusStr = Labs.Meth:GetReductionPanelStatus(i)
+                        ShowHelpNotification(statusStr or "Attente...")
+                    end
+                end
             end
 
+            -- 5. Plates Spots (Take plates)
             for i = 1, #_LABS.Shell['meth'].Plates do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['meth'].Plates[i].x,
-                        _LABS.Shell['meth'].Plates[i].y, _LABS.Shell['meth'].Plates[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = function()
-                                return ('Récupérer %0d plateaux'):format(Labs.Meth.circuits[i]
-                                    .reduction.plates)
-                            end,
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                                if not Labs.Meth.circuits[i].reduction.working then
-                                    yCore.TriggerServerCallback("core:labs:TakePlateMeth", function(done)
-                                        if done then
-                                            if Labs.Meth.working then
-                                                ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                                            else
-                                                Labs.Meth.working = true
-                                                local ped = PlayerPedId()
-                                                local pos =  GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['meth'].Plates[i].x, _LABS.Shell['meth'].Plates[i].y, _LABS.Shell['meth'].Plates[i].z)
-                                                TaskTurnPedToFaceCoord(ped, pos.x, pos.y, pos.z, 1000)
-                                                Citizen.Wait(1000)
-                                                ShowNotification("~g~Récupération d'un plateau~s~.")
-                                                if not Labs.Meth.hasPlate then
-                                                    Labs.Meth.hasPlate = true
-                                                    Citizen.CreateThread(function()
-                                                        Labs:PlayAnimation(ped, "anim@heists@box_carry@", "idle", -1, 49)
-                                                        local object = Labs:AttachEntityToEntity(ped,
-                                                            "bkr_prop_meth_tray_01a", vector3(0.0, -0.23, -0.21),
-                                                            vector3(0.0, -0.23, -0.21), vector3(16.0, -4.0, 1.0))
-                                                        while Labs.Meth.hasPlate do
-                                                            ShowHelpNotification("Appuyez sur ~INPUT_ENTER~ pour ~y~ranger~s~.")
-                                                            if IsControlJustPressed(0, 23) then
-                                                                Labs.Meth.hasPlate = false
-                                                                Labs.Meth.working = false
-                                                            end
-                                                            Citizen.Wait(1)
-                                                        end
-                                                        DeleteObject(object)
-                                                        ClearPedTasks(ped)
-                                                        Labs.Meth.hasPlate = false
-                                                    end)
-                                                end
-                                                Labs.Meth.working = false
-                                            end
+                local spot = _LABS.Shell['meth'].Plates[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        local platesCount = (Labs.Meth.circuits[i] and Labs.Meth.circuits[i].reduction) and Labs.Meth.circuits[i].reduction.plates or 0
+                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Récupérer " .. platesCount .. " plateau(x)~s~.")
+                        if IsControlJustReleased(0, 38) then
+                            if not Labs.Meth.circuits[i].reduction.working then
+                                yCore.TriggerServerCallback("core:labs:TakePlateMeth", function(done)
+                                    if done then
+                                        if Labs.Meth.working then
+                                            ShowNotification("Vous êtes déjà en train de faire une action.")
                                         else
-                                            ShowNotification("~r~Il n'y a plus de plateaux de meths~s~.")
+                                            Labs.Meth.working = true
+                                            local ped = PlayerPedId()
+                                            TaskTurnPedToFaceCoord(ped, coords.x, coords.y, coords.z, 1000)
+                                            Citizen.Wait(1000)
+                                            ShowNotification("~g~Récupération d'un plateau~s~.")
+                                            if not Labs.Meth.hasPlate then
+                                                Labs.Meth.hasPlate = true
+                                                Citizen.CreateThread(function()
+                                                    Labs:PlayAnimation(ped, "anim@heists@box_carry@", "idle", -1, 49)
+                                                    local object = Labs:AttachEntityToEntity(ped, "bkr_prop_meth_tray_01a", vector3(0.0, -0.23, -0.21), vector3(0.0, -0.23, -0.21), vector3(16.0, -4.0, 1.0))
+                                                    while Labs.Meth.hasPlate do
+                                                        ShowHelpNotification("Appuyez sur ~INPUT_ENTER~ pour ~y~ranger~s~.")
+                                                        if IsControlJustPressed(0, 23) then
+                                                            Labs.Meth.hasPlate = false
+                                                            Labs.Meth.working = false
+                                                        end
+                                                        Citizen.Wait(1)
+                                                    end
+                                                    DeleteObject(object)
+                                                    ClearPedTasks(ped)
+                                                    Labs.Meth.hasPlate = false
+                                                end)
+                                            end
+                                            Labs.Meth.working = false
                                         end
-                                    end, Labs.LabosIndex.id, i, GetTerritoryFromCoords(Labs.LabosIndex.coords))
-                                else
-                                    ShowNotification("~r~La synthèse n'est pas terminée~s~.")
-                                end
+                                    else
+                                        ShowNotification("~r~Il n'y a plus de plateaux de meths~s~.")
+                                    end
+                                end, Labs.LabosIndex.id, i, GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                            else
+                                ShowNotification("~r~La synthèse n'est pas terminée~s~.")
                             end
-                        }
-                    }
-                })
+                        end
+                    end
+                end
             end
 
+            -- 6. Breaks spots
             for i = 1, #_LABS.Shell['meth'].Breaks do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['meth'].Breaks[i].x,
-                        _LABS.Shell['meth'].Breaks[i].y, _LABS.Shell['meth'].Breaks[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = 'Briser la meth',
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                                if Labs.Meth.working then
-                                    ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                                else
-                                    Labs.Meth.working = true
-                                    Labs.Meth.hasPlate = false
-                                    local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['meth'].Breaks[i].x, _LABS.Shell['meth'].Breaks[i].y, _LABS.Shell['meth'].Breaks[i].z)
-                                    Labs:PlayLabosAnimation(coords, "anim@amb@board_room@stenographer@paper@", "break_01_left_amy_skater_01", 3000)
-                                    TriggerServerEvent("core:labs:GetBrisseMeth")
-                                    Labs.Meth.working = false
-                                end
+                local spot = _LABS.Shell['meth'].Breaks[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 142, 68, 173, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Briser la meth~s~.")
+                        if IsControlJustReleased(0, 38) then
+                            if Labs.Meth.working then
+                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                            else
+                                Labs.Meth.working = true
+                                Labs.Meth.hasPlate = false
+                                TaskTurnPedToFaceCoord(pPed, coords.x, coords.y, coords.z, 500)
+                                Citizen.Wait(500)
+                                Labs:PlayAnimation(pPed, "anim@amb@board_room@stenographer@paper@", "break_01_left_amy_skater_01", 3000)
+                                Citizen.Wait(3000)
+                                TriggerServerEvent("core:labs:GetBrisseMeth")
+                                Labs.Meth.working = false
                             end
-                        }
-                    }
-                })
+                        end
+                    end
+                end
             end
 
+            -- 7. Packs spots
             for i = 1, #_LABS.Shell['meth'].Packs do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['meth'].Packs[i].x, _LABS.Shell['meth'].Packs[i].y, _LABS.Shell['meth'].Packs[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = 'Empocher la meth',
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                                if Labs.Meth.working then
-                                    ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                                else
-                                    Labs.Meth.working = true
-                                    local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['meth'].Packs[i].x, _LABS.Shell['meth'].Packs[i].y, _LABS.Shell['meth'].Packs[i].z)
-                                    Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_unpack_cut@", "fullcut_cycle_cokepacker", 3000)
-                                    TriggerServerEvent("core:labs:GetEmpocheMeth", GetTerritoryFromCoords(Labs.LabosIndex.coords))
-                                    Labs.Meth.working = false
-                                end
+                local spot = _LABS.Shell['meth'].Packs[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Empocher la meth~s~.")
+                        if IsControlJustReleased(0, 38) then
+                            if Labs.Meth.working then
+                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                            else
+                                Labs.Meth.working = true
+                                TaskTurnPedToFaceCoord(pPed, coords.x, coords.y, coords.z, 500)
+                                Citizen.Wait(500)
+                                Labs:PlayAnimation(pPed, "anim@amb@business@coc@coc_unpack_cut@", "fullcut_cycle_cokepacker", 3000)
+                                Citizen.Wait(3000)
+                                TriggerServerEvent("core:labs:GetEmpocheMeth", GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                Labs.Meth.working = false
                             end
-                        }
-                    }
-                })
+                        end
+                    end
+                end
             end
-        end)
+
+            Citizen.Wait(wait)
+        end
+        Labs.Meth:Unload()
     end)
 
     Citizen.CreateThread(function()
-        Labs.Meth.MethThread = true
         while Labs.Meth.MethThread and Labs.LabosIndex and Labs.LabosIndex.type == 'meth' do
             for k, v in pairs(Labs.Meth.circuits) do
                 local reduc = v.reduction
@@ -354,7 +331,6 @@ function Labs:StartMeth()
             end
             Citizen.Wait(500)
         end
-        Labs.Meth:Unload()
     end)
 end
 

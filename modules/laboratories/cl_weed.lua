@@ -143,102 +143,109 @@ function Labs.Weed:ActionOnPlant(key)
     end
 end
 
+local function ShowHelpNotification(text)
+    BeginTextCommandDisplayHelp("STRING")
+    AddTextComponentSubstringPlayerName(text)
+    EndTextCommandDisplayHelp(0, false, true, -1)
+end
+
 function Labs:StartWeed()
-    local player = GetPlayer()
     if Labs.Weed.Thread then return end
     Logger:info('LABORATORIES', 'Load weed')
+    
+    Labs.Weed:Load()
+    Labs.Weed.Thread = true
+
     Citizen.CreateThread(function()
-        Labs.Weed:Load()
-        Citizen.CreateThread(function()
-            Labs.Weed.Thread = true
+        while Labs.Weed.Thread and Labs.LabosIndex and Labs.LabosIndex.type == 'weed' do
+            local wait = 1000
+            local pPed = PlayerPedId()
+            local pPos = GetEntityCoords(pPed)
+
+            -- 1. Growing spots
             for i = 1, #_LABS.Shell['weed'].spots do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['weed'].spots[i].x, _LABS.Shell['weed'].spots[i].y, _LABS.Shell['weed'].spots[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = function() return Labs.Weed:GetWeedMessage(i) or 'Erreur' end,
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                                if Labs.Weed.working then
-                                    ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                                else
-                                    Labs.Weed:ActionOnPlant(i)
+                local spot = _LABS.Shell['weed'].spots[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        local msg = Labs.Weed:GetWeedMessage(i) or 'Erreur'
+                        local plant = Labs.Weed.plants[i]
+                        if plant then
+                            if not plant.planted or not plant.fertilized or plant.pickable or plant.state == 7 then
+                                ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~" .. msg .. "~s~.")
+                                if IsControlJustReleased(0, 38) then
+                                    if Labs.Weed.working then
+                                        ShowNotification("Vous êtes déjà en train de faire une action.")
+                                    else
+                                        Labs.Weed:ActionOnPlant(i)
+                                    end
                                 end
+                            else
+                                ShowHelpNotification(msg)
                             end
-                        }
-                    }
-                })
+                        end
+                    end
+                end
             end
 
+            -- 2. Rolls spots (Rolling)
             for i = 1, #_LABS.Shell['weed'].Rolls do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['weed'].Rolls[i].x, _LABS.Shell['weed'].Rolls[i].y, _LABS.Shell['weed'].Rolls[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = 'Rouler',
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                                if Labs.Weed.working then
-                                    ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                                else
-                                    Labs.Weed.working = true
-                                    local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['weed'].Rolls[i].x, _LABS.Shell['weed'].Rolls[i].y, _LABS.Shell['weed'].Rolls[i].z)
-                                    Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_unpack_cut@", "fullcut_cycle_cokecutter", 2000, 2000, Labs.Weed.Texts.SuccessRoll)
-                                    TriggerServerEvent("core:labs:WeedToJoint", GetTerritoryFromCoords(Labs.LabosIndex.coords))
-                                    Labs.Weed.working = false
-                                end
+                local spot = _LABS.Shell['weed'].Rolls[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Rouler~s~.")
+                        if IsControlJustReleased(0, 38) then
+                            if Labs.Weed.working then
+                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                            else
+                                Labs.Weed.working = true
+                                Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_unpack_cut@", "fullcut_cycle_cokecutter", 2000, 2000, Labs.Weed.Texts.SuccessRoll)
+                                TriggerServerEvent("core:labs:WeedToJoint", GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                Labs.Weed.working = false
                             end
-                        }
-                    }
-                })
+                        end
+                    end
+                end
             end
 
+            -- 3. Packs spots (Packaging)
             for i = 1, #_LABS.Shell['weed'].Packs do
-                Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
-                    coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['weed'].Packs[i].x, _LABS.Shell['weed'].Packs[i].y, _LABS.Shell['weed'].Packs[i].z),
-                    distance = 2.5,
-                    interactDst = 1.5,
-                    offset = vec(0.0, 0.0, 0.0),
-                    options = {
-                        {
-                            label = 'Empocher',
-                            canInteract = function(entity, coords, args)
-                                return (player:Can())
-                            end,
-                            action = function(entity, coords, args)
-                                if Labs.Weed.working then
-                                    ShowNotification(GetPhrase('LABS_AlreadyInAction'))
-                                else
-                                    Labs.Weed.working = true
-                                    local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['weed'].Packs[i].x, _LABS.Shell['weed'].Packs[i].y, _LABS.Shell['weed'].Packs[i].z)
-                                    Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_unpack_cut@", "fullcut_cycle_cokepacker", 4000)
-                                    TriggerServerEvent("core:labs:WeedToPack", GetTerritoryFromCoords(Labs.LabosIndex.coords))
-                                    Labs.Weed.working = false
-                                end
+                local spot = _LABS.Shell['weed'].Packs[i]
+                local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, spot.x, spot.y, spot.z)
+                local dist = #(pPos - coords)
+                if dist < 5.0 then
+                    wait = 0
+                    DrawMarker(1, coords.x, coords.y, coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.5, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
+                    if dist < 1.3 then
+                        ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour ~y~Empocher~s~.")
+                        if IsControlJustReleased(0, 38) then
+                            if Labs.Weed.working then
+                                ShowNotification("Vous êtes déjà en train de faire une action.")
+                            else
+                                Labs.Weed.working = true
+                                Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_unpack_cut@", "fullcut_cycle_cokepacker", 4000)
+                                TriggerServerEvent("core:labs:WeedToPack", GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                Labs.Weed.working = false
                             end
-                        }
-                    }
-                })
+                        end
+                    end
+                end
             end
-        end)
 
-        Labs.Weed.IsConfig = false
-        Labs.Weed.Thread = false
+            Citizen.Wait(wait)
+        end
+        Labs.Weed:Unload()
     end)
 
+    -- Growth and State checking thread
     Citizen.CreateThread(function()
-        Labs.Weed.Thread = true
-
         while Labs.Weed.Thread and Labs.LabosIndex and Labs.LabosIndex.type == 'weed' do
             for k, plant in pairs(Labs.Weed.plants) do
                 plant.state = Labs.Weed:GetState(plant)
@@ -255,7 +262,5 @@ function Labs:StartWeed()
             end
             Citizen.Wait(500)
         end
-        Labs.Weed:Unload()
     end)
-
 end
