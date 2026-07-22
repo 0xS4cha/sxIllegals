@@ -9,14 +9,15 @@ import {
 } from 'lucide-react'
 import type { AdminStats } from '../../../types/admin'
 
+export type TimeFrame = '24h' | '7d' | '30d'
+
 interface StatisticsViewProps {
   stats: AdminStats
+  timeFrame: TimeFrame
+  onTimeFrameChange: (tf: TimeFrame) => void
 }
 
-type TimeFrame = '24h' | '7d' | '30d'
-
-export function StatisticsView({ stats }: StatisticsViewProps) {
-  const [timeFrame, setTimeFrame] = useState<TimeFrame>('24h')
+export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: StatisticsViewProps) {
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null)
 
   const points = stats.timeSeriesData
@@ -55,7 +56,7 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
           <Calendar className="ml-2 h-3.5 w-3.5 text-zinc-500" />
           <button
             type="button"
-            onClick={() => setTimeFrame('24h')}
+            onClick={() => onTimeFrameChange('24h')}
             className={`rounded-md px-3 py-1 text-xs font-medium transition ${timeFrame === '24h'
               ? 'bg-zinc-800 text-zinc-100 shadow-sm'
               : 'text-zinc-400 hover:text-zinc-200'
@@ -65,7 +66,7 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
           </button>
           <button
             type="button"
-            onClick={() => setTimeFrame('7d')}
+            onClick={() => onTimeFrameChange('7d')}
             className={`rounded-md px-3 py-1 text-xs font-medium transition ${timeFrame === '7d'
               ? 'bg-zinc-800 text-zinc-100 shadow-sm'
               : 'text-zinc-400 hover:text-zinc-200'
@@ -75,7 +76,7 @@ export function StatisticsView({ stats }: StatisticsViewProps) {
           </button>
           <button
             type="button"
-            onClick={() => setTimeFrame('30d')}
+            onClick={() => onTimeFrameChange('30d')}
             className={`rounded-md px-3 py-1 text-xs font-medium transition ${timeFrame === '30d'
               ? 'bg-zinc-800 text-zinc-100 shadow-sm'
               : 'text-zinc-400 hover:text-zinc-200'

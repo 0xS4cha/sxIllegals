@@ -1,3 +1,5 @@
+local os = { time = function() return GetCloudTimeAsInt() end }
+
 Labs.Meth = Labs.Meth or {}
 
 Labs.Meth.MethThread = false

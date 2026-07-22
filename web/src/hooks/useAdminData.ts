@@ -26,6 +26,7 @@ export function useAdminData() {
   const [territories, setTerritories] = useState<TerritoryItem[]>(INITIAL_MOCK_TERRITORIES)
   const [labs, setLabs] = useState<LaboratoryItem[]>(INITIAL_MOCK_LABS)
   const [stats, setStats] = useState<AdminStats>(INITIAL_MOCK_STATS)
+  const [timeFrame, setTimeFrame] = useState<'24h' | '7d' | '30d'>('24h')
   const [loading, setLoading] = useState(false)
   const [selectedGroup, setSelectedGroup] = useState<GroupItem | null>(null)
   const [selectedTerritory, setSelectedTerritory] = useState<TerritoryItem | null>(null)
@@ -46,6 +47,51 @@ export function useAdminData() {
     if (data) setStats(data)
   })
 
+  const fetchStats = useCallback(async (tf: '24h' | '7d' | '30d') => {
+    if (isEnvBrowser()) {
+      const mockSales = tf === '24h' ? 124100 : tf === '7d' ? 842000 : 3240000
+      const mockPoints = tf === '24h' ? [
+        { label: '00:00', sales: 12400, influence: 450, production: 120 },
+        { label: '04:00', sales: 8200,  influence: 320,  production: 90 },
+        { label: '08:00', sales: 15600, influence: 580,  production: 210 },
+        { label: '12:00', sales: 32800, influence: 890,  production: 340 },
+        { label: '16:00', sales: 48500, influence: 1240, production: 480 },
+        { label: '20:00', sales: 67000, influence: 1650, production: 620 },
+        { label: '23:59', sales: 54100, influence: 1410, production: 530 }
+      ] : tf === '7d' ? [
+        { label: 'Lun', sales: 45000, influence: 300, production: 100 },
+        { label: 'Mar', sales: 52000, influence: 350, production: 110 },
+        { label: 'Mer', sales: 48000, influence: 320, production: 105 },
+        { label: 'Jeu', sales: 61000, influence: 410, production: 130 },
+        { label: 'Ven', sales: 85000, influence: 560, production: 180 },
+        { label: 'Sam', sales: 98000, influence: 620, production: 210 },
+        { label: 'Dim', sales: 72000, influence: 490, production: 160 }
+      ] : [
+        { label: 'Sem 1', sales: 650000, influence: 1200, production: 500 },
+        { label: 'Sem 2', sales: 810000, influence: 1400, production: 620 },
+        { label: 'Sem 3', sales: 780000, influence: 1300, production: 580 },
+        { label: 'Sem 4', sales: 1020000, influence: 1900, production: 850 }
+      ]
+      setStats((prev) => ({
+        ...prev,
+        totalDrugSales24h: mockSales,
+        timeSeriesData: mockPoints
+      }))
+      return
+    }
+
+    try {
+      const statsRes = await fetchNui<AdminStats>('getAdminStats', { timeframe: tf })
+      if (statsRes) setStats(statsRes)
+    } catch (err) {
+      console.error('Failed to fetch stats:', err)
+    }
+  }, [])
+
+  useEffect(() => {
+    void fetchStats(timeFrame)
+  }, [timeFrame, fetchStats])
+
   const refreshData = useCallback(async () => {
     setLoading(true)
     try {
@@ -63,18 +109,17 @@ export function useAdminData() {
       const labsRes = await fetchNui<LaboratoryItem[]>('getAdminLabs')
       if (labsRes) setLabs(labsRes)
 
-      const statsRes = await fetchNui<AdminStats>('getAdminStats')
-      if (statsRes) setStats(statsRes)
+      await fetchStats(timeFrame)
     } catch (err) {
       console.error('Failed to fetch admin data via NUI:', err)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [timeFrame, fetchStats])
 
   useEffect(() => {
     void refreshData()
-  }, [refreshData])
+  }, [])
 
   const toggleOfficialGroup = useCallback(async (id: string | number) => {
     setGroups((prev) =>
@@ -215,6 +260,8 @@ export function useAdminData() {
     territories,
     labs,
     stats,
+    timeFrame,
+    setTimeFrame,
     loading,
     selectedGroup,
     setSelectedGroup,

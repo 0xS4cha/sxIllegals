@@ -34,3 +34,52 @@ function GetGridsSurroundingPosition(pos)
 
     return grids
 end
+
+function TeleportTopCoords(pos, ent, trustPos)
+    if not pos or not pos.x or not pos.y or not pos.z or (ent and not DoesEntityExist(ent)) then return true end
+    local x, y, z = pos.x, pos.y, pos.z + 1.0
+    ent = ent or GetPlayerPed(-1)
+
+    RequestCollisionAtCoord(x, y, z)
+
+    local tempTimer = GetGameTimer()
+    while not IsNewLoadSceneLoaded() do
+        if GetGameTimer() - tempTimer > 3000 then
+            break
+        end
+
+        Citizen.Wait(0)
+    end
+
+    SetEntityCoordsNoOffset(ent, x, y, z)
+
+    tempTimer = GetGameTimer()
+    while not HasCollisionLoadedAroundEntity(ent) do
+        if GetGameTimer() - tempTimer > 3000 then
+            break
+        end
+
+        Citizen.Wait(0)
+    end
+
+    local foundNewZ, newZ
+    if not trustPos then
+        foundNewZ, newZ = GetGroundZCoordWithOffsets(x, y, z)
+        tempTimer = GetGameTimer()
+        while not foundNewZ do
+            z = z + 10.0
+            foundNewZ, newZ = GetGroundZCoordWithOffsets(x, y, z)
+            Wait(0)
+
+            if GetGameTimer() - tempTimer > 2000 then
+                break
+            end
+        end
+    end
+
+    LastCoords = vector3(x, y, foundNewZ and newZ or z)
+    SetEntityCoordsNoOffset(ent, x, y, foundNewZ and newZ or z)
+
+    if type(pos) ~= "vector3" and pos.w then SetEntityHeading(ent, pos.w) end
+    return true
+end

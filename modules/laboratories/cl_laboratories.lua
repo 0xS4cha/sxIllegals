@@ -76,6 +76,7 @@ function Labs:enter()
     Labs.LabosIndex.exit = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, enterOffset.x, enterOffset.y,
         enterOffset.z)
     Labs.IsInLab = true
+    NetworkOverrideClockTime(23, 0, 0)
     SetEntityCoords(pPed, vector3(Labs.LabosIndex.exit.x, Labs.LabosIndex.exit.y, Labs.LabosIndex.exit.z))
     TriggerServerEvent("yCore:initInstance", Labs.LabosIndex.id)
     -- Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
@@ -118,6 +119,10 @@ function Labs:exit()
     end
     Labs.LabosIndex = {}
     Labs.IsInLab = false
+    TriggerServerEvent('vSync:requestSync')
+    TriggerServerEvent('qb-weathersync:server:RequestStateSync')
+    TriggerEvent('qb-weathersync:client:EnableSync')
+    TriggerEvent('cd_easytime:ToggleSync', true)
     DoScreenFadeIn(1000)
 end
 
@@ -132,7 +137,7 @@ Citizen.CreateThread(function()
         local wait = 1000
         local pPed = PlayerPedId()
         local pPos = GetEntityCoords(pPed)
-        
+
         if not Labs.IsInLab then
             for i = 1, #Labs.Labos do
                 local lab = Labs.Labos[i]
@@ -140,8 +145,9 @@ Citizen.CreateThread(function()
                     local dist = #(pPos - vector3(lab.coords.x, lab.coords.y, lab.coords.z))
                     if dist < 15.0 then
                         wait = 0
-                        DrawMarker(27, lab.coords.x, lab.coords.y, lab.coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
-                        
+                        DrawMarker(27, lab.coords.x, lab.coords.y, lab.coords.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+                            1.0, 1.0, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
+
                         if dist < 1.5 then
                             ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour entrer dans le ~g~laboratoire~s~.")
                             if IsControlJustReleased(0, 38) then
@@ -164,8 +170,9 @@ Citizen.CreateThread(function()
                 local dist = #(pPos - exit)
                 if dist < 15.0 then
                     wait = 0
-                    DrawMarker(27, exit.x, exit.y, exit.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 231, 76, 60, 100, false, false, 2, false, nil, nil, false)
-                    
+                    DrawMarker(27, exit.x, exit.y, exit.z - 0.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 231, 76,
+                        60, 100, false, false, 2, false, nil, nil, false)
+
                     if dist < 1.5 then
                         ShowHelpNotification("Appuyez sur ~INPUT_CONTEXT~ pour sortir du ~r~laboratoire~s~.")
                         if IsControlJustReleased(0, 38) then
@@ -175,7 +182,7 @@ Citizen.CreateThread(function()
                 end
             end
         end
-        
+
         Citizen.Wait(wait)
     end
 end)
@@ -191,5 +198,14 @@ AddEventHandler("sxIllegals:SyncLabsTable", function(tableData)
         Labs.Labos[i].instance = math.random(100, 200)
         Labs.Labos[i].interact_temp = {}
         Labs.Labos[i].enter = nil
+    end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        if Labs.IsInLab then
+            NetworkOverrideClockTime(23, 0, 0)
+        end
+        Citizen.Wait(1000)
     end
 end)

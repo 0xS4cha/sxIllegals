@@ -395,6 +395,16 @@ MySQL.ready(function()
         MySQL.Sync.execute("ALTER TABLE `labs` MODIFY `id` VARCHAR(50) NOT NULL")
     end
 
+    -- Ensure statistics logs table exists
+    MySQL.Sync.execute([[
+        CREATE TABLE IF NOT EXISTS `statistics_logs` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            `type` VARCHAR(50) NOT NULL,
+            `amount` INT NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ]])
+
     MySQL.query("ALTER TABLE `group_list` ADD COLUMN IF NOT EXISTS `slots` INT DEFAULT NULL", {}, function()
         Wait(1000)
         LoadGroup()

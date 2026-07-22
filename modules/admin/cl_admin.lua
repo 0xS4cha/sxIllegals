@@ -11,8 +11,9 @@ function SX.Admin:Initialize()
         cb(territories or {})
     end)
 
-    RegisterNUICallback('getAdminStats', function(_, cb)
-        local stats = TriggerServerCallback('sxAdmin:getStats')
+    RegisterNUICallback('getAdminStats', function(data, cb)
+        local timeframe = data and data.timeframe or '24h'
+        local stats = TriggerServerCallback('sxAdmin:getStats', timeframe)
         cb(stats or {})
     end)
 

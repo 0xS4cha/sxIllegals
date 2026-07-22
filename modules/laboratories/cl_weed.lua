@@ -1,3 +1,5 @@
+local os = { time = function() return GetCloudTimeAsInt() end }
+
 Labs.Weed = Labs.Weed or {}
 Labs.Weed.Thread = false
 Labs.Weed.IsConfig = false

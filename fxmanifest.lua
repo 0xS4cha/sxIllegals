@@ -41,5 +41,5 @@ ui_page 'web/dist/index.html'
 files {
     'core/MINIMAP_LOADER.gfx',
     'web/dist/index.html',
-    'web/dist/**/*',
+    'web/dist/**/*'
 }

@@ -1,3 +1,5 @@
+local os = { time = function() return GetCloudTimeAsInt() end }
+
 Labs = Labs or {}
 Labs.Coke = Labs.Coke or {}
 

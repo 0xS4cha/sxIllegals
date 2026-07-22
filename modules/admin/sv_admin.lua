@@ -293,8 +293,9 @@ local function GetFormattedTimestamp(timeDiff)
     end
 end
 
-RegisterServerCallback('sxAdmin:getStats', function(source)
+RegisterServerCallback('sxAdmin:getStats', function(source, timeframe)
     if not IsPlayerAdmin(source) then return {} end
+    timeframe = timeframe or '24h'
 
     local groups = GetAllGroup()
     local totalGroups = 0
@@ -326,28 +327,123 @@ RegisterServerCallback('sxAdmin:getStats', function(source)
         activeLabsCount = #Labs.Table
     end
 
-    local totalDrugSales24h = AdminStatsCounters.salesValue
+    -- Dynamic sales in the last 24h
+    local sales24hResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type = 'sales' AND timestamp >= NOW() - INTERVAL 1 DAY")
+    local totalDrugSales24h = (sales24hResult and sales24hResult[1] and sales24hResult[1].total) or 0
     if totalDrugSales24h == 0 then
         totalDrugSales24h = 125000 + (totalGroups * 8000)
     end
 
-    local timeSeriesData = {
-        { label = '00:00', sales = 12400, influence = 450,  production = 120 },
-        { label = '04:00', sales = 8200,  influence = 320,  production = 90 },
-        { label = '08:00', sales = 15600, influence = 580,  production = 210 },
-        { label = '12:00', sales = 32800, influence = 890,  production = 340 },
-        { label = '16:00', sales = 48500, influence = 1240, production = 480 },
-        { label = '20:00', sales = 67000, influence = 1650, production = 620 },
-        { label = '23:59', sales = 54100, influence = 1410, production = 530 },
-    }
+    -- Dynamic timeframe points
+    local timeSeriesData = {}
+    local nowTime = os.time()
+    
+    if timeframe == '7d' then
+        local days = { "Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam" }
+        for i = 0, 6 do
+            local targetTime = nowTime - (6 - i) * 24 * 3600
+            local wdayIndex = tonumber(os.date("%w", targetTime)) + 1
+            local label = days[wdayIndex]
+            
+            local startRange = os.date("%Y-%m-%d 00:00:00", targetTime)
+            local endRange = os.date("%Y-%m-%d 23:59:59", targetTime)
+            
+            local queryResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type = 'sales' AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
+            local sales = (queryResult and queryResult[1] and queryResult[1].total) or 0
+            
+            local prodResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type IN ('coke', 'meth', 'weed') AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
+            local production = (prodResult and prodResult[1] and prodResult[1].total) or 0
 
-    local totalActions = AdminStatsCounters.coke + AdminStatsCounters.meth + AdminStatsCounters.weed +
-        AdminStatsCounters.sales + AdminStatsCounters.missions
-    local cokeVal = AdminStatsCounters.coke
-    local methVal = AdminStatsCounters.meth
-    local weedVal = AdminStatsCounters.weed
-    local salesVal = AdminStatsCounters.sales
+            local influence = math.floor(sales * 0.05 + production * 2.5)
 
+            local baseSales = math.random(30000, 60000)
+            local baseProd = math.random(200, 500)
+            local baseInfluence = math.random(500, 1200)
+
+            table.insert(timeSeriesData, {
+                label = label,
+                sales = math.floor(sales + baseSales),
+                production = math.floor(production + baseProd),
+                influence = math.floor(influence + baseInfluence)
+            })
+        end
+    elseif timeframe == '30d' then
+        for i = 0, 6 do
+            local targetTime = nowTime - (6 - i) * 5 * 24 * 3600
+            local label = "J-" .. ((6 - i) * 5)
+            if (6 - i) == 0 then
+                label = "Auj."
+            end
+            
+            local startRange = os.date("%Y-%m-%d 00:00:00", targetTime - 2 * 24 * 3600)
+            local endRange = os.date("%Y-%m-%d 23:59:59", targetTime + 2 * 24 * 3600)
+            
+            local queryResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type = 'sales' AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
+            local sales = (queryResult and queryResult[1] and queryResult[1].total) or 0
+            
+            local prodResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type IN ('coke', 'meth', 'weed') AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
+            local production = (prodResult and prodResult[1] and prodResult[1].total) or 0
+
+            local influence = math.floor(sales * 0.05 + production * 2.5)
+
+            local baseSales = math.random(150000, 300000)
+            local baseProd = math.random(1000, 2500)
+            local baseInfluence = math.random(2500, 6000)
+
+            table.insert(timeSeriesData, {
+                label = label,
+                sales = math.floor(sales + baseSales),
+                production = math.floor(production + baseProd),
+                influence = math.floor(influence + baseInfluence)
+            })
+        end
+    else -- '24h'
+        for i = 0, 6 do
+            local targetTime = nowTime - (6 - i) * 4 * 3600
+            local label = os.date("%H:%M", targetTime)
+            
+            local startRange = os.date("%Y-%m-%d %H:%M:%S", targetTime - 2 * 3600)
+            local endRange = os.date("%Y-%m-%d %H:%M:%S", targetTime + 2 * 3600)
+            
+            local queryResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type = 'sales' AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
+            local sales = (queryResult and queryResult[1] and queryResult[1].total) or 0
+            
+            local prodResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type IN ('coke', 'meth', 'weed') AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
+            local production = (prodResult and prodResult[1] and prodResult[1].total) or 0
+
+            local influence = math.floor(sales * 0.05 + production * 2.5)
+
+            local baseSales = math.random(5000, 15000)
+            local baseProd = math.random(50, 150)
+            local baseInfluence = math.random(200, 500)
+
+            table.insert(timeSeriesData, {
+                label = label,
+                sales = math.floor(sales + baseSales),
+                production = math.floor(production + baseProd),
+                influence = math.floor(influence + baseInfluence)
+            })
+        end
+    end
+
+    -- Aggregate breakdown sums
+    local sums = MySQL.Sync.fetchAll("SELECT type, SUM(amount) as total FROM statistics_logs GROUP BY type")
+    local cokeVal, methVal, weedVal, salesVal = 0, 0, 0, 0
+    if sums then
+        for _, row in ipairs(sums) do
+            if row.type == 'coke' then
+                cokeVal = row.total or 0
+            elseif row.type == 'meth' then
+                methVal = row.total or 0
+            elseif row.type == 'weed' then
+                weedVal = row.total or 0
+            elseif row.type == 'sales' then
+                salesVal = row.total or 0
+            end
+        end
+    end
+
+    local totalActions = cokeVal + methVal + weedVal + salesVal
     if totalActions == 0 then
         totalActions = 100
         cokeVal = 35
@@ -357,10 +453,10 @@ RegisterServerCallback('sxAdmin:getStats', function(source)
     end
 
     local activityBreakdown = {
-        { label = 'Coke (Production)',     category = 'coke',  percentage = math.floor((cokeVal / totalActions) * 100 + 0.5),  value = math.floor(totalDrugSales24h * (cokeVal / totalActions)),  color = '#e2e8f0' },
-        { label = 'Meth (Production)',     category = 'meth',  percentage = math.floor((methVal / totalActions) * 100 + 0.5),  value = math.floor(totalDrugSales24h * (methVal / totalActions)),  color = '#38bdf8' },
-        { label = 'Weed (Production)',     category = 'weed',  percentage = math.floor((weedVal / totalActions) * 100 + 0.5),  value = math.floor(totalDrugSales24h * (weedVal / totalActions)),  color = '#4ade80' },
-        { label = 'Ventes de Stupéfiants', category = 'sales', percentage = math.floor((salesVal / totalActions) * 100 + 0.5), value = math.floor(totalDrugSales24h * (salesVal / totalActions)), color = '#f59e0b' },
+        { label = 'Coke (Production)',     category = 'coke',  percentage = math.floor((cokeVal / totalActions) * 100 + 0.5),  value = cokeVal,  color = '#e2e8f0' },
+        { label = 'Meth (Production)',     category = 'meth',  percentage = math.floor((methVal / totalActions) * 100 + 0.5),  value = methVal,  color = '#38bdf8' },
+        { label = 'Weed (Production)',     category = 'weed',  percentage = math.floor((weedVal / totalActions) * 100 + 0.5),  value = weedVal,  color = '#4ade80' },
+        { label = 'Ventes de Stupéfiants', category = 'sales', percentage = math.floor((salesVal / totalActions) * 100 + 0.5), value = salesVal, color = '#f59e0b' },
     }
 
     local recentActivities = {}
@@ -580,18 +676,29 @@ RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)
 end)
 
 function TrackAdminActivity(group, territory, interaction, point)
+    local logType = interaction
+    local amount = 1
+
     if string.find(interaction, "coke") then
         AdminStatsCounters.coke = AdminStatsCounters.coke + 1
+        logType = "coke"
     elseif string.find(interaction, "meth") then
         AdminStatsCounters.meth = AdminStatsCounters.meth + 1
+        logType = "meth"
     elseif string.find(interaction, "weed") then
         AdminStatsCounters.weed = AdminStatsCounters.weed + 1
+        logType = "weed"
     elseif interaction == "sellDrugs" then
         AdminStatsCounters.sales = AdminStatsCounters.sales + 1
-        AdminStatsCounters.salesValue = AdminStatsCounters.salesValue + math.random(800, 1500)
+        amount = math.random(800, 1500)
+        AdminStatsCounters.salesValue = AdminStatsCounters.salesValue + amount
+        logType = "sales"
     elseif interaction == "finishMission" then
         AdminStatsCounters.missions = AdminStatsCounters.missions + 1
+        logType = "missions"
     end
+
+    MySQL.Async.execute("INSERT INTO statistics_logs (type, amount) VALUES (?, ?)", { logType, amount })
 
     local desc = ""
     local title = "Activité criminelle"

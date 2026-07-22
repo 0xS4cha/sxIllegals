@@ -31,6 +31,8 @@ export function AdminPanel() {
     territories,
     labs,
     stats,
+    timeFrame,
+    setTimeFrame,
     loading,
     selectedGroup,
     setSelectedGroup,
@@ -159,7 +161,11 @@ export function AdminPanel() {
               )}
 
               {activeCategory === 'statistics' && (
-                <StatisticsView stats={stats} />
+                <StatisticsView
+                  stats={stats}
+                  timeFrame={timeFrame}
+                  onTimeFrameChange={setTimeFrame}
+                />
               )}
 
               {activeCategory === 'laboratories' && (
