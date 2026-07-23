@@ -93,7 +93,6 @@ export function AdminPanel() {
         onToggleCollapse={() => setCollapsedSidebar((prev) => !prev)}
       />
 
-
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-zinc-950/60 px-6 backdrop-blur-md">
           <div className="flex items-center gap-3">

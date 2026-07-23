@@ -15,15 +15,23 @@ interface LaboratoriesViewProps {
   onOpenCreateModal: () => void
 }
 
+type LaboratoryFilter = 'all' | 'weed' | 'coke' | 'meth'
+
 export function LaboratoriesView({ labs, onOpenCreateModal }: LaboratoriesViewProps) {
   const [search, setSearch] = useState('')
+  const [filterState, setFilterState] = useState<LaboratoryFilter>('all')
 
-  const filteredLabs = labs.filter(
-    (l) =>
-      l.label.toLowerCase().includes(search.toLowerCase()) ||
+  const filteredLabs = labs.filter((l) => {
+      const matchesSearch = l.label.toLowerCase().includes(search.toLowerCase()) ||
       l.territoryName.toLowerCase().includes(search.toLowerCase()) ||
       l.type.toLowerCase().includes(search.toLowerCase())
-  )
+    if (!matchesSearch) return false
+
+    if (filterState === 'coke') return l.type === "coke"
+    if (filterState === 'weed') return l.type === "weed"
+    if (filterState === 'meth') return l.type === "meth"
+    return true
+  })
 
   const getLabIcon = (type: 'coke' | 'meth' | 'weed') => {
     switch (type) {
@@ -71,7 +79,52 @@ export function LaboratoriesView({ labs, onOpenCreateModal }: LaboratoriesViewPr
             className="w-full rounded-lg border border-zinc-800 bg-zinc-900/60 py-2.5 pl-10 pr-4 text-xs text-zinc-200 placeholder-zinc-500 transition focus:border-zinc-700 focus:outline-none focus:ring-0"
           />
         </div>
-
+          <div className="flex rounded-lg border border-zinc-800 bg-zinc-950/80 p-1">
+            <button
+              type="button"
+              onClick={() => setFilterState('all')}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                filterState === 'all'
+                  ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Tous ({labs.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterState('coke')}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                filterState === 'coke'
+                  ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Coke ({labs.filter((t) => t.type === 'coke').length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterState('weed')}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                filterState === 'weed'
+                  ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Weed ({labs.filter((t) => t.type === 'weed').length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterState('meth')}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                filterState === 'meth'
+                  ? 'bg-zinc-800 text-zinc-100 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Weed ({labs.filter((t) => t.type === 'meth').length})
+            </button>
+          </div>
         <button
           type="button"
           onClick={onOpenCreateModal}
