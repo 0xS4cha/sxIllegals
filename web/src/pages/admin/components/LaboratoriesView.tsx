@@ -3,7 +3,7 @@ import {
   Activity,
   FlaskConical,
   Leaf,
-  MapPin,
+  FlaskRound,
   Package,
   Plus,
   Search,
@@ -157,7 +157,7 @@ export function LaboratoriesView({ labs, onOpenCreateModal }: LaboratoriesViewPr
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-zinc-300" />
+                    <FlaskRound className="h-4 w-4 text-zinc-300" />
                     <h4 className="text-base font-bold text-zinc-100">{lab.label}</h4>
                     <span className="text-xs font-mono text-zinc-500">#{lab.id}</span>
                   </div>
@@ -182,7 +182,7 @@ export function LaboratoriesView({ labs, onOpenCreateModal }: LaboratoriesViewPr
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="text-zinc-500">Territoire</span>
                   <div className="flex items-center gap-1 text-zinc-300">
-                    <MapPin className="h-3 w-3 text-zinc-500" />
+                    <FlaskRound className="h-3 w-3 text-zinc-500" />
                     <span>{lab.territoryName}</span>
                   </div>
                 </div>
