@@ -1,7 +1,9 @@
 local Group = {}
 
-SX.Group.Initialize = function(self)
+function SX.Group:Initialize()
+    if self.initialized then return end
+    self.initialized = true
 end
 
-SX.Group.Think = function(self, lp)
+function SX.Group:Think(lp)
 end

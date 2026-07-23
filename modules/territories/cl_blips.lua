@@ -1,6 +1,5 @@
 local BLIP_INFO_DATA = {}
 
-
 function EnsureBlipInfoTerritory(zone)
     if not BLIP_INFO_DATA[zone] then BLIP_INFO_DATA[zone] = {} end
     if not BLIP_INFO_DATA[zone].title then BLIP_INFO_DATA[zone].title = "" end

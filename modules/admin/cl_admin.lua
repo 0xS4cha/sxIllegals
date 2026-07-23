@@ -94,5 +94,3 @@ end
 
 function SX.Admin:Think(lp)
 end
-
-SX.Admin:Initialize()

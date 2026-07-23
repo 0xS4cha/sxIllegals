@@ -20,6 +20,7 @@ interface AdminSidebarProps {
   onSelectCategory: (category: AdminCategory) => void
   groupsCount: number
   territoriesCount: number
+  laboratoriesCount: number
   contestedCount: number
   collapsed: boolean
   onToggleCollapse: () => void
@@ -38,6 +39,7 @@ export function AdminSidebar({
   onSelectCategory,
   groupsCount,
   territoriesCount,
+  laboratoriesCount,
   contestedCount,
   collapsed,
   onToggleCollapse,
@@ -71,6 +73,8 @@ export function AdminSidebar({
       id: 'laboratories',
       label: t('admin_sidebar_laboratories'),
       icon: FlaskConical,
+      badge: laboratoriesCount,
+      badgeColor: 'bg-zinc-800 text-zinc-300 border border-zinc-700',
     },
     {
       id: 'statistics',

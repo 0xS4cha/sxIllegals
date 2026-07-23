@@ -87,6 +87,7 @@ export function AdminPanel() {
         onSelectCategory={setActiveCategory}
         groupsCount={groups.length}
         territoriesCount={territories.length}
+        laboratoriesCount={labs.length}
         contestedCount={contestedCount}
         collapsed={collapsedSidebar}
         onToggleCollapse={() => setCollapsedSidebar((prev) => !prev)}
