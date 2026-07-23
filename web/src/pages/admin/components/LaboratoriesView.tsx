@@ -28,11 +28,11 @@ export function LaboratoriesView({ labs, onOpenCreateModal }: LaboratoriesViewPr
   const getLabIcon = (type: 'coke' | 'meth' | 'weed') => {
     switch (type) {
       case 'coke':
-        return <Package className="h-5 w-5 text-sky-400 animate-pulse" />
+        return <Package className="h-3 w-3 text-sky-400 animate-pulse" />
       case 'meth':
-        return <FlaskConical className="h-5 w-5 text-purple-400" />
+        return <FlaskConical className="h-3 w-3 text-purple-400" />
       case 'weed':
-        return <Leaf className="h-5 w-5 text-emerald-400" />
+        return <Leaf className="h-3 w-3 text-emerald-400" />
     }
   }
 
@@ -91,46 +91,37 @@ export function LaboratoriesView({ labs, onOpenCreateModal }: LaboratoriesViewPr
           </p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
           {filteredLabs.map((lab) => (
             <div
               key={lab.id}
               className="group relative overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60 shadow-lg"
             >
               <div
-                className={`absolute inset-x-0 top-0 h-[2px] transition-all duration-300 ${lab.type === 'coke'
-                  ? 'bg-sky-500/40'
-                  : lab.type === 'meth'
-                    ? 'bg-purple-500/40'
-                    : 'bg-emerald-500/40'
-                  }`}
+                className={`absolute inset-x-0 top-0 h-[2px] transition-all duration-300`}
               />
 
               <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-lg border ${getLabBadgeColor(
-                      lab.type
-                    )}`}
-                  >
-                    {getLabIcon(lab.type)}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-zinc-300" />
+                    <h4 className="text-base font-bold text-zinc-100">{lab.label}</h4>
+                    <span className="text-xs font-mono text-zinc-500">#{lab.id}</span>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-zinc-100 group-hover:text-white transition">
-                      {lab.label}
-                    </h4>
-                    <span className="text-[10px] font-semibold text-zinc-500">
-                      Niveau {lab.level}
+                  <p className="mt-1 text-xs text-zinc-400">
+                    Niveau:{' '}
+                    <span className="font-semibold text-zinc-200">
+                      {lab.level}
                     </span>
-                  </div>
+                  </p>
                 </div>
-
                 <span
-                  className={`rounded-full border px-2.5 py-0.5 text-[9px] font-bold tracking-wider uppercase ${getLabBadgeColor(
+                  className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[9px] font-bold tracking-wider uppercase ${getLabBadgeColor(
                     lab.type
                   )}`}
                 >
-                  {getLabTypeText(lab.type)}
+                  {getLabIcon(lab.type)}
+                  <span>{getLabTypeText(lab.type)}</span>
                 </span>
               </div>
 

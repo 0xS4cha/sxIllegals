@@ -125,19 +125,26 @@ export function GroupsView({
               }`}
           >
             <div>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
                   <div
                     className="h-4 w-4 rounded-full border border-white/20 shadow-md"
                     style={{
                       backgroundColor: `rgb(${group.rgb.r}, ${group.rgb.g}, ${group.rgb.b})`,
                     }}
                   />
-                  <div>
-                    <h4 className="text-base font-semibold text-zinc-100">{group.name}</h4>
-                    <p className="text-xs text-zinc-400">{group.devise || 'Sans devise'}</p>
+                    <h4 className="text-base font-bold text-zinc-100">{group.name}</h4>
+                    <span className="text-xs font-mono text-zinc-500">#{group.id}</span>
                   </div>
+                  <p className="mt-1 text-xs text-zinc-400">
+                    Devise:{' '}
+                    <span className="font-semibold text-zinc-200">
+                      {group.devise || 'Sans devise'}
+                    </span>
+                  </p>
                 </div>
+
 
                 <button
                   type="button"
