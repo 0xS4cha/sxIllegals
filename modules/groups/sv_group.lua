@@ -131,6 +131,7 @@ function group:renameRank(rankId, newName)
     for i = 1, #self.ranks do
         local rank = self.ranks[i]
         if rank.rank == rankId then
+            self:setNeedSave(true)
             self.ranks[i].name = newName
             return true
         end
@@ -186,7 +187,7 @@ function group:kickPlayer(identifier)
                 })
             if result then
                 self:setNeedSave(true)
-                self.members[i] = nil
+                table.remove(self.members, i)
                 return true
             end
             return false
@@ -276,6 +277,7 @@ function group:recruitPlayer(identifier, rank)
                 self.id
             })
         self.members[#self.members + 1] = {
+            id = id,
             identifier = identifier,
             label = pName.Name,
             id_grade = pName.rank,
@@ -289,6 +291,8 @@ function group:recruitPlayer(identifier, rank)
 end
 
 function group:saveGroup()
+    self:setNeedSave(false)
+
     MySQL.Async.execute([[
         UPDATE group_list
         SET name = ?, devise = ?, rgb = ?, is_official = ?, slots = ?
@@ -338,6 +342,14 @@ function group:saveGroup()
         query = query .. " ON DUPLICATE KEY UPDATE label = VALUES(label), id_grade = VALUES(id_grade);"
 
         MySQL.Async.execute(query, params)
+    end
+end
+
+local function SaveGroups()
+    for _, data in pairs(GetAllGroup()) do
+        if data:getNeedSave() then
+            data:saveGroup()
+        end
     end
 end
 
@@ -409,18 +421,20 @@ MySQL.ready(function()
         Wait(1000)
         LoadGroup()
         groupLoaded = true
+
+        CreateThread(function()
+            while true do
+                Wait(_GROUP.SaveInterval * 60 * 1000)
+                SaveGroups()
+            end
+        end)
     end)
 end)
 
 AddEventHandler("onResourceStop", function(resource)
     if resource == GetCurrentResourceName() then
         Logger:info('SAVE', "Resource stopping, saving groups.")
-        local groupLists = GetAllGroup()
-        for k, v in pairs(groupLists) do
-            if v:getNeedSave() then
-                v:saveGroup()
-            end
-        end
+        SaveGroups()
     end
 end)
 

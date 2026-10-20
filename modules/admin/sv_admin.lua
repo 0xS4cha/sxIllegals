@@ -572,13 +572,14 @@ RegisterNetEvent('sxAdmin:createGroup', function(data)
         }
         local ranks = {}
         for _, gradeData in ipairs(defaultGrades) do
-            MySQL.Sync.insert("INSERT INTO group_grades (name, rank, perms, groupId) VALUES (?, ?, ?, ?)", {
+            local gradeId = MySQL.Sync.insert("INSERT INTO group_grades (name, rank, perms, groupId) VALUES (?, ?, ?, ?)", {
                 gradeData.name,
                 gradeData.rank,
                 json.encode({}),
                 id
             })
             table.insert(ranks, {
+                id = gradeId,
                 name = gradeData.name,
                 rank = gradeData.rank,
                 perms = {}

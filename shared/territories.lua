@@ -1,4 +1,5 @@
 _TERRITORY = _TERRITORY or {}
+_TERRITORY.SaveInterval = 5
 _TERRITORY.InfluencePoint = {
     ['sellDrugs'] = 10,
     ['finishMission'] = 15,

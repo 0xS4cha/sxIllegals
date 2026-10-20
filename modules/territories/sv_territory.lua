@@ -177,7 +177,6 @@ function territory:saveTerritories()
     end
 
     if self.coordsChanged then
-        print('here')
         table.insert(updates, "coords = ?")
         table.insert(params, json.encode(self.coords))
     end
@@ -187,12 +186,18 @@ function territory:saveTerritories()
         table.insert(params, self.start)
     end
 
+    self:setNeedSave(false)
+    self.influenceChanged = false
+    self.labelChanged = false
+    self.maxZChanged = false
+    self.minZChanged = false
+    self.coordsChanged = false
+    self.startChanged = false
+
     if #updates > 0 then
         table.insert(params, self.id)
         local query = ("UPDATE territories SET %s WHERE id = ?"):format(table.concat(updates, ", "))
-        MySQL.Async.execute(query, params, function(affectedRows)
-            self:setNeedSave(false)
-        end)
+        MySQL.Async.execute(query, params)
     end
 end
 
@@ -286,19 +291,29 @@ local function LoadTerritories()
     Logger:info('LOAD', "All territories have been loaded.")
 end
 
+local function SaveTerritories()
+    for _, data in pairs(GetAllTerritories()) do
+        if data:getNeedSave() then
+            data:saveTerritories()
+        end
+    end
+end
+
 MySQL.ready(function()
     LoadTerritories()
+
+    CreateThread(function()
+        while true do
+            Wait(_TERRITORY.SaveInterval * 60 * 1000)
+            SaveTerritories()
+        end
+    end)
 end)
 
 AddEventHandler("onResourceStop", function(resource)
     if resource == GetCurrentResourceName() then
         Logger:info('SAVE', "Resource stopping, saving territories.")
-        local territoriesList = GetAllTerritories()
-        for k, v in pairs(territoriesList) do
-            if v:getNeedSave() then
-                v:saveTerritories()
-            end
-        end
+        SaveTerritories()
     end
 end)
 
