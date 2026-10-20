@@ -139,7 +139,7 @@ function Labs:StartMeth()
                             else
                                 Labs.Meth.working = true
                                 Labs:PlayLabosAnimation(spot, "anim@amb@business@meth@meth_monitoring_cooking@monitoring@", "button_press_monitor", 3000)
-                                TriggerServerEvent("core:labs:startSynthesis", Labs.LabosIndex.id, i, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                TriggerServerEvent("core:labs:startSynthesis", Labs.LabosIndex.id, i, os.time())
                                 Labs.Meth.working = false
                             end
                         end
@@ -166,7 +166,7 @@ function Labs:StartMeth()
                                     Labs.Meth.working = true
                                     TriggerServerEvent("core:labs:sendToReduction", Labs.LabosIndex.id, i)
                                     Labs:PlayLabosAnimation(spot, "anim@amb@business@meth@meth_monitoring_cooking@monitoring@", "button_press_monitor", 3000)
-                                    TriggerServerEvent("core:labs:startReduction", Labs.LabosIndex.id, i, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                    TriggerServerEvent("core:labs:startReduction", Labs.LabosIndex.id, i, os.time())
                                     Labs.Meth.working = false
                                 end
                             end
@@ -205,7 +205,7 @@ function Labs:StartMeth()
                         ShowHelpNotification(GetPhrase('meth_take_plates', platesCount))
                         if IsControlJustReleased(0, 38) then
                             if not Labs.Meth.circuits[i].reduction.working then
-                                local done = TriggerServerCallback("core:labs:TakePlateMeth", Labs.LabosIndex.id, i, GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                local done = TriggerServerCallback("core:labs:TakePlateMeth", Labs.LabosIndex.id, i)
                                 if done then
                                     if Labs.Meth.working then
                                         ShowNotification(GetPhrase('action_in_progress'))
@@ -293,7 +293,7 @@ function Labs:StartMeth()
                                 Citizen.Wait(500)
                                 Labs:PlayAnimation(pPed, "anim@amb@business@coc@coc_unpack_cut@", "fullcut_cycle_cokepacker", 3000)
                                 Citizen.Wait(3000)
-                                TriggerServerEvent("core:labs:GetEmpocheMeth", GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                TriggerServerEvent("core:labs:GetEmpocheMeth")
                                 Labs.Meth.working = false
                             end
                         end

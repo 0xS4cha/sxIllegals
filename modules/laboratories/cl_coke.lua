@@ -65,7 +65,7 @@ function Labs.Coke:ActionOnCoke(key)
     if not t or not t.kerosene or t.kerosene.start == 0 then
         local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['coke'].spots[key].x, _LABS.Shell['coke'].spots[key].y, _LABS.Shell['coke'].spots[key].z)
         Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000)
-        TriggerServerEvent("core:labs:CheckKerozen", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+        TriggerServerEvent("core:labs:CheckKerozen", Labs.LabosIndex.id, key, os.time())
         Labs.Coke.working = false
         return
     end
@@ -73,7 +73,7 @@ function Labs.Coke:ActionOnCoke(key)
     if not t.coca or t.coca.start == 0 then
         local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['coke'].spots[key].x, _LABS.Shell['coke'].spots[key].y, _LABS.Shell['coke'].spots[key].z)
         Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000)
-        TriggerServerEvent("core:labs:CheckCoca", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+        TriggerServerEvent("core:labs:CheckCoca", Labs.LabosIndex.id, key, os.time())
         Labs.Coke.working = false
         return
     end
@@ -81,7 +81,7 @@ function Labs.Coke:ActionOnCoke(key)
     if not t.whitewash or t.whitewash.start == 0 then
         local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['coke'].spots[key].x, _LABS.Shell['coke'].spots[key].y, _LABS.Shell['coke'].spots[key].z)
         Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000, 3000, GetPhrase('coke_add_whitewash_success'))
-        TriggerServerEvent("core:labs:CheckWhitewash", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+        TriggerServerEvent("core:labs:CheckWhitewash", Labs.LabosIndex.id, key, os.time())
         Labs.Coke.working = false
         return
     end
@@ -89,7 +89,7 @@ function Labs.Coke:ActionOnCoke(key)
         return 
     end
     TaskTurnPedToFaceCoord(ped, pos.x, pos.y, pos.z, 500)
-    TriggerServerEvent("core:labs:takeCokeTray", Labs.LabosIndex.id, key, GetTerritoryFromCoords(Labs.LabosIndex.coords))
+    TriggerServerEvent("core:labs:takeCokeTray", Labs.LabosIndex.id, key)
     Citizen.Wait(500)
     ShowNotification(GetPhrase('coke_take_tray_success'))
     if not Labs.Coke.hasTray then
@@ -194,7 +194,7 @@ function Labs:StartCoke()
                                 Citizen.Wait(3000)
                                 ShowNotification(GetPhrase('coke_pocket_success', _LABS.Coke.CountCocaine))
                                 Labs.Coke.working = false
-                                TriggerServerEvent("core:labs:GetEmpocheCoke", GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                TriggerServerEvent("core:labs:GetEmpocheCoke")
                             end
                         end
                     end

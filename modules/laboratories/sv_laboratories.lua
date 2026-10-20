@@ -21,7 +21,7 @@ AddEventHandler("core:labs:UpdateProps", function(entity, labo, weed)
 end)
 
 RegisterServerEvent("core:labs:CheckPlant")
-AddEventHandler("core:labs:CheckPlant", function(labo, weed, territory)
+AddEventHandler("core:labs:CheckPlant", function(labo, weed)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemGraine)
@@ -30,9 +30,7 @@ AddEventHandler("core:labs:CheckPlant", function(labo, weed, territory)
         Labs.WeedsServer[labo][weed].planted = true
         TriggerClientEvent("core:labs:PlantWeed", -1, labo, weed)
         xPlayer.removeInventoryItem(_LABS.Weed.ItemGraine, _LABS.Weed.CountRequiredGraine)
-        if territory then
-            AddInfluence(source, territory, 'weedPlant')
-        end
+        AddLabInfluence(source, 'weedPlant')
         Notify(source, GetPhrase('weed_plant_success'))
     else
         local label = GetItemLabel(_LABS.Weed.ItemGraine)
@@ -41,7 +39,7 @@ AddEventHandler("core:labs:CheckPlant", function(labo, weed, territory)
 end)
 
 RegisterServerEvent("core:labs:CheckFertilize")
-AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territory)
+AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFerti)
@@ -51,9 +49,7 @@ AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territor
         Labs.WeedsServer[labo][weed].fertilized = true
         TriggerClientEvent("core:labs:FertilizeWeed", -1, labo, weed)
         xPlayer.removeInventoryItem(_LABS.Weed.ItemFerti, _LABS.Weed.CountRequiredFerti)
-        if territory then
-            AddInfluence(source, territory, 'weedFertilize')
-        end
+        AddLabInfluence(source, 'weedFertilize')
         Notify(source, GetPhrase('weed_fertilize_success'))
         if weed == 1 then
             for k, v in pairs(Labs.Table) do
@@ -69,7 +65,7 @@ AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territor
 end)
 
 RegisterServerEvent("core:labs:WeedToJoint")
-AddEventHandler("core:labs:WeedToJoint", function(territory)
+AddEventHandler("core:labs:WeedToJoint", function()
     local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFeuille)
@@ -77,9 +73,7 @@ AddEventHandler("core:labs:WeedToJoint", function(territory)
     if Required.count >= _LABS.Weed.CountRequiredJoint then
         xPlayer.removeInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountRequiredJoint)
         xPlayer.addInventoryItem(_LABS.Weed.ItemJoint, _LABS.Weed.CountJoint)
-        if territory then
-            AddInfluence(source, territory, 'weedJoint')
-        end
+        AddLabInfluence(source, 'weedJoint')
         Notify(source, GetPhrase('weed_joint_success', _LABS.Weed.CountJoint))
     else
         local label = GetItemLabel(_LABS.Weed.ItemFeuille)
@@ -88,7 +82,7 @@ AddEventHandler("core:labs:WeedToJoint", function(territory)
 end)
 
 RegisterServerEvent("core:labs:WeedToPack")
-AddEventHandler("core:labs:WeedToPack", function(territory)
+AddEventHandler("core:labs:WeedToPack", function()
     local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFeuille)
@@ -99,9 +93,7 @@ AddEventHandler("core:labs:WeedToPack", function(territory)
             xPlayer.removeInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountRequiredPack)
             xPlayer.removeInventoryItem(_LABS.Weed.ItemBags, _LABS.Weed.CountRequiredBags)
             xPlayer.addInventoryItem(_LABS.Weed.ItemWeed, _LABS.Weed.CountWeed)
-            if territory then
-                AddInfluence(source, territory, 'weedEmpoche')
-            end
+            AddLabInfluence(source, 'weedEmpoche')
             Notify(source, GetPhrase('weed_pack_success', _LABS.Weed.CountWeed))
         else
             local label = GetItemLabel(_LABS.Weed.ItemBags)
@@ -114,14 +106,12 @@ AddEventHandler("core:labs:WeedToPack", function(territory)
 end)
 
 RegisterServerEvent("core:labs:CheckGet")
-AddEventHandler("core:labs:CheckGet", function(labo, weed, territory)
+AddEventHandler("core:labs:CheckGet", function(labo, weed)
     local xPlayer = ESX.GetPlayerFromId(source)
     if Labs.WeedsServer[labo][weed].state == 7 then
         Labs.WeedsServer[labo][weed] = { planted = false, fertilized = false, pickable = false, state = 0, previousState = -1, start = nil }
         TriggerClientEvent("core:labs:GetWeed", -1, labo, weed)
-        if territory then
-            AddInfluence(source, territory, 'weedCut')
-        end
+        AddLabInfluence(source, 'weedCut')
         xPlayer.addInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountFeuille)
         Notify(source, GetPhrase('weed_harvest_success', _LABS.Weed.CountFeuille))
     end
@@ -129,7 +119,7 @@ end)
 
 
 RegisterServerEvent("core:labs:CheckKerozen")
-AddEventHandler("core:labs:CheckKerozen", function(labo, tray, timer, territory)
+AddEventHandler("core:labs:CheckKerozen", function(labo, tray, timer)
     local xPlayer = ESX.GetPlayerFromId(source)
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemKerozen)
     if Required.count >= _LABS.Coke.CountRequiredKerozen then
@@ -137,9 +127,7 @@ AddEventHandler("core:labs:CheckKerozen", function(labo, tray, timer, territory)
         TriggerClientEvent("core:labs:addKerosene", -1, labo, tray, timer)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemKerozen, _LABS.Coke.CountRequiredKerozen)
         local label = GetItemLabel(_LABS.Coke.ItemKerozen)
-        if territory then
-            AddInfluence(source, territory, 'cokeKerozen')
-        end
+        AddLabInfluence(source, 'cokeKerozen')
         Notify(source, GetPhrase('item_added', label))
     else
         local label = GetItemLabel(_LABS.Coke.ItemKerozen)
@@ -148,7 +136,7 @@ AddEventHandler("core:labs:CheckKerozen", function(labo, tray, timer, territory)
 end)
 
 RegisterServerEvent("core:labs:CheckCoca")
-AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer, territory)
+AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemCoca)
@@ -158,9 +146,7 @@ AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer, territory)
         TriggerClientEvent("core:labs:addCoca", -1, labo, tray, timer)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemCoca, _LABS.Coke.CountRequiredCoca)
         local label = GetItemLabel(_LABS.Coke.ItemCoca)
-        if territory then
-            AddInfluence(source, territory, 'cokeFeuille')
-        end
+        AddLabInfluence(source, 'cokeFeuille')
         Notify(source, GetPhrase('item_added', label))
     else
         local label = GetItemLabel(_LABS.Coke.ItemCoca)
@@ -169,7 +155,7 @@ AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer, territory)
 end)
 
 RegisterServerEvent("core:labs:CheckWhitewash")
-AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer, territory)
+AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemWhitewash)
@@ -179,9 +165,7 @@ AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer, territor
         TriggerClientEvent("core:labs:addWhitewash", -1, labo, tray, timer)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemWhitewash, _LABS.Coke.CountRequiredWhitewash)
         local label = GetItemLabel(_LABS.Coke.ItemWhitewash)
-        if territory then
-            AddInfluence(source, territory, 'cokeWhiteWash')
-        end
+        AddLabInfluence(source, 'cokeWhiteWash')
         Notify(source, GetPhrase('item_added', label))
     else
         local label = GetItemLabel(_LABS.Coke.ItemWhitewash)
@@ -190,7 +174,7 @@ AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer, territor
 end)
 
 RegisterServerEvent("core:labs:takeCokeTray")
-AddEventHandler("core:labs:takeCokeTray", function(labo, tray, territory)
+AddEventHandler("core:labs:takeCokeTray", function(labo, tray)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     Labs.TraysServer[labo][tray].whitewash.start = 0
@@ -199,14 +183,12 @@ AddEventHandler("core:labs:takeCokeTray", function(labo, tray, territory)
 
     TriggerClientEvent("core:labs:takeCokeTray", -1, labo, tray)
     xPlayer.addInventoryItem(_LABS.Coke.ItemRecip, _LABS.Coke.CountRecip)
-    if territory then
-        AddInfluence(source, territory, 'cokeTray')
-    end
+    AddLabInfluence(source, 'cokeTray')
     Notify(source, GetPhrase('coke_tray_harvest_success', _LABS.Coke.CountRecip))
 end)
 
 RegisterServerEvent("core:labs:GetEmpocheCoke")
-AddEventHandler("core:labs:GetEmpocheCoke", function(territory)
+AddEventHandler("core:labs:GetEmpocheCoke", function()
     local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemRecip)
@@ -214,9 +196,7 @@ AddEventHandler("core:labs:GetEmpocheCoke", function(territory)
     if Required.count >= 1 then
         xPlayer.addInventoryItem(_LABS.Coke.ItemCoke, _LABS.Coke.CountCocaine)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemRecip, 1)
-        if territory then
-            AddInfluence(source, territory, 'cokeEmpoche')
-        end
+        AddLabInfluence(source, 'cokeEmpoche')
         local label = GetItemLabel(_LABS.Coke.ItemRecip)
         Notify(source, GetPhrase('item_added', label))
     else
@@ -261,7 +241,7 @@ AddEventHandler("core:labs:addComponents", function(labo, spot)
 end)
 
 RegisterServerEvent("core:labs:startSynthesis")
-AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer, territory)
+AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     if not Labs.CircuitsServer[labo][spot].synthesis.start then
@@ -269,9 +249,7 @@ AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer, territor
             if Labs.CircuitsServer[labo][spot].synthesis.methylamine >= _LABS.Meth.Tanks[2] then
                 Labs.CircuitsServer[labo][spot].synthesis.start = timer
                 Labs.CircuitsServer[labo][spot].synthesis.working = true
-                if territory then
-                    AddInfluence(source, territory, 'methStartSynthesis')
-                end
+                AddLabInfluence(source, 'methStartSynthesis')
                 TriggerClientEvent("core:labs:startSynthesis", -1, labo, spot, timer)
                 Notify(source, GetPhrase('meth_synthesis_started'))
             else
@@ -318,16 +296,14 @@ AddEventHandler("core:labs:sendToReduction", function(labo, spot, timer)
 end)
 
 RegisterServerEvent("core:labs:startReduction")
-AddEventHandler("core:labs:startReduction", function(labo, spot, timer, territory)
+AddEventHandler("core:labs:startReduction", function(labo, spot, timer)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     if xPlayer and not Labs.CircuitsServer[labo][spot].reduction.start then
         if Labs.CircuitsServer[labo][spot].reduction.plates > 0 then
             Labs.CircuitsServer[labo][spot].reduction.start = timer
             Labs.CircuitsServer[labo][spot].reduction.working = true
-            if territory then
-                AddInfluence(source, territory, 'methStartReduction')
-            end
+            AddLabInfluence(source, 'methStartReduction')
             TriggerClientEvent("core:labs:startReduction", -1, labo, spot, timer)
             Notify(source, GetPhrase('meth_reduction_started'))
         else
@@ -338,15 +314,13 @@ AddEventHandler("core:labs:startReduction", function(labo, spot, timer, territor
     end
 end)
 
-RegisterServerCallback("core:labs:TakePlateMeth", function(source, labo, spot, territory)
+RegisterServerCallback("core:labs:TakePlateMeth", function(source, labo, spot)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     if Labs.CircuitsServer[labo][spot].reduction.plates > 0 then
         Labs.CircuitsServer[labo][spot].reduction.plates = Labs.CircuitsServer[labo][spot].reduction.plates - 1
         xPlayer.addInventoryItem(_LABS.Meth.ItemRecip, 1)
-        if territory then
-            AddInfluence(source, territory, 'methPlate')
-        end
+        AddLabInfluence(source, 'methPlate')
         TriggerClientEvent("core:labs:takePlate", -1, labo, spot, Labs.CircuitsServer[labo][spot].reduction.plates)
         Notify(source, GetPhrase('meth_take_plate_success'))
         return true
@@ -380,7 +354,7 @@ AddEventHandler("core:labs:GetBrisseMeth", function()
 end)
 
 RegisterServerEvent("core:labs:GetEmpocheMeth")
-AddEventHandler("core:labs:GetEmpocheMeth", function(territory)
+AddEventHandler("core:labs:GetEmpocheMeth", function()
     local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemBack)
@@ -388,15 +362,15 @@ AddEventHandler("core:labs:GetEmpocheMeth", function(territory)
     if Required.count >= 1 then
         xPlayer.addInventoryItem(_LABS.Meth.ItemMeth, _LABS.Meth.CountMeth)
         xPlayer.removeInventoryItem(_LABS.Meth.ItemBack, 1)
-        if territory then
-            AddInfluence(source, territory, 'methEmpoche')
-        end
+        AddLabInfluence(source, 'methEmpoche')
         Notify(source, GetPhrase('meth_pocket_success'))
     else
         local label = GetItemLabel(_LABS.Meth.ItemBack)
         Notify(source, GetPhrase('not_enough_to_deposit', label))
     end
 end)
+
+local PlayerLabs = {}
 
 local function GetLabFromId(id)
     for k, v in pairs(Labs.Table or {}) do
@@ -409,6 +383,16 @@ end
 
 local LabBuckets = {}
 local PreviousBuckets = {}
+
+function AddLabInfluence(source, interaction)
+    local lab = GetLabFromId(PlayerLabs[source])
+    if not lab or not lab.coords then return end
+
+    local territoryId = GetTerritoryFromCoords(lab.coords)
+    if territoryId then
+        AddInfluence(source, territoryId, interaction)
+    end
+end
 local NextBucket = 1000
 
 RegisterNetEvent("sxIllegals:enterLab", function(labId)
@@ -424,6 +408,7 @@ RegisterNetEvent("sxIllegals:enterLab", function(labId)
     if not PreviousBuckets[src] then
         PreviousBuckets[src] = GetPlayerRoutingBucket(src)
     end
+    PlayerLabs[src] = labId
     SetPlayerRoutingBucket(src, LabBuckets[labId])
 end)
 
@@ -431,10 +416,12 @@ RegisterNetEvent("sxIllegals:exitLab", function()
     local src = source
     SetPlayerRoutingBucket(src, PreviousBuckets[src] or 0)
     PreviousBuckets[src] = nil
+    PlayerLabs[src] = nil
 end)
 
 AddEventHandler("playerDropped", function()
     PreviousBuckets[source] = nil
+    PlayerLabs[source] = nil
 end)
 
 local function GenerateUniqueLabId()

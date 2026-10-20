@@ -128,13 +128,13 @@ function Labs.Weed:ActionOnPlant(key)
     local pos = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['weed'].spots[key].x, _LABS.Shell['weed'].spots[key].y, _LABS.Shell['weed'].spots[key].z)
     if plant.state == 0 then
         Labs:PlayLabosAnimation(pos, "amb@world_human_gardener_plant@male@enter", "enter", -1, 2000)
-        TriggerServerEvent("core:labs:CheckPlant", Labs.LabosIndex.id, weed, GetTerritoryFromCoords(Labs.LabosIndex.coords))
+        TriggerServerEvent("core:labs:CheckPlant", Labs.LabosIndex.id, weed)
     elseif plant.state == 1 then
         Labs:PlayLabosAnimation(pos, "amb@world_human_gardener_plant@female@idle_a", "idle_c_female", 1000)
-        TriggerServerEvent("core:labs:CheckFertilize", Labs.LabosIndex.id, weed, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+        TriggerServerEvent("core:labs:CheckFertilize", Labs.LabosIndex.id, weed, os.time())
     elseif plant.state == 7 then
         local ped = PlayerPedId()
-        TriggerServerEvent("core:labs:CheckGet", Labs.LabosIndex.id, weed, GetTerritoryFromCoords(Labs.LabosIndex.coords))
+        TriggerServerEvent("core:labs:CheckGet", Labs.LabosIndex.id, weed)
         TaskTurnPedToFaceCoord(ped, pos.x, pos.y, pos.z, 1000)
         Citizen.Wait(1000)
         TaskStartScenarioInPlace(ped, "PROP_HUMAN_BUM_BIN", 0, true)
@@ -204,7 +204,7 @@ function Labs:StartWeed()
                             else
                                 Labs.Weed.working = true
                                 Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_unpack_cut@", "fullcut_cycle_cokecutter", 2000, 2000, GetPhrase('weed_roll_success'))
-                                TriggerServerEvent("core:labs:WeedToJoint", GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                TriggerServerEvent("core:labs:WeedToJoint")
                                 Labs.Weed.working = false
                             end
                         end
@@ -228,7 +228,7 @@ function Labs:StartWeed()
                             else
                                 Labs.Weed.working = true
                                 Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_unpack_cut@", "fullcut_cycle_cokepacker", 4000)
-                                TriggerServerEvent("core:labs:WeedToPack", GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                TriggerServerEvent("core:labs:WeedToPack")
                                 Labs.Weed.working = false
                             end
                         end
