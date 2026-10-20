@@ -65,7 +65,7 @@ function Labs.Coke:ActionOnCoke(key)
     if not t or not t.kerosene or t.kerosene.start == 0 then
         local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['coke'].spots[key].x, _LABS.Shell['coke'].spots[key].y, _LABS.Shell['coke'].spots[key].z)
         Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000)
-        Rsv("core:labs:CheckKerozen", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+        TriggerServerEvent("core:labs:CheckKerozen", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
         Labs.Coke.working = false
         return
     end
@@ -73,7 +73,7 @@ function Labs.Coke:ActionOnCoke(key)
     if not t.coca or t.coca.start == 0 then
         local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['coke'].spots[key].x, _LABS.Shell['coke'].spots[key].y, _LABS.Shell['coke'].spots[key].z)
         Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000)
-        Rsv("core:labs:CheckCoca", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+        TriggerServerEvent("core:labs:CheckCoca", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
         Labs.Coke.working = false
         return
     end
@@ -81,7 +81,7 @@ function Labs.Coke:ActionOnCoke(key)
     if not t.whitewash or t.whitewash.start == 0 then
         local coords = GetOffsetFromEntityInWorldCoords(Labs.LabosIndex.model, _LABS.Shell['coke'].spots[key].x, _LABS.Shell['coke'].spots[key].y, _LABS.Shell['coke'].spots[key].z)
         Labs:PlayLabosAnimation(coords, "anim@amb@business@coc@coc_packing@", "fill_basicmould_v2_pressoperator", 3000, 3000, GetPhrase('coke_add_whitewash_success'))
-        Rsv("core:labs:CheckWhitewash", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
+        TriggerServerEvent("core:labs:CheckWhitewash", Labs.LabosIndex.id, key, os.time(), GetTerritoryFromCoords(Labs.LabosIndex.coords))
         Labs.Coke.working = false
         return
     end
@@ -89,7 +89,7 @@ function Labs.Coke:ActionOnCoke(key)
         return 
     end
     TaskTurnPedToFaceCoord(ped, pos.x, pos.y, pos.z, 500)
-    Rsv("core:labs:takeCokeTray", Labs.LabosIndex.id, key, GetTerritoryFromCoords(Labs.LabosIndex.coords))
+    TriggerServerEvent("core:labs:takeCokeTray", Labs.LabosIndex.id, key, GetTerritoryFromCoords(Labs.LabosIndex.coords))
     Citizen.Wait(500)
     ShowNotification(GetPhrase('coke_take_tray_success'))
     if not Labs.Coke.hasTray then
@@ -102,7 +102,7 @@ function Labs.Coke:ActionOnCoke(key)
             AttachEntityToEntity(object, ped, GetPedBoneIndex(ped, 28422), 0.05, -0.35, -0.17,  316.0, 403.0, -261.0, true, true, false, true, 1, true)
             
             while Labs.Coke.hasTray do                                    
-                Utils.ShowHelpNotification(GetPhrase('press_to_store'))
+                ShowHelpNotification(GetPhrase('press_to_store'))
                 if IsControlJustPressed(0, 23) then
                     Labs.Coke.hasTray = false
                 end
@@ -115,11 +115,6 @@ function Labs.Coke:ActionOnCoke(key)
     end
  end
 
-local function ShowHelpNotification(text)
-    BeginTextCommandDisplayHelp("STRING")
-    AddTextComponentSubstringPlayerName(text)
-    EndTextCommandDisplayHelp(0, false, true, -1)
-end
 
 function Labs:StartCoke()
     if Labs.Coke.Thread then return end
@@ -199,7 +194,7 @@ function Labs:StartCoke()
                                 Citizen.Wait(3000)
                                 ShowNotification(GetPhrase('coke_pocket_success', _LABS.Coke.CountCocaine))
                                 Labs.Coke.working = false
-                                Rsv("core:labs:GetEmpocheCoke", GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                TriggerServerEvent("core:labs:GetEmpocheCoke", GetTerritoryFromCoords(Labs.LabosIndex.coords))
                             end
                         end
                     end

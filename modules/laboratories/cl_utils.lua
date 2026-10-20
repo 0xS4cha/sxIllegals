@@ -55,16 +55,6 @@ function Labs:KillModules()
     Citizen.Wait(1000)
 end
 
-function Labs:PlayAnimation(ped, dict, anim, duration, flag, lock, inSpeed, outSpeed)
-    duration = duration or -1
-    flag = flag or 16
-    lock = lock or false
-    inSpeed = inSpeed or 1.0
-    outSpeed = outSpeed or 1.0
-    UtilsFunction:RequestAnimDict(dict)
-    TaskPlayAnim(ped, dict, anim, inSpeed, outSpeed, duration, flag, 0.0, lock, lock, lock)
-end
-
 function Labs:PlayLabosAnimation(pos, dictionary, animation, duration, wait)
     local ped = PlayerPedId()
     TaskTurnPedToFaceCoord(ped, pos.x, pos.y, pos.z, 1000)

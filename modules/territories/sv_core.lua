@@ -1,7 +1,7 @@
 local influenceCooldown = {}
 
 function AddInfluence(source, id, interaction)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
     if not xPlayer then return end
 
     local license = xPlayer.getIdentifier()
@@ -31,11 +31,15 @@ function AddInfluence(source, id, interaction)
 end
 
 RegisterNetEvent("sxGroup:AddInfluence")
-AddEventHandler('sxGroup:AddInfluence', function(token, id, interaction)
-    local source = source
-    if CheckPlayerToken(source, token) then
-        AddInfluence(source, id, interaction)
-    end
+AddEventHandler('sxGroup:AddInfluence', function(id, interaction)
+    local src = source
+    local territory = GetTerritoriesFromId(id)
+    if not territory then return end
+
+    local ped = GetPlayerPed(src)
+    if ped == 0 or not territory:isPointInside(GetEntityCoords(ped)) then return end
+
+    AddInfluence(src, id, interaction)
 end)
 
 local function GenerateUniqueTerritoryId()

@@ -189,7 +189,7 @@ RegisterServerCallback('sxAdmin:getLabs', function(source)
         local point = vector3(l.coords.x, l.coords.y, l.coords.z)
 
         for _, t in pairs(territories) do
-            if t.PolyZone and t.PolyZone:isPointInside(point) then
+            if t:isPointInside(point) then
                 territoryLabel = t.label or t.id
                 break
             end
@@ -509,8 +509,7 @@ RegisterNetEvent('sxAdmin:toggleGroupOfficial', function(data)
             severity = 'info'
         })
 
-        TriggerClientEvent('yCore:showNotification', src,
-            string.format("Statut officiel de %s changé en: %s", group.name, tostring(newStatus)))
+        Notify(src, string.format("Statut officiel de %s changé en: %s", group.name, tostring(newStatus)))
     end
 end)
 
@@ -536,8 +535,7 @@ RegisterNetEvent('sxAdmin:deleteGroup', function(data)
         MySQL.Async.execute("DELETE FROM group_grades WHERE groupId = ?", { groupId })
         MySQL.Async.execute("DELETE FROM group_list WHERE id = ?", { groupId })
         RemoveGroup(groupId)
-        TriggerClientEvent('yCore:showNotification', src,
-            string.format("Le groupe %s a été dissous avec succès.", groupName))
+        Notify(src, string.format("Le groupe %s a été dissous avec succès.", groupName))
     end
 end)
 
@@ -608,7 +606,7 @@ RegisterNetEvent('sxAdmin:createGroup', function(data)
             severity = 'info'
         })
 
-        TriggerClientEvent('yCore:showNotification', src, string.format("Le groupe %s a été créé.", name))
+        Notify(src, string.format("Le groupe %s a été créé.", name))
     end
 end)
 
@@ -643,7 +641,7 @@ RegisterNetEvent('sxAdmin:updateGroup', function(data)
             severity = 'info'
         })
 
-        TriggerClientEvent('yCore:showNotification', src, string.format("Groupe %s mis à jour avec succès.", group.name))
+        Notify(src, string.format("Groupe %s mis à jour avec succès.", group.name))
     end
 end)
 
@@ -670,8 +668,7 @@ RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)
             severity = 'warning'
         })
 
-        TriggerClientEvent('yCore:showNotification', src,
-            string.format("Influence de la zone %s réinitialisée.", territory.label or territory.id))
+        Notify(src, string.format("Influence de la zone %s réinitialisée.", territory.label or territory.id))
     end
 end)
 

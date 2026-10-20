@@ -78,7 +78,7 @@ function Labs:enter()
     Labs.IsInLab = true
     NetworkOverrideClockTime(23, 0, 0)
     SetEntityCoords(pPed, vector3(Labs.LabosIndex.exit.x, Labs.LabosIndex.exit.y, Labs.LabosIndex.exit.z))
-    TriggerServerEvent("yCore:initInstance", Labs.LabosIndex.id)
+    TriggerServerEvent("sxIllegals:enterLab", Labs.LabosIndex.id)
     -- Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
     --     coords = Labs.LabosIndex.exit,
     --     distance = 5.0,
@@ -107,11 +107,7 @@ function Labs:exit()
     TeleportTopCoords(Labs.LabosIndex.coords, pPed)
     DeleteObject(Labs.LabosIndex.model)
     DeleteEntity(Labs.LabosIndex.model)
-    for i = 1, #Labs.LabosIndex.interact_temp do
-        InteractAPI.removeInteraction(Labs.LabosIndex.interact_temp[i])
-        Labs.LabosIndex.interact_temp[i] = nil
-    end
-    TriggerServerEvent("yCore:outInstance", Labs.LabosIndex.id)
+    TriggerServerEvent("sxIllegals:exitLab")
     for k, v in pairs(GetActivePlayers()) do
         if v ~= GetPlayerIndex() then
             NetworkConcealPlayer(v, false, false)
@@ -126,11 +122,6 @@ function Labs:exit()
     DoScreenFadeIn(1000)
 end
 
-local function ShowHelpNotification(text)
-    BeginTextCommandDisplayHelp("STRING")
-    AddTextComponentSubstringPlayerName(text)
-    EndTextCommandDisplayHelp(0, false, true, -1)
-end
 
 Citizen.CreateThread(function()
     while true do

@@ -9,6 +9,7 @@ version '1.0.0'
 lua54 'yes'
 
 dependencies {
+    'es_extended',
     'oxmysql',
 }
 

@@ -22,7 +22,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckPlant")
 AddEventHandler("core:labs:CheckPlant", function(labo, weed, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemGraine)
 
@@ -33,17 +33,16 @@ AddEventHandler("core:labs:CheckPlant", function(labo, weed, territory)
         if territory then
             AddInfluence(source, territory, 'weedPlant')
         end
-        TriggerClientEvent("yCore:showNotification", source, "Vous avez ~g~effectué~s~ la ~g~plantation~s~.")
+        Notify(source, "Vous avez ~g~effectué~s~ la ~g~plantation~s~.")
     else
-        local label = yCore.GetItemLabel(_LABS.Weed.ItemGraine) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour planter.")
+        local label = GetItemLabel(_LABS.Weed.ItemGraine)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour planter.")
     end
 end)
 
 RegisterServerEvent("core:labs:CheckFertilize")
 AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFerti)
 
@@ -55,7 +54,7 @@ AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territor
         if territory then
             AddInfluence(source, territory, 'weedFertilize')
         end
-        TriggerClientEvent("yCore:showNotification", source, "Vous avez ~g~effectué~s~ la ~g~fertilisation~s~.")
+        Notify(source, "Vous avez ~g~effectué~s~ la ~g~fertilisation~s~.")
         if weed == 1 then
             for k, v in pairs(Labs.Table) do
                 if v.id == labo then
@@ -64,15 +63,14 @@ AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territor
             end
         end
     else
-        local label = yCore.GetItemLabel(_LABS.Weed.ItemFerti) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour fertiliser.")
+        local label = GetItemLabel(_LABS.Weed.ItemFerti)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour fertiliser.")
     end
 end)
 
 RegisterServerEvent("core:labs:WeedToJoint")
 AddEventHandler("core:labs:WeedToJoint", function(territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFeuille)
 
@@ -82,17 +80,16 @@ AddEventHandler("core:labs:WeedToJoint", function(territory)
         if territory then
             AddInfluence(source, territory, 'weedJoint')
         end
-        TriggerClientEvent("yCore:showNotification", source, "Vous avez roulé ~g~1 joint~s~.")
+        Notify(source, "Vous avez roulé ~g~1 joint~s~.")
     else
-        local label = yCore.GetItemLabel(_LABS.Weed.ItemFeuille) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour transformer.")
+        local label = GetItemLabel(_LABS.Weed.ItemFeuille)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour transformer.")
     end
 end)
 
 RegisterServerEvent("core:labs:WeedToPack")
 AddEventHandler("core:labs:WeedToPack", function(territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFeuille)
     local Required2 = xPlayer.getInventoryItem(_LABS.Weed.ItemBags)
@@ -105,22 +102,20 @@ AddEventHandler("core:labs:WeedToPack", function(territory)
             if territory then
                 AddInfluence(source, territory, 'weedEmpoche')
             end
-            TriggerClientEvent("yCore:showNotification", source, "Vous avez empoché ~g~5 weeds~s~.")
+            Notify(source, "Vous avez empoché ~g~5 weeds~s~.")
         else
-            local label = yCore.GetItemLabel(_LABS.Weed.ItemBags) or "Nil"
-            TriggerClientEvent("yCore:showNotification", source,
-                "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour empocher.")
+            local label = GetItemLabel(_LABS.Weed.ItemBags)
+            Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour empocher.")
         end
     else
-        local label = yCore.GetItemLabel(_LABS.Weed.ItemFeuille) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour empocher.")
+        local label = GetItemLabel(_LABS.Weed.ItemFeuille)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour empocher.")
     end
 end)
 
 RegisterServerEvent("core:labs:CheckGet")
 AddEventHandler("core:labs:CheckGet", function(labo, weed, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
     if Labs.WeedsServer[labo][weed].state == 7 then
         Labs.WeedsServer[labo][weed] = { planted = false, fertilized = false, pickable = false, state = 0, previousState = -1, start = nil }
         TriggerClientEvent("core:labs:GetWeed", -1, labo, weed)
@@ -128,35 +123,33 @@ AddEventHandler("core:labs:CheckGet", function(labo, weed, territory)
             AddInfluence(source, territory, 'weedCut')
         end
         xPlayer.addInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountFeuille)
-        TriggerClientEvent("yCore:showNotification", source,
-            string.format("Vous avez récolté ~g~%0d~s~ de ~g~feuilles de weed~s~.", _LABS.Weed.CountFeuille))
+        Notify(source, string.format("Vous avez récolté ~g~%0d~s~ de ~g~feuilles de weed~s~.", _LABS.Weed.CountFeuille))
     end
 end)
 
 
 RegisterServerEvent("core:labs:CheckKerozen")
 AddEventHandler("core:labs:CheckKerozen", function(labo, tray, timer, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemKerozen)
     if Required.count >= _LABS.Coke.CountRequiredKerozen then
         Labs.TraysServer[labo][tray].kerosene.start = timer
         TriggerClientEvent("core:labs:addKerosene", -1, labo, tray, timer)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemKerozen, _LABS.Coke.CountRequiredKerozen)
-        local label = yCore.GetItemLabel(_LABS.Coke.ItemKerozen) or "Nil"
+        local label = GetItemLabel(_LABS.Coke.ItemKerozen)
         if territory then
             AddInfluence(source, territory, 'cokeKerozen')
         end
-        TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
+        Notify(source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
     else
-        local label = yCore.GetItemLabel(_LABS.Coke.ItemKerozen) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        local label = GetItemLabel(_LABS.Coke.ItemKerozen)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
     end
 end)
 
 RegisterServerEvent("core:labs:CheckCoca")
 AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemCoca)
 
@@ -164,21 +157,20 @@ AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer, territory)
         Labs.TraysServer[labo][tray].coca.start = timer
         TriggerClientEvent("core:labs:addCoca", -1, labo, tray, timer)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemCoca, _LABS.Coke.CountRequiredCoca)
-        local label = yCore.GetItemLabel(_LABS.Coke.ItemCoca) or "Nil"
+        local label = GetItemLabel(_LABS.Coke.ItemCoca)
         if territory then
             AddInfluence(source, territory, 'cokeFeuille')
         end
-        TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté des ~b~" .. label .. "~s~.")
+        Notify(source, "Vous avez ajouté des ~b~" .. label .. "~s~.")
     else
-        local label = yCore.GetItemLabel(_LABS.Coke.ItemCoca) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        local label = GetItemLabel(_LABS.Coke.ItemCoca)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
     end
 end)
 
 RegisterServerEvent("core:labs:CheckWhitewash")
 AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemWhitewash)
 
@@ -186,21 +178,20 @@ AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer, territor
         Labs.TraysServer[labo][tray].whitewash.start = timer
         TriggerClientEvent("core:labs:addWhitewash", -1, labo, tray, timer)
         xPlayer.removeInventoryItem(_LABS.Coke.ItemWhitewash, _LABS.Coke.CountRequiredWhitewash)
-        local label = yCore.GetItemLabel(_LABS.Coke.ItemWhitewash) or "Nil"
+        local label = GetItemLabel(_LABS.Coke.ItemWhitewash)
         if territory then
             AddInfluence(source, territory, 'cokeWhiteWash')
         end
-        TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
+        Notify(source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
     else
-        local label = yCore.GetItemLabel(_LABS.Coke.ItemWhitewash) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        local label = GetItemLabel(_LABS.Coke.ItemWhitewash)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
     end
 end)
 
 RegisterServerEvent("core:labs:takeCokeTray")
 AddEventHandler("core:labs:takeCokeTray", function(labo, tray, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     Labs.TraysServer[labo][tray].whitewash.start = 0
     Labs.TraysServer[labo][tray].coca.start = 0
@@ -211,13 +202,12 @@ AddEventHandler("core:labs:takeCokeTray", function(labo, tray, territory)
     if territory then
         AddInfluence(source, territory, 'cokeTray')
     end
-    TriggerClientEvent("yCore:showNotification", source,
-        string.format("Vous avez récolté ~g~%0d~s~ de ~g~récipients de cocaine~s~.", _LABS.Coke.CountRecip))
+    Notify(source, string.format("Vous avez récolté ~g~%0d~s~ de ~g~récipients de cocaine~s~.", _LABS.Coke.CountRecip))
 end)
 
 RegisterServerEvent("core:labs:GetEmpocheCoke")
 AddEventHandler("core:labs:GetEmpocheCoke", function(territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemRecip)
 
@@ -227,18 +217,17 @@ AddEventHandler("core:labs:GetEmpocheCoke", function(territory)
         if territory then
             AddInfluence(source, territory, 'cokeEmpoche')
         end
-        local label = yCore.GetItemLabel(_LABS.Coke.ItemRecip) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
+        local label = GetItemLabel(_LABS.Coke.ItemRecip)
+        Notify(source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
     else
-        local label = yCore.GetItemLabel(_LABS.Coke.ItemRecip) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        local label = GetItemLabel(_LABS.Coke.ItemRecip)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
     end
 end)
 
 RegisterServerEvent("core:labs:addComponents")
 AddEventHandler("core:labs:addComponents", function(labo, spot)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemMethylamine)
     local Required2 = xPlayer.getInventoryItem(_LABS.Meth.ItemPhenylacetone)
@@ -257,27 +246,23 @@ AddEventHandler("core:labs:addComponents", function(labo, spot)
                     Labs.CircuitsServer[labo][spot].synthesis.phenylacetone,
                     Labs.CircuitsServer[labo][spot].synthesis.methylamine)
 
-                TriggerClientEvent("yCore:showNotification", source,
-                    "~g~Ajout de méthylamine et phénylacétone dans la cuve~s~.")
+                Notify(source, "~g~Ajout de méthylamine et phénylacétone dans la cuve~s~.")
             else
-                local label = yCore.GetItemLabel(_LABS.Meth.ItemPhenylacetone) or "Nil"
-                TriggerClientEvent("yCore:showNotification", source,
-                    "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+                local label = GetItemLabel(_LABS.Meth.ItemPhenylacetone)
+                Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
             end
         else
-            local label = yCore.GetItemLabel(_LABS.Meth.ItemMethylamine) or "Nil"
-            TriggerClientEvent("yCore:showNotification", source,
-                "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+            local label = GetItemLabel(_LABS.Meth.ItemMethylamine)
+            Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
         end
     else
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
+        Notify(source, "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
     end
 end)
 
 RegisterServerEvent("core:labs:startSynthesis")
 AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     if not Labs.CircuitsServer[labo][spot].synthesis.start then
         if Labs.CircuitsServer[labo][spot].synthesis.phenylacetone >= _LABS.Meth.Tanks[2] then
@@ -288,26 +273,23 @@ AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer, territor
                     AddInfluence(source, territory, 'methStartSynthesis')
                 end
                 TriggerClientEvent("core:labs:startSynthesis", -1, labo, spot, timer)
-                TriggerClientEvent("yCore:showNotification", source, "~g~Démarrage de la synthèse~s~.")
+                Notify(source, "~g~Démarrage de la synthèse~s~.")
             else
-                local label = yCore.GetItemLabel(_LABS.Meth.ItemMethylamine) or "Nil"
-                TriggerClientEvent("yCore:showNotification", source,
-                    "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la synthèse.")
+                local label = GetItemLabel(_LABS.Meth.ItemMethylamine)
+                Notify(source, "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la synthèse.")
             end
         else
-            local label = yCore.GetItemLabel(_LABS.Meth.ItemPhenylacetone) or "Nil"
-            TriggerClientEvent("yCore:showNotification", source,
-                "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la synthèse.")
+            local label = GetItemLabel(_LABS.Meth.ItemPhenylacetone)
+            Notify(source, "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la synthèse.")
         end
     else
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Action impossible, une image de synthèse est déjà en cours~s~.")
+        Notify(source, "~r~Action impossible, une image de synthèse est déjà en cours~s~.")
     end
 end)
 
 RegisterServerEvent("core:labs:sendToReduction")
 AddEventHandler("core:labs:sendToReduction", function(labo, spot, timer)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     if xPlayer and Labs.CircuitsServer[labo][spot].reduction.plates == 0 then
         if Labs.CircuitsServer[labo][spot].synthesis.phenylacetone >= _LABS.Meth.Tanks[2] then
@@ -320,27 +302,24 @@ AddEventHandler("core:labs:sendToReduction", function(labo, spot, timer)
                     _LABS.Meth.CountRecip
                 TriggerClientEvent("core:labs:sendToReduction", -1, labo, spot,
                     Labs.CircuitsServer[labo][spot].reduction.plates)
-                TriggerClientEvent("yCore:showNotification", source, "~g~Transfert vers la réduction effectuée~s~.")
+                Notify(source, "~g~Transfert vers la réduction effectuée~s~.")
             else
-                local label = yCore.GetItemLabel(_LABS.Meth.ItemMethylamine) or "Nil"
-                TriggerClientEvent("yCore:showNotification", source,
-                    "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la reduction.")
+                local label = GetItemLabel(_LABS.Meth.ItemMethylamine)
+                Notify(source, "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la reduction.")
             end
         else
-            local label = yCore.GetItemLabel(_LABS.Meth.ItemPhenylacetone) or "Nil"
-            TriggerClientEvent("yCore:showNotification", source,
-                "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la reduction.")
+            local label = GetItemLabel(_LABS.Meth.ItemPhenylacetone)
+            Notify(source, "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la reduction.")
         end
     else
-        local label = yCore.GetItemLabel(_LABS.Meth.ItemRecip) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
+        local label = GetItemLabel(_LABS.Meth.ItemRecip)
+        Notify(source, "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
     end
 end)
 
 RegisterServerEvent("core:labs:startReduction")
 AddEventHandler("core:labs:startReduction", function(labo, spot, timer, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     if xPlayer and not Labs.CircuitsServer[labo][spot].reduction.start then
         if Labs.CircuitsServer[labo][spot].reduction.plates > 0 then
@@ -350,18 +329,17 @@ AddEventHandler("core:labs:startReduction", function(labo, spot, timer, territor
                 AddInfluence(source, territory, 'methStartReduction')
             end
             TriggerClientEvent("core:labs:startReduction", -1, labo, spot, timer)
-            TriggerClientEvent("yCore:showNotification", source, "~g~Démarrage de la réduction~s~.")
+            Notify(source, "~g~Démarrage de la réduction~s~.")
         else
-            TriggerClientEvent("yCore:showNotification", source, "~r~La cuve est vide.")
+            Notify(source, "~r~La cuve est vide.")
         end
     else
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Action impossible, le processus de réduction est déjà en cours~s~.")
+        Notify(source, "~r~Action impossible, le processus de réduction est déjà en cours~s~.")
     end
 end)
 
 RegisterServerCallback("core:labs:TakePlateMeth", function(source, labo, spot, territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     if Labs.CircuitsServer[labo][spot].reduction.plates > 0 then
         Labs.CircuitsServer[labo][spot].reduction.plates = Labs.CircuitsServer[labo][spot].reduction.plates - 1
@@ -370,13 +348,13 @@ RegisterServerCallback("core:labs:TakePlateMeth", function(source, labo, spot, t
             AddInfluence(source, territory, 'methPlate')
         end
         TriggerClientEvent("core:labs:takePlate", -1, labo, spot, Labs.CircuitsServer[labo][spot].reduction.plates)
-        TriggerClientEvent("yCore:showNotification", source, "~g~Récupération d'un plateau~s~.")
-        return { true }
+        Notify(source, "~g~Récupération d'un plateau~s~.")
+        return true
     else
         Labs.CircuitsServer[labo][spot].reduction.start = nil
         Labs.CircuitsServer[labo][spot].reduction.working = false
         TriggerClientEvent("core:labs:takePlate", -1, labo, spot, Labs.CircuitsServer[labo][spot].reduction.plates)
-        return { false }
+        return false
     end
 end)
 
@@ -387,24 +365,23 @@ end)
 
 RegisterServerEvent("core:labs:GetBrisseMeth")
 AddEventHandler("core:labs:GetBrisseMeth", function()
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemRecip)
 
     if Required.count >= 1 then
         xPlayer.addInventoryItem(_LABS.Meth.ItemBack, 1)
         xPlayer.removeInventoryItem(_LABS.Meth.ItemRecip, 1)
-        TriggerClientEvent("yCore:showNotification", source, "~g~Vous avez rempli un bac de meth~s~.")
+        Notify(source, "~g~Vous avez rempli un bac de meth~s~.")
     else
-        local label = yCore.GetItemLabel(_LABS.Meth.ItemRecip) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        local label = GetItemLabel(_LABS.Meth.ItemRecip)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
     end
 end)
 
 RegisterServerEvent("core:labs:GetEmpocheMeth")
 AddEventHandler("core:labs:GetEmpocheMeth", function(territory)
-    local xPlayer = ESX.Player(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemBack)
 
@@ -414,11 +391,10 @@ AddEventHandler("core:labs:GetEmpocheMeth", function(territory)
         if territory then
             AddInfluence(source, territory, 'methEmpoche')
         end
-        TriggerClientEvent("yCore:showNotification", source, "~g~Vous avez empoché de la meth~s~.")
+        Notify(source, "~g~Vous avez empoché de la meth~s~.")
     else
-        local label = yCore.GetItemLabel(_LABS.Meth.ItemBack) or "Nil"
-        TriggerClientEvent("yCore:showNotification", source,
-            "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        local label = GetItemLabel(_LABS.Meth.ItemBack)
+        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
     end
 end)
 
@@ -430,6 +406,36 @@ local function GetLabFromId(id)
     end
     return nil
 end
+
+local LabBuckets = {}
+local PreviousBuckets = {}
+local NextBucket = 1000
+
+RegisterNetEvent("sxIllegals:enterLab", function(labId)
+    local src = source
+    if not GetLabFromId(labId) then return end
+
+    if not LabBuckets[labId] then
+        NextBucket = NextBucket + 1
+        LabBuckets[labId] = NextBucket
+        SetRoutingBucketPopulationEnabled(NextBucket, false)
+    end
+
+    if not PreviousBuckets[src] then
+        PreviousBuckets[src] = GetPlayerRoutingBucket(src)
+    end
+    SetPlayerRoutingBucket(src, LabBuckets[labId])
+end)
+
+RegisterNetEvent("sxIllegals:exitLab", function()
+    local src = source
+    SetPlayerRoutingBucket(src, PreviousBuckets[src] or 0)
+    PreviousBuckets[src] = nil
+end)
+
+AddEventHandler("playerDropped", function()
+    PreviousBuckets[source] = nil
+end)
 
 local function GenerateUniqueLabId()
     local id

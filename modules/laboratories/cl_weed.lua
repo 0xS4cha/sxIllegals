@@ -145,11 +145,6 @@ function Labs.Weed:ActionOnPlant(key)
     end
 end
 
-local function ShowHelpNotification(text)
-    BeginTextCommandDisplayHelp("STRING")
-    AddTextComponentSubstringPlayerName(text)
-    EndTextCommandDisplayHelp(0, false, true, -1)
-end
 
 function Labs:StartWeed()
     if Labs.Weed.Thread then return end

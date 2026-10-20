@@ -83,3 +83,25 @@ function TeleportTopCoords(pos, ent, trustPos)
     if type(pos) ~= "vector3" and pos.w then SetEntityHeading(ent, pos.w) end
     return true
 end
+
+if IsDuplicityVersion() then
+    function Notify(source, message)
+        TriggerClientEvent("esx:showNotification", source, message)
+    end
+
+    function GetItemLabel(item)
+        return ESX.GetItemLabel(item) or item
+    end
+else
+    function ShowNotification(message)
+        BeginTextCommandThefeedPost("STRING")
+        AddTextComponentSubstringPlayerName(message)
+        EndTextCommandThefeedPostTicker(false, true)
+    end
+
+    function ShowHelpNotification(message)
+        BeginTextCommandDisplayHelp("STRING")
+        AddTextComponentSubstringPlayerName(message)
+        EndTextCommandDisplayHelp(0, false, true, -1)
+    end
+end

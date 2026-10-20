@@ -87,11 +87,6 @@ function Labs.Meth:GetReductionPanelStatus(key)
     return GetPhrase('weed_msg_timer', string.format('%02d:%02d', minutes, seconds))
 end
 
-local function ShowHelpNotification(text)
-    BeginTextCommandDisplayHelp("STRING")
-    AddTextComponentSubstringPlayerName(text)
-    EndTextCommandDisplayHelp(0, false, true, -1)
-end
 
 function Labs:StartMeth()
     if Labs.Meth.MethThread then return end
@@ -210,40 +205,39 @@ function Labs:StartMeth()
                         ShowHelpNotification(GetPhrase('meth_take_plates', platesCount))
                         if IsControlJustReleased(0, 38) then
                             if not Labs.Meth.circuits[i].reduction.working then
-                                yCore.TriggerServerCallback("core:labs:TakePlateMeth", function(done)
-                                    if done then
-                                        if Labs.Meth.working then
-                                            ShowNotification(GetPhrase('action_in_progress'))
-                                        else
-                                            Labs.Meth.working = true
-                                            local ped = PlayerPedId()
-                                            TaskTurnPedToFaceCoord(ped, coords.x, coords.y, coords.z, 1000)
-                                            Citizen.Wait(1000)
-                                            ShowNotification(GetPhrase('meth_take_plate_success'))
-                                            if not Labs.Meth.hasPlate then
-                                                Labs.Meth.hasPlate = true
-                                                Citizen.CreateThread(function()
-                                                    Labs:PlayAnimation(ped, "anim@heists@box_carry@", "idle", -1, 49)
-                                                    local object = Labs:AttachEntityToEntity(ped, "bkr_prop_meth_tray_01a", vector3(0.0, -0.23, -0.21), vector3(0.0, -0.23, -0.21), vector3(16.0, -4.0, 1.0))
-                                                    while Labs.Meth.hasPlate do
-                                                        ShowHelpNotification(GetPhrase('press_to_store'))
-                                                        if IsControlJustPressed(0, 23) then
-                                                            Labs.Meth.hasPlate = false
-                                                            Labs.Meth.working = false
-                                                        end
-                                                        Citizen.Wait(1)
-                                                    end
-                                                    DeleteObject(object)
-                                                    ClearPedTasks(ped)
-                                                    Labs.Meth.hasPlate = false
-                                                end)
-                                            end
-                                            Labs.Meth.working = false
-                                        end
+                                local done = TriggerServerCallback("core:labs:TakePlateMeth", Labs.LabosIndex.id, i, GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                if done then
+                                    if Labs.Meth.working then
+                                        ShowNotification(GetPhrase('action_in_progress'))
                                     else
-                                        ShowNotification(GetPhrase('meth_no_plates'))
+                                        Labs.Meth.working = true
+                                        local ped = PlayerPedId()
+                                        TaskTurnPedToFaceCoord(ped, coords.x, coords.y, coords.z, 1000)
+                                        Citizen.Wait(1000)
+                                        ShowNotification(GetPhrase('meth_take_plate_success'))
+                                        if not Labs.Meth.hasPlate then
+                                            Labs.Meth.hasPlate = true
+                                            Citizen.CreateThread(function()
+                                                Labs:PlayAnimation(ped, "anim@heists@box_carry@", "idle", -1, 49)
+                                                local object = Labs:AttachEntityToEntity(ped, "bkr_prop_meth_tray_01a", vector3(0.0, -0.23, -0.21), vector3(0.0, -0.23, -0.21), vector3(16.0, -4.0, 1.0))
+                                                while Labs.Meth.hasPlate do
+                                                    ShowHelpNotification(GetPhrase('press_to_store'))
+                                                    if IsControlJustPressed(0, 23) then
+                                                        Labs.Meth.hasPlate = false
+                                                        Labs.Meth.working = false
+                                                    end
+                                                    Citizen.Wait(1)
+                                                end
+                                                DeleteObject(object)
+                                                ClearPedTasks(ped)
+                                                Labs.Meth.hasPlate = false
+                                            end)
+                                        end
+                                        Labs.Meth.working = false
                                     end
-                                end, Labs.LabosIndex.id, i, GetTerritoryFromCoords(Labs.LabosIndex.coords))
+                                else
+                                    ShowNotification(GetPhrase('meth_no_plates'))
+                                end
                             else
                                 ShowNotification(GetPhrase('meth_synthesis_not_done'))
                             end

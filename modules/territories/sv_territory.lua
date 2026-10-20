@@ -196,6 +196,33 @@ function territory:saveTerritories()
     end
 end
 
+function territory:isPointInside(point)
+    local coords = self.coords
+    if not point or not coords or #coords < 3 then return false end
+
+    local inside = false
+    local j = #coords
+    for i = 1, #coords do
+        local xi, yi = coords[i].x, coords[i].y
+        local xj, yj = coords[j].x, coords[j].y
+        if ((yi > point.y) ~= (yj > point.y)) and (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi) then
+            inside = not inside
+        end
+        j = i
+    end
+
+    return inside
+end
+
+function GetTerritoryFromCoords(coords)
+    for id, data in pairs(TerritoriesList) do
+        if data:isPointInside(coords) then
+            return id
+        end
+    end
+    return nil
+end
+
 function territory:getInfluence()
     return self.influence
 end
