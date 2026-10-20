@@ -196,9 +196,6 @@ exports("AddGroupInfluence", function(territoryId, groupId, points)
     end
 
     data:addInfluence(groupId, points)
-    data.influenceChanged = true
-    data:setNeedSave(true)
-    data:refreshZoneData()
     return true
 end)
 

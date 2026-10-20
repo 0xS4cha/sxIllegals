@@ -94,14 +94,19 @@ function territory:calculateTotalInfluence()
 end
 
 function territory:addInfluence(group, point)
+    local found = false
     for i = 1, #self.influence do
         if self.influence[i].id == group then
             self.influence[i].points += point
-            return
+            found = true
+            break
         end
     end
 
-    self.influence[#self.influence + 1] = { points = point, id = group }
+    if not found then
+        self.influence[#self.influence + 1] = { points = point, id = group }
+    end
+
     self.influenceChanged = true
     self:setNeedSave(true)
     self:refreshZoneData()
