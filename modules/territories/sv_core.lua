@@ -49,10 +49,7 @@ end
 RegisterNetEvent("sxGroup:RegisterTerritory")
 AddEventHandler('sxGroup:RegisterTerritory', function(data)
     local src = source
-    local xPlayer = ESX.GetPlayerFromId(src)
-    if not xPlayer or (xPlayer.getGroup() ~= 'admin' and xPlayer.getGroup() ~= 'superadmin') then
-        return
-    end
+    if not IsPlayerAdmin(src) then return end
 
     local id = GenerateUniqueTerritoryId()
     MySQL.Sync.insert("INSERT INTO territories (id, label, influence, coords, minZ, maxZ) VALUES (?, ?, ?, ?, ?, ?)"
@@ -83,7 +80,11 @@ end)
 
 RegisterNetEvent("sxGroup:SaveTerritory")
 AddEventHandler('sxGroup:SaveTerritory', function(data)
+    if not IsPlayerAdmin(source) or type(data) ~= "table" then return end
+
     local territory = GetTerritoriesFromId(data.id)
+    if not territory then return end
+
     if data.label ~= territory:getLabel() then
         territory:setLabel(data.label)
         territory:setLabelChanged(true)
@@ -100,6 +101,7 @@ AddEventHandler('sxGroup:SaveTerritory', function(data)
         territory:setCoords(data.coords)
         territory:setCoordsChanged(true)
     end
+    territory:setNeedSave(true)
     TriggerClientEvent('sxGroup:RefreshTerritories', -1, GetTerritoriesFromId(data.id), data.id)
 end)
 

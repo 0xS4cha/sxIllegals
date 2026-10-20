@@ -442,10 +442,7 @@ end
 RegisterServerEvent("sxGroup:RegisterLaboratory")
 AddEventHandler("sxGroup:RegisterLaboratory", function(data)
     local src = source
-    local xPlayer = ESX.GetPlayerFromId(src)
-    if not xPlayer or (xPlayer.getGroup() ~= 'admin' and xPlayer.getGroup() ~= 'superadmin') then
-        return
-    end
+    if not IsPlayerAdmin(src) then return end
 
     local tab = {}
     if data.type == 'coke' then

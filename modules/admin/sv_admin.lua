@@ -18,7 +18,7 @@ AdminStatsCounters = {
     salesValue = 0
 }
 
-local function IsPlayerAdmin(source)
+function IsPlayerAdmin(source)
     local xPlayer = ESX.GetPlayerFromId(source)
     if not xPlayer then return false end
     local group = xPlayer.getGroup()
