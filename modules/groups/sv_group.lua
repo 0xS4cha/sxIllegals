@@ -35,6 +35,16 @@ function RemoveGroup(id)
     return true
 end
 
+local function FormatDate(value)
+    local timestamp = tonumber(value)
+    if timestamp then
+        return os.date("%Y-%m-%d", math.floor(timestamp / 1000))
+    elseif type(value) == "string" then
+        return value:sub(1, 10)
+    end
+    return os.date("%Y-%m-%d")
+end
+
 group = newClass()
 
 function group:new(data)
@@ -48,6 +58,7 @@ function group:new(data)
     self.ranks = data.ranks or {}
     self.is_official = data.is_official or false
     self.slots = data.slots
+    self.createdAt = FormatDate(data.created_at)
     GroupList[self.id] = self
     return self
 end
@@ -416,6 +427,8 @@ MySQL.ready(function()
             `amount` INT NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ]])
+
+    MySQL.Sync.execute("ALTER TABLE `group_list` ADD COLUMN IF NOT EXISTS `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP")
 
     MySQL.query("ALTER TABLE `group_list` ADD COLUMN IF NOT EXISTS `slots` INT DEFAULT NULL", {}, function()
         Wait(1000)

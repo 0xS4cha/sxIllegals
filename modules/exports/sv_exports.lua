@@ -32,6 +32,7 @@ local function SerializeGroup(data)
         rgb = data.rgb,
         isOfficial = data.is_official == true,
         slots = data.slots or _GROUP.Slots[data.is_official == true],
+        createdAt = data.createdAt,
         members = members,
         ranks = ranks
     }
@@ -185,8 +186,8 @@ exports("GetGroupTerritories", function(groupId)
     return result
 end)
 
-exports("AddPlayerInfluence", function(source, territoryId, interaction)
-    AddInfluence(source, territoryId, interaction)
+exports("AddPlayerInfluence", function(source, territoryId, interaction, value)
+    AddInfluence(source, territoryId, interaction, value)
 end)
 
 exports("AddGroupInfluence", function(territoryId, groupId, points)

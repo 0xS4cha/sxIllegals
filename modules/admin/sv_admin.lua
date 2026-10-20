@@ -99,7 +99,7 @@ RegisterServerCallback('sxAdmin:getGroups', function(source)
             leaderName = leaderName,
             influenceTotal = influenceTotal,
             territoriesCount = territoriesCount,
-            createdAt = "2026-07-22",
+            createdAt = g.createdAt,
             members = members,
             ranks = ranks
         })
@@ -167,7 +167,7 @@ RegisterServerCallback('sxAdmin:getTerritories', function(source)
             coords = firstPoint,
             minZ = t.minZ or -100.0,
             maxZ = t.maxZ or 100.0,
-            startDate = t.start or "2026-07-22",
+            startDate = t.start,
             controlledBy = controlledBy,
             influences = influences
         })
@@ -283,6 +283,25 @@ RegisterServerCallback('sxAdmin:getLabs', function(source)
     return mappedLabs
 end)
 
+local WEEK_DAYS = { 'day_sun', 'day_mon', 'day_tue', 'day_wed', 'day_thu', 'day_fri', 'day_sat' }
+
+function SumStatistics(types, startTime, endTime)
+    local placeholders = {}
+    local params = {}
+    for i = 1, #types do
+        placeholders[i] = "?"
+        params[i] = types[i]
+    end
+    params[#params + 1] = os.date("%Y-%m-%d %H:%M:%S", startTime)
+    params[#params + 1] = os.date("%Y-%m-%d %H:%M:%S", endTime)
+
+    local result = MySQL.Sync.fetchAll(
+        ("SELECT SUM(amount) as total FROM statistics_logs WHERE type IN (%s) AND timestamp >= ? AND timestamp < ?")
+        :format(table.concat(placeholders, ", ")), params)
+
+    return math.floor(tonumber(result and result[1] and result[1].total) or 0)
+end
+
 local function GetFormattedTimestamp(timeDiff)
     if timeDiff < 60 then
         return GetPhrase('time_just_now')
@@ -327,136 +346,65 @@ RegisterServerCallback('sxAdmin:getStats', function(source, timeframe)
         activeLabsCount = #Labs.Table
     end
 
-    -- Dynamic sales in the last 24h
-    local sales24hResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type = 'sales' AND timestamp >= NOW() - INTERVAL 1 DAY")
-    local totalDrugSales24h = (sales24hResult and sales24hResult[1] and sales24hResult[1].total) or 0
-    if totalDrugSales24h == 0 then
-        totalDrugSales24h = 125000 + (totalGroups * 8000)
-    end
+    local totalDrugSales24h = SumStatistics({ 'sales' }, os.time() - 24 * 3600, os.time())
 
-    -- Dynamic timeframe points
     local timeSeriesData = {}
     local nowTime = os.time()
-    
-    if timeframe == '7d' then
-        local days = { 'day_sun', 'day_mon', 'day_tue', 'day_wed', 'day_thu', 'day_fri', 'day_sat' }
-        for i = 0, 6 do
+
+    for i = 0, 6 do
+        local label, startTime, endTime
+
+        if timeframe == '7d' then
             local targetTime = nowTime - (6 - i) * 24 * 3600
-            local wdayIndex = tonumber(os.date("%w", targetTime)) + 1
-            local label = GetPhrase(days[wdayIndex])
-            
-            local startRange = os.date("%Y-%m-%d 00:00:00", targetTime)
-            local endRange = os.date("%Y-%m-%d 23:59:59", targetTime)
-            
-            local queryResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type = 'sales' AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
-            local sales = (queryResult and queryResult[1] and queryResult[1].total) or 0
-            
-            local prodResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type IN ('coke', 'meth', 'weed') AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
-            local production = (prodResult and prodResult[1] and prodResult[1].total) or 0
-
-            local influence = math.floor(sales * 0.05 + production * 2.5)
-
-            local baseSales = math.random(30000, 60000)
-            local baseProd = math.random(200, 500)
-            local baseInfluence = math.random(500, 1200)
-
-            table.insert(timeSeriesData, {
-                label = label,
-                sales = math.floor(sales + baseSales),
-                production = math.floor(production + baseProd),
-                influence = math.floor(influence + baseInfluence)
-            })
+            label = GetPhrase(WEEK_DAYS[tonumber(os.date("%w", targetTime)) + 1])
+            local day = os.date("*t", targetTime)
+            day.hour, day.min, day.sec = 0, 0, 0
+            startTime = os.time(day)
+            endTime = startTime + 24 * 3600
+        elseif timeframe == '30d' then
+            local daysBefore = (6 - i) * 5
+            label = daysBefore == 0 and GetPhrase('time_today') or GetPhrase('time_days_before', daysBefore)
+            endTime = nowTime - daysBefore * 24 * 3600
+            startTime = endTime - 5 * 24 * 3600
+        else
+            endTime = nowTime - (6 - i) * 4 * 3600
+            startTime = endTime - 4 * 3600
+            label = os.date("%H:%M", endTime)
         end
-    elseif timeframe == '30d' then
-        for i = 0, 6 do
-            local targetTime = nowTime - (6 - i) * 5 * 24 * 3600
-            local label = GetPhrase('time_days_before', (6 - i) * 5)
-            if (6 - i) == 0 then
-                label = GetPhrase('time_today')
-            end
-            
-            local startRange = os.date("%Y-%m-%d 00:00:00", targetTime - 2 * 24 * 3600)
-            local endRange = os.date("%Y-%m-%d 23:59:59", targetTime + 2 * 24 * 3600)
-            
-            local queryResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type = 'sales' AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
-            local sales = (queryResult and queryResult[1] and queryResult[1].total) or 0
-            
-            local prodResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type IN ('coke', 'meth', 'weed') AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
-            local production = (prodResult and prodResult[1] and prodResult[1].total) or 0
 
-            local influence = math.floor(sales * 0.05 + production * 2.5)
-
-            local baseSales = math.random(150000, 300000)
-            local baseProd = math.random(1000, 2500)
-            local baseInfluence = math.random(2500, 6000)
-
-            table.insert(timeSeriesData, {
-                label = label,
-                sales = math.floor(sales + baseSales),
-                production = math.floor(production + baseProd),
-                influence = math.floor(influence + baseInfluence)
-            })
-        end
-    else -- '24h'
-        for i = 0, 6 do
-            local targetTime = nowTime - (6 - i) * 4 * 3600
-            local label = os.date("%H:%M", targetTime)
-            
-            local startRange = os.date("%Y-%m-%d %H:%M:%S", targetTime - 2 * 3600)
-            local endRange = os.date("%Y-%m-%d %H:%M:%S", targetTime + 2 * 3600)
-            
-            local queryResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type = 'sales' AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
-            local sales = (queryResult and queryResult[1] and queryResult[1].total) or 0
-            
-            local prodResult = MySQL.Sync.fetchAll("SELECT SUM(amount) as total FROM statistics_logs WHERE type IN ('coke', 'meth', 'weed') AND timestamp >= ? AND timestamp < ?", { startRange, endRange })
-            local production = (prodResult and prodResult[1] and prodResult[1].total) or 0
-
-            local influence = math.floor(sales * 0.05 + production * 2.5)
-
-            local baseSales = math.random(5000, 15000)
-            local baseProd = math.random(50, 150)
-            local baseInfluence = math.random(200, 500)
-
-            table.insert(timeSeriesData, {
-                label = label,
-                sales = math.floor(sales + baseSales),
-                production = math.floor(production + baseProd),
-                influence = math.floor(influence + baseInfluence)
-            })
-        end
+        table.insert(timeSeriesData, {
+            label = label,
+            sales = SumStatistics({ 'sales' }, startTime, endTime),
+            production = SumStatistics({ 'coke', 'meth', 'weed' }, startTime, endTime),
+            influence = SumStatistics({ 'influence' }, startTime, endTime)
+        })
     end
 
-    -- Aggregate breakdown sums
-    local sums = MySQL.Sync.fetchAll("SELECT type, SUM(amount) as total FROM statistics_logs GROUP BY type")
+    local counts = MySQL.Sync.fetchAll("SELECT type, COUNT(*) as total FROM statistics_logs GROUP BY type")
     local cokeVal, methVal, weedVal, salesVal = 0, 0, 0, 0
-    if sums then
-        for _, row in ipairs(sums) do
-            if row.type == 'coke' then
-                cokeVal = row.total or 0
-            elseif row.type == 'meth' then
-                methVal = row.total or 0
-            elseif row.type == 'weed' then
-                weedVal = row.total or 0
-            elseif row.type == 'sales' then
-                salesVal = row.total or 0
-            end
+    for _, row in ipairs(counts or {}) do
+        if row.type == 'coke' then
+            cokeVal = row.total or 0
+        elseif row.type == 'meth' then
+            methVal = row.total or 0
+        elseif row.type == 'weed' then
+            weedVal = row.total or 0
+        elseif row.type == 'sales' then
+            salesVal = row.total or 0
         end
     end
 
     local totalActions = cokeVal + methVal + weedVal + salesVal
-    if totalActions == 0 then
-        totalActions = 100
-        cokeVal = 35
-        methVal = 28
-        weedVal = 22
-        salesVal = 15
+    local function Percentage(value)
+        if totalActions == 0 then return 0 end
+        return math.floor((value / totalActions) * 100 + 0.5)
     end
 
     local activityBreakdown = {
-        { label = GetPhrase('stats_breakdown_coke'),  category = 'coke',  percentage = math.floor((cokeVal / totalActions) * 100 + 0.5),  value = cokeVal,  color = '#e2e8f0' },
-        { label = GetPhrase('stats_breakdown_meth'),  category = 'meth',  percentage = math.floor((methVal / totalActions) * 100 + 0.5),  value = methVal,  color = '#38bdf8' },
-        { label = GetPhrase('stats_breakdown_weed'),  category = 'weed',  percentage = math.floor((weedVal / totalActions) * 100 + 0.5),  value = weedVal,  color = '#4ade80' },
-        { label = GetPhrase('stats_breakdown_sales'), category = 'sales', percentage = math.floor((salesVal / totalActions) * 100 + 0.5), value = salesVal, color = '#f59e0b' },
+        { label = GetPhrase('stats_breakdown_coke'),  category = 'coke',  percentage = Percentage(cokeVal),  value = cokeVal,  color = '#e2e8f0' },
+        { label = GetPhrase('stats_breakdown_meth'),  category = 'meth',  percentage = Percentage(methVal),  value = methVal,  color = '#38bdf8' },
+        { label = GetPhrase('stats_breakdown_weed'),  category = 'weed',  percentage = Percentage(weedVal),  value = weedVal,  color = '#4ade80' },
+        { label = GetPhrase('stats_breakdown_sales'), category = 'sales', percentage = Percentage(salesVal), value = salesVal, color = '#f59e0b' },
     }
 
     local recentActivities = {}
@@ -671,7 +619,7 @@ RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)
     end
 end)
 
-function TrackAdminActivity(group, territory, interaction, point)
+function TrackAdminActivity(group, territory, interaction, point, value)
     local logType = interaction
     local amount = 1
 
@@ -686,7 +634,7 @@ function TrackAdminActivity(group, territory, interaction, point)
         logType = "weed"
     elseif interaction == "sellDrugs" then
         AdminStatsCounters.sales = AdminStatsCounters.sales + 1
-        amount = math.random(800, 1500)
+        amount = math.floor(tonumber(value) or 0)
         AdminStatsCounters.salesValue = AdminStatsCounters.salesValue + amount
         logType = "sales"
     elseif interaction == "finishMission" then
@@ -694,7 +642,7 @@ function TrackAdminActivity(group, territory, interaction, point)
         logType = "missions"
     end
 
-    MySQL.Async.execute("INSERT INTO statistics_logs (type, amount) VALUES (?, ?)", { logType, amount })
+    MySQL.Async.execute("INSERT INTO statistics_logs (type, amount) VALUES (?, ?), (?, ?)", { logType, amount, "influence", point })
 
     local desc = ""
     local title = GetPhrase('activity_crime_title')

@@ -21,11 +21,24 @@ const INITIAL_MOCK_LABS: LaboratoryItem[] = [
   { id: 3, label: 'Labo Chamberlain weed', type: 'weed', level: 1, coords: { x: -200, y: -1400, z: 31.0 }, territoryName: 'Chamberlain Hills', productionPercentage: 80, productionStatus: 'Prêt à récolter (4/6)' }
 ]
 
+const EMPTY_STATS: AdminStats = {
+  totalGroups: 0,
+  officialGroups: 0,
+  unofficialGroups: 0,
+  totalTerritories: 0,
+  contestedTerritories: 0,
+  totalDrugSales24h: 0,
+  activeLabsCount: 0,
+  timeSeriesData: [],
+  activityBreakdown: [],
+  recentActivities: []
+}
+
 export function useAdminData() {
-  const [groups, setGroups] = useState<GroupItem[]>(INITIAL_MOCK_GROUPS)
-  const [territories, setTerritories] = useState<TerritoryItem[]>(INITIAL_MOCK_TERRITORIES)
-  const [labs, setLabs] = useState<LaboratoryItem[]>(INITIAL_MOCK_LABS)
-  const [stats, setStats] = useState<AdminStats>(INITIAL_MOCK_STATS)
+  const [groups, setGroups] = useState<GroupItem[]>(isEnvBrowser() ? INITIAL_MOCK_GROUPS : [])
+  const [territories, setTerritories] = useState<TerritoryItem[]>(isEnvBrowser() ? INITIAL_MOCK_TERRITORIES : [])
+  const [labs, setLabs] = useState<LaboratoryItem[]>(isEnvBrowser() ? INITIAL_MOCK_LABS : [])
+  const [stats, setStats] = useState<AdminStats>(isEnvBrowser() ? INITIAL_MOCK_STATS : EMPTY_STATS)
   const [timeFrame, setTimeFrame] = useState<'24h' | '7d' | '30d'>('24h')
   const [loading, setLoading] = useState(false)
   const [selectedGroup, setSelectedGroup] = useState<GroupItem | null>(null)

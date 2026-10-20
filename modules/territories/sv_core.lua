@@ -1,6 +1,6 @@
 local influenceCooldown = {}
 
-function AddInfluence(source, id, interaction)
+function AddInfluence(source, id, interaction, value)
     local xPlayer = ESX.GetPlayerFromId(source)
     if not xPlayer then return end
 
@@ -24,7 +24,7 @@ function AddInfluence(source, id, interaction)
     territory:addInfluence(group:getId(), point)
 
     if TrackAdminActivity then
-        TrackAdminActivity(group, territory, interaction, point)
+        TrackAdminActivity(group, territory, interaction, point, value)
     end
 
     influenceCooldown[license][interaction] = currentTime

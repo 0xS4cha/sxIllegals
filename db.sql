@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS `group_list` (
   `rgb` text DEFAULT NULL,
   `is_official` int(11) DEFAULT 0,
   `slots` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_group_list_id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -73,6 +74,14 @@ CREATE TABLE IF NOT EXISTS `territories` (
   `start` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_territories_id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `statistics_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` datetime DEFAULT current_timestamp(),
+  `type` varchar(50) NOT NULL,
+  `amount` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
