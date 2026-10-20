@@ -18,9 +18,8 @@ A FiveM resource for ESX that brings together **criminal groups**, **territories
 | --- | --- |
 | [es_extended](https://github.com/esx-framework/esx_core) | Players, identifiers, inventory and admin groups |
 | [oxmysql](https://github.com/overextended/oxmysql) | Database access |
-| `yCore` | Notifications (`yCore:showNotification`), item labels, instances and the server callback used by the meth plates |
 
-The `sxGroup:AddInfluence` net event relies on a global `CheckPlayerToken(source, token)` function provided by your anti-cheat or core resource.
+Notifications are sent through the ESX `esx:showNotification` event and laboratory instances use FiveM routing buckets, so no other resource is required.
 
 ## Installation
 
@@ -45,7 +44,6 @@ The `sxGroup:AddInfluence` net event relies on a global `CheckPlayerToken(source
    ```cfg
    ensure oxmysql
    ensure es_extended
-   ensure yCore
    ensure sxIllegals
    ```
 
@@ -82,6 +80,7 @@ All gameplay values live in the `shared` folder.
 | --- | --- | --- |
 | `sh_dev` | `1` | Enables console logging |
 | `sh_log_level` | `3` | `0` errors, `1` warnings, `2` info, `3` trace |
+| `sx_locale` | | Forces the language, for example `setr sx_locale fr`. When unset, clients follow the game language and the server uses English |
 
 ## How it works
 
@@ -124,9 +123,15 @@ Every time a player performs a tracked interaction inside a territory, the serve
 
 Territories are created from the admin panel by recording points in game.
 
+Client scripts can also grant influence by triggering the `sxGroup:AddInfluence` net event. The server only accepts it when the player is physically inside the territory.
+
+```lua
+TriggerServerEvent("sxGroup:AddInfluence", territoryId, "sellDrugs")
+```
+
 ### Laboratories
 
-Laboratories are created from the admin panel at the admin's position. A marker is drawn at the entrance; pressing `E` spawns the shell above the entrance, teleports the player inside and puts them in an instance. The state of every plant, tray and circuit is kept on the server, synchronized to every client and saved to the database every 3 minutes.
+Laboratories are created from the admin panel at the admin's position. A marker is drawn at the entrance; pressing `E` spawns the shell above the entrance, teleports the player inside and moves them to a routing bucket dedicated to this laboratory, which is restored when they leave. The state of every plant, tray and circuit is kept on the server, synchronized to every client and saved to the database every 3 minutes.
 
 If the laboratory is inside a territory, each production step gives influence to the player's group.
 
@@ -177,7 +182,7 @@ Both commands can be bound to a key from the FiveM key bindings settings.
 
 ### Translations
 
-Translations are registered in `translations/*.lua` with `AddLanguage`. The language follows the game language and falls back to English. To add a language, copy `translations/en.lua`, translate the values and change the language code passed to `AddLanguage`.
+Translations are registered in `translations/*.lua` with `AddLanguage`. The language follows the game language, or the `sx_locale` convar when set, and falls back to English. To add a language, copy `translations/en.lua`, translate the values and change the language code passed to `AddLanguage`.
 
 ## Exports
 
