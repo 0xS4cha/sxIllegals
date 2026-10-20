@@ -15,7 +15,8 @@ if not GetCurrentLanguage then
 end
 
 
-local autoLanguage = langToId[GetCurrentLanguage() + 1]
+local forcedLanguage = GetConvar("sx_locale", "")
+local autoLanguage = forcedLanguage ~= "" and forcedLanguage or langToId[GetCurrentLanguage() + 1]
 local selectedLanguage = autoLanguage
 
 function RegisterDefaultPhrases(phrases)

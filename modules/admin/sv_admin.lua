@@ -2,8 +2,8 @@ AdminActivities = {
     {
         id = 'act-init-1',
         time = os.time() - 1800,
-        title = 'Système Initialisé',
-        description = 'Le gestionnaire sxIllegals est en cours d\'exécution.',
+        title = GetPhrase('activity_system_title'),
+        description = GetPhrase('activity_system_desc'),
         type = 'system',
         severity = 'info'
     }
@@ -38,13 +38,13 @@ RegisterServerCallback('sxAdmin:getGroups', function(source)
 
     for _, g in pairs(groupLists) do
         local membersCount = 0
-        local leaderName = "Pas de leader"
+        local leaderName = GetPhrase('admin_no_leader')
         local members = {}
 
         local lowestGrade = 999
         for _, m in ipairs(g.members or {}) do
             membersCount = membersCount + 1
-            local rankLabel = "Recrue"
+            local rankLabel = GetPhrase('grade_recruit')
             for _, r in ipairs(g.ranks or {}) do
                 if r.rank == m.id_grade then
                     rankLabel = r.name
@@ -54,12 +54,12 @@ RegisterServerCallback('sxAdmin:getGroups', function(source)
 
             if m.id_grade < lowestGrade then
                 lowestGrade = m.id_grade
-                leaderName = m.label or "Inconnu"
+                leaderName = m.label or GetPhrase('admin_unknown')
             end
 
             table.insert(members, {
                 identifier = m.identifier,
-                name = m.label or "Inconnu",
+                name = m.label or GetPhrase('admin_unknown'),
                 rank = rankLabel,
                 isLeader = (m.id_grade == 0)
             })
@@ -129,7 +129,7 @@ RegisterServerCallback('sxAdmin:getTerritories', function(source)
 
             table.insert(influences, {
                 groupId = inf.id,
-                groupName = inf.name or "Groupe inconnu",
+                groupName = inf.name or GetPhrase('admin_unknown_group'),
                 points = inf.points,
                 percentage = percentage,
                 color = string.format("rgb(%d, %d, %d)", r, g, b)
@@ -145,7 +145,7 @@ RegisterServerCallback('sxAdmin:getTerritories', function(source)
             end
             controlledBy = {
                 id = topGroup.id,
-                name = topGroup.name or "Groupe inconnu",
+                name = topGroup.name or GetPhrase('admin_unknown_group'),
                 color = string.format("rgb(%d, %d, %d)", r, g, b)
             }
         end
@@ -185,7 +185,7 @@ RegisterServerCallback('sxAdmin:getLabs', function(source)
     local labsTable = (Labs and Labs.Table) or {}
 
     for _, l in ipairs(labsTable) do
-        local territoryLabel = "Aucun"
+        local territoryLabel = GetPhrase('none')
         local point = vector3(l.coords.x, l.coords.y, l.coords.z)
 
         for _, t in pairs(territories) do
@@ -196,7 +196,7 @@ RegisterServerCallback('sxAdmin:getLabs', function(source)
         end
 
         local percentage = 0
-        local status = "Inactif"
+        local status = GetPhrase('lab_status_inactive')
 
         if l.type == 'weed' then
             local pots = (Labs.WeedsServer and Labs.WeedsServer[l.id]) or {}
@@ -217,14 +217,14 @@ RegisterServerCallback('sxAdmin:getLabs', function(source)
             if totalPots > 0 then
                 percentage = math.floor((plantedPots / totalPots) * 100)
                 if grownPots > 0 then
-                    status = string.format("Prêt à récolter (%d/%d)", grownPots, totalPots)
+                    status = GetPhrase('lab_status_weed_ready', grownPots, totalPots)
                 elseif plantedPots > 0 then
-                    status = string.format("Croissance (%d/%d)", plantedPots, totalPots)
+                    status = GetPhrase('lab_status_weed_growing', plantedPots, totalPots)
                 else
-                    status = "En attente de plantation"
+                    status = GetPhrase('lab_status_weed_waiting')
                 end
             else
-                status = "Vide"
+                status = GetPhrase('lab_status_empty')
             end
         elseif l.type == 'meth' then
             local benches = (Labs.CircuitsServer and Labs.CircuitsServer[l.id]) or {}
@@ -239,10 +239,10 @@ RegisterServerCallback('sxAdmin:getLabs', function(source)
             end
 
             if activeBenches > 0 then
-                status = string.format("Synthèse en cours (%d/%d)", activeBenches, totalBenches)
+                status = GetPhrase('lab_status_meth_active', activeBenches, totalBenches)
                 percentage = 50
             else
-                status = "En attente de composants"
+                status = GetPhrase('lab_status_meth_waiting')
             end
         elseif l.type == 'coke' then
             local trays = (Labs.TraysServer and Labs.TraysServer[l.id]) or {}
@@ -257,16 +257,16 @@ RegisterServerCallback('sxAdmin:getLabs', function(source)
             end
 
             if activeTrays > 0 then
-                status = string.format("Filtration en cours (%d/%d)", activeTrays, totalTrays)
+                status = GetPhrase('lab_status_coke_active', activeTrays, totalTrays)
                 percentage = 65
             else
-                status = "En attente de matière première"
+                status = GetPhrase('lab_status_coke_waiting')
             end
         end
 
         table.insert(mappedLabs, {
             id = l.id,
-            label = l.label or ("Labo #" .. l.id),
+            label = l.label or GetPhrase('lab_default_label', l.id),
             type = l.type,
             level = l.level or 1,
             coords = {
@@ -285,11 +285,11 @@ end)
 
 local function GetFormattedTimestamp(timeDiff)
     if timeDiff < 60 then
-        return "À l'instant"
+        return GetPhrase('time_just_now')
     elseif timeDiff < 3600 then
-        return string.format("Il y a %d min", math.floor(timeDiff / 60))
+        return GetPhrase('time_minutes_ago', math.floor(timeDiff / 60))
     else
-        return string.format("Il y a %d h", math.floor(timeDiff / 3600))
+        return GetPhrase('time_hours_ago', math.floor(timeDiff / 3600))
     end
 end
 
@@ -339,11 +339,11 @@ RegisterServerCallback('sxAdmin:getStats', function(source, timeframe)
     local nowTime = os.time()
     
     if timeframe == '7d' then
-        local days = { "Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam" }
+        local days = { 'day_sun', 'day_mon', 'day_tue', 'day_wed', 'day_thu', 'day_fri', 'day_sat' }
         for i = 0, 6 do
             local targetTime = nowTime - (6 - i) * 24 * 3600
             local wdayIndex = tonumber(os.date("%w", targetTime)) + 1
-            local label = days[wdayIndex]
+            local label = GetPhrase(days[wdayIndex])
             
             local startRange = os.date("%Y-%m-%d 00:00:00", targetTime)
             local endRange = os.date("%Y-%m-%d 23:59:59", targetTime)
@@ -370,9 +370,9 @@ RegisterServerCallback('sxAdmin:getStats', function(source, timeframe)
     elseif timeframe == '30d' then
         for i = 0, 6 do
             local targetTime = nowTime - (6 - i) * 5 * 24 * 3600
-            local label = "J-" .. ((6 - i) * 5)
+            local label = GetPhrase('time_days_before', (6 - i) * 5)
             if (6 - i) == 0 then
-                label = "Auj."
+                label = GetPhrase('time_today')
             end
             
             local startRange = os.date("%Y-%m-%d 00:00:00", targetTime - 2 * 24 * 3600)
@@ -453,10 +453,10 @@ RegisterServerCallback('sxAdmin:getStats', function(source, timeframe)
     end
 
     local activityBreakdown = {
-        { label = 'Coke (Production)',     category = 'coke',  percentage = math.floor((cokeVal / totalActions) * 100 + 0.5),  value = cokeVal,  color = '#e2e8f0' },
-        { label = 'Meth (Production)',     category = 'meth',  percentage = math.floor((methVal / totalActions) * 100 + 0.5),  value = methVal,  color = '#38bdf8' },
-        { label = 'Weed (Production)',     category = 'weed',  percentage = math.floor((weedVal / totalActions) * 100 + 0.5),  value = weedVal,  color = '#4ade80' },
-        { label = 'Ventes de Stupéfiants', category = 'sales', percentage = math.floor((salesVal / totalActions) * 100 + 0.5), value = salesVal, color = '#f59e0b' },
+        { label = GetPhrase('stats_breakdown_coke'),  category = 'coke',  percentage = math.floor((cokeVal / totalActions) * 100 + 0.5),  value = cokeVal,  color = '#e2e8f0' },
+        { label = GetPhrase('stats_breakdown_meth'),  category = 'meth',  percentage = math.floor((methVal / totalActions) * 100 + 0.5),  value = methVal,  color = '#38bdf8' },
+        { label = GetPhrase('stats_breakdown_weed'),  category = 'weed',  percentage = math.floor((weedVal / totalActions) * 100 + 0.5),  value = weedVal,  color = '#4ade80' },
+        { label = GetPhrase('stats_breakdown_sales'), category = 'sales', percentage = math.floor((salesVal / totalActions) * 100 + 0.5), value = salesVal, color = '#f59e0b' },
     }
 
     local recentActivities = {}
@@ -502,14 +502,13 @@ RegisterNetEvent('sxAdmin:toggleGroupOfficial', function(data)
         table.insert(AdminActivities, 1, {
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
-            title = 'Statut Officiel',
-            description = string.format("Le groupe %s a été %s par l'administration.", group.name,
-                newStatus and "promu Officiel" or "rétrogradé"),
+            title = GetPhrase('activity_official_title'),
+            description = GetPhrase(newStatus and 'activity_official_promoted_desc' or 'activity_official_demoted_desc', group.name),
             type = 'group',
             severity = 'info'
         })
 
-        Notify(src, string.format("Statut officiel de %s changé en: %s", group.name, tostring(newStatus)))
+        Notify(src, GetPhrase(newStatus and 'notify_group_official' or 'notify_group_unofficial', group.name))
     end
 end)
 
@@ -525,8 +524,8 @@ RegisterNetEvent('sxAdmin:deleteGroup', function(data)
         table.insert(AdminActivities, 1, {
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
-            title = 'Dissolution',
-            description = string.format("Le groupe %s a été dissous par l'administration.", groupName),
+            title = GetPhrase('activity_group_deleted_title'),
+            description = GetPhrase('activity_group_deleted_desc', groupName),
             type = 'group',
             severity = 'warning'
         })
@@ -535,7 +534,7 @@ RegisterNetEvent('sxAdmin:deleteGroup', function(data)
         MySQL.Async.execute("DELETE FROM group_grades WHERE groupId = ?", { groupId })
         MySQL.Async.execute("DELETE FROM group_list WHERE id = ?", { groupId })
         RemoveGroup(groupId)
-        Notify(src, string.format("Le groupe %s a été dissous avec succès.", groupName))
+        Notify(src, GetPhrase('notify_group_deleted', groupName))
     end
 end)
 
@@ -567,9 +566,9 @@ RegisterNetEvent('sxAdmin:createGroup', function(data)
 
     if id then
         local defaultGrades = {
-            { name = "Boss",       rank = 0 },
-            { name = "Lieutenant", rank = 1 },
-            { name = "Recrue",     rank = 2 }
+            { name = GetPhrase('grade_boss'),       rank = 0 },
+            { name = GetPhrase('grade_lieutenant'), rank = 1 },
+            { name = GetPhrase('grade_recruit'),    rank = 2 }
         }
         local ranks = {}
         for _, gradeData in ipairs(defaultGrades) do
@@ -600,13 +599,13 @@ RegisterNetEvent('sxAdmin:createGroup', function(data)
         table.insert(AdminActivities, 1, {
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
-            title = 'Création Faction',
-            description = string.format("Le groupe %s a été créé avec succès.", name),
+            title = GetPhrase('activity_group_created_title'),
+            description = GetPhrase('activity_group_created_desc', name),
             type = 'group',
             severity = 'info'
         })
 
-        Notify(src, string.format("Le groupe %s a été créé.", name))
+        Notify(src, GetPhrase('notify_group_created', name))
     end
 end)
 
@@ -635,13 +634,13 @@ RegisterNetEvent('sxAdmin:updateGroup', function(data)
         table.insert(AdminActivities, 1, {
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
-            title = 'Groupe mis à jour',
-            description = string.format("Les paramètres du groupe %s ont été modifiés.", group.name),
+            title = GetPhrase('activity_group_updated_title'),
+            description = GetPhrase('activity_group_updated_desc', group.name),
             type = 'group',
             severity = 'info'
         })
 
-        Notify(src, string.format("Groupe %s mis à jour avec succès.", group.name))
+        Notify(src, GetPhrase('notify_group_updated', group.name))
     end
 end)
 
@@ -661,14 +660,13 @@ RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)
         table.insert(AdminActivities, 1, {
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
-            title = 'Réinitialisation Zone',
-            description = string.format("L'influence du territoire %s a été réinitialisée.",
-                territory.label or territory.id),
+            title = GetPhrase('activity_territory_reset_title'),
+            description = GetPhrase('activity_territory_reset_desc', territory.label or territory.id),
             type = 'territory',
             severity = 'warning'
         })
 
-        Notify(src, string.format("Influence de la zone %s réinitialisée.", territory.label or territory.id))
+        Notify(src, GetPhrase('notify_territory_reset', territory.label or territory.id))
     end
 end)
 
@@ -698,38 +696,37 @@ function TrackAdminActivity(group, territory, interaction, point)
     MySQL.Async.execute("INSERT INTO statistics_logs (type, amount) VALUES (?, ?)", { logType, amount })
 
     local desc = ""
-    local title = "Activité criminelle"
+    local title = GetPhrase('activity_crime_title')
     local actType = "system"
     local severity = "info"
 
     if interaction == "sellDrugs" then
-        desc = string.format("Vente de stupéfiants par %s sur %s.", group:getName(), territory:getLabel())
-        title = "Vente de drogue"
+        desc = GetPhrase('activity_sales_desc', group:getName(), territory:getLabel())
+        title = GetPhrase('activity_sales_title')
         actType = "system"
     elseif interaction == "finishMission" then
-        desc = string.format("Mission complétée par le groupe %s.", group:getName())
-        title = "Mission finie"
+        desc = GetPhrase('activity_mission_desc', group:getName())
+        title = GetPhrase('activity_mission_title')
         actType = "group"
     elseif string.find(interaction, "Plant") or string.find(interaction, "Fertilize") then
-        desc = string.format("%s a planté/fertilisé dans la zone %s.", group:getName(), territory:getLabel())
-        title = "Culture de Weed"
+        desc = GetPhrase('activity_weed_grow_desc', group:getName(), territory:getLabel())
+        title = GetPhrase('activity_weed_grow_title')
         actType = "lab"
     elseif string.find(interaction, "Cut") or string.find(interaction, "Joint") then
-        desc = string.format("%s a récolté/roulé du weed de la zone %s.", group:getName(), territory:getLabel())
-        title = "Harvest de Weed"
+        desc = GetPhrase('activity_weed_harvest_desc', group:getName(), territory:getLabel())
+        title = GetPhrase('activity_weed_harvest_title')
         actType = "lab"
     elseif string.find(interaction, "coke") then
-        desc = string.format("Production de cocaïne par %s sur %s.", group:getName(), territory:getLabel())
-        title = "Labo Cocaïne"
+        desc = GetPhrase('activity_coke_desc', group:getName(), territory:getLabel())
+        title = GetPhrase('activity_coke_title')
         actType = "lab"
     elseif string.find(interaction, "meth") then
-        desc = string.format("Synthèse/réduction de méthamphétamine par %s sur %s.", group:getName(),
-            territory:getLabel())
-        title = "Labo Méth"
+        desc = GetPhrase('activity_meth_desc', group:getName(), territory:getLabel())
+        title = GetPhrase('activity_meth_title')
         actType = "lab"
     else
-        desc = string.format("Le groupe %s a généré de l'influence sur %s.", group:getName(), territory:getLabel())
-        title = "Gain d'influence"
+        desc = GetPhrase('activity_influence_desc', group:getName(), territory:getLabel())
+        title = GetPhrase('activity_influence_title')
         actType = "territory"
     end
 

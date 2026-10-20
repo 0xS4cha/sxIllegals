@@ -72,8 +72,8 @@ AddEventHandler('sxGroup:RegisterTerritory', function(data)
         table.insert(AdminActivities, 1, {
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
-            title = 'Territoire Créé',
-            description = string.format("Le territoire %s a été créé par l'administration.", data.label),
+            title = GetPhrase('activity_territory_created_title'),
+            description = GetPhrase('activity_territory_created_desc', data.label),
             type = 'territory',
             severity = 'info'
         })

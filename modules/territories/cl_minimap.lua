@@ -101,20 +101,20 @@ function InitializeTerritory(id, data)
     ResetBlipInfoTerritory(territory.id)
     SetBlipInfoTitleTerritory(territory.id, territory.label, false)
     
-    AddBlipInfoTextTerritory(territory.id, 'Domination',
-        ('~b~<C>%s</C>~s~'):format((#territory.influence > 0 and territory.influence[1].name) or 'Aucun'))
+    AddBlipInfoTextTerritory(territory.id, GetPhrase('territory_domination'),
+        ('~b~<C>%s</C>~s~'):format((#territory.influence > 0 and territory.influence[1].name) or GetPhrase('none')))
         
-    AddBlipInfoTextTerritory(territory.id, 'Influence',
+    AddBlipInfoTextTerritory(territory.id, GetPhrase('territories_influence'),
         ('%s'):format((territory.influence and territory.influence[1] and territory.totalInfluence and territory.totalInfluence > 0) and
             string.format('%.1f%%', (territory.influence[1].points / territory.totalInfluence * 100)) or '0%'))
             
     AddBlipInfoHeaderTerritory(territory.id, "")
     
     AddBlipInfoTextTerritory(territory.id,
-        ('%s'):format((#territory.influence > 0 and territory.influence[1].name) or 'Aucun groupe'), 
-        ('%s jour(s)'):format(territory.date or 0))
+        ('%s'):format((#territory.influence > 0 and territory.influence[1].name) or GetPhrase('no_group')), 
+        GetPhrase('territory_days', territory.date or 0))
         
-    AddBlipInfoTextTerritory(territory.id, 'Le territoire est présentement sous contrôle')
+    AddBlipInfoTextTerritory(territory.id, GetPhrase('territory_controlled'))
 end
 
 RegisterNetEvent("sxGroup:RefreshTerritories")
@@ -142,10 +142,10 @@ AddEventHandler("sxGroup:RefreshTerritories", function(data, id)
         ResetBlipInfoTerritory(TerritoriesList[id].id)
         SetBlipInfoTitleTerritory(TerritoriesList[id].id, TerritoriesList[id].label, false)
 
-        AddBlipInfoTextTerritory(TerritoriesList[id].id, 'Domination',
+        AddBlipInfoTextTerritory(TerritoriesList[id].id, GetPhrase('territory_domination'),
             ('~b~<C>%s</C>~s~'):format((#TerritoriesList[id].influence > 0 and TerritoriesList[id].influence[1].name) or
-                'Aucun'))
-        AddBlipInfoTextTerritory(TerritoriesList[id].id, 'Influence',
+                GetPhrase('none')))
+        AddBlipInfoTextTerritory(TerritoriesList[id].id, GetPhrase('territories_influence'),
             ('%s'):format((TerritoriesList[id].influence and TerritoriesList[id].influence[1] and TerritoriesList[id].totalInfluence and TerritoriesList[id].totalInfluence > 0) and
                 string.format('%.1f%%',
                     (TerritoriesList[id].influence[1].points / TerritoriesList[id].totalInfluence * 100)) or
@@ -153,15 +153,15 @@ AddEventHandler("sxGroup:RefreshTerritories", function(data, id)
         AddBlipInfoHeaderTerritory(TerritoriesList[id].id, "")
         AddBlipInfoTextTerritory(TerritoriesList[id].id,
             ('%s'):format((#TerritoriesList[id].influence > 0 and TerritoriesList[id].influence[1].name) or
-                'Aucun groupe'), ('%s jour(s)'):format(TerritoriesList[id].date or 0))
-        AddBlipInfoTextTerritory(TerritoriesList[id].id, 'Le territoire est présentement sous contrôle')
+                GetPhrase('no_group')), GetPhrase('territory_days', TerritoriesList[id].date or 0))
+        AddBlipInfoTextTerritory(TerritoriesList[id].id, GetPhrase('territory_controlled'))
     end
 end)
 
 Citizen.CreateThread(function()
-    AddTextEntry('IB_POI', 'Afficher les territoires')
-    AddTextEntry(GetHashKey('0x86A9740F'), 'Afficher les territoires')
-    AddTextEntryByHash('0x86A9740F', 'Afficher les territoires')
+    AddTextEntry('IB_POI', GetPhrase('territory_toggle_display'))
+    AddTextEntry(GetHashKey('0x86A9740F'), GetPhrase('territory_toggle_display'))
+    AddTextEntryByHash('0x86A9740F', GetPhrase('territory_toggle_display'))
     
     local list = TriggerServerCallback('sxGroup:getTerritoriesList') or {}
     TerritoriesList = {}

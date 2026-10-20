@@ -4,9 +4,9 @@ RegisterCommand('adminpanel', function()
         SX.UI:Open('admin')
     else
         BeginTextCommandThefeedPost("STRING")
-        AddTextComponentSubstringPlayerName("~r~Vous n'avez pas la permission d'ouvrir le panel admin.")
+        AddTextComponentSubstringPlayerName(GetPhrase('admin_no_permission'))
         EndTextCommandThefeedPostTicker(false, true)
     end
 end, false)
 
-RegisterKeyMapping('adminpanel', 'Ouvrir le panel admin', 'keyboard', '')
+RegisterKeyMapping('adminpanel', GetPhrase('keymap_admin_panel'), 'keyboard', '')

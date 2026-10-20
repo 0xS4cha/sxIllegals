@@ -33,10 +33,10 @@ AddEventHandler("core:labs:CheckPlant", function(labo, weed, territory)
         if territory then
             AddInfluence(source, territory, 'weedPlant')
         end
-        Notify(source, "Vous avez ~g~effectué~s~ la ~g~plantation~s~.")
+        Notify(source, GetPhrase('weed_plant_success'))
     else
         local label = GetItemLabel(_LABS.Weed.ItemGraine)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour planter.")
+        Notify(source, GetPhrase('not_enough_to_plant', label))
     end
 end)
 
@@ -54,7 +54,7 @@ AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territor
         if territory then
             AddInfluence(source, territory, 'weedFertilize')
         end
-        Notify(source, "Vous avez ~g~effectué~s~ la ~g~fertilisation~s~.")
+        Notify(source, GetPhrase('weed_fertilize_success'))
         if weed == 1 then
             for k, v in pairs(Labs.Table) do
                 if v.id == labo then
@@ -64,7 +64,7 @@ AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer, territor
         end
     else
         local label = GetItemLabel(_LABS.Weed.ItemFerti)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour fertiliser.")
+        Notify(source, GetPhrase('not_enough_to_fertilize', label))
     end
 end)
 
@@ -80,10 +80,10 @@ AddEventHandler("core:labs:WeedToJoint", function(territory)
         if territory then
             AddInfluence(source, territory, 'weedJoint')
         end
-        Notify(source, "Vous avez roulé ~g~1 joint~s~.")
+        Notify(source, GetPhrase('weed_joint_success', _LABS.Weed.CountJoint))
     else
         local label = GetItemLabel(_LABS.Weed.ItemFeuille)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour transformer.")
+        Notify(source, GetPhrase('not_enough_to_process', label))
     end
 end)
 
@@ -102,14 +102,14 @@ AddEventHandler("core:labs:WeedToPack", function(territory)
             if territory then
                 AddInfluence(source, territory, 'weedEmpoche')
             end
-            Notify(source, "Vous avez empoché ~g~5 weeds~s~.")
+            Notify(source, GetPhrase('weed_pack_success', _LABS.Weed.CountWeed))
         else
             local label = GetItemLabel(_LABS.Weed.ItemBags)
-            Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour empocher.")
+            Notify(source, GetPhrase('not_enough_to_pocket', label))
         end
     else
         local label = GetItemLabel(_LABS.Weed.ItemFeuille)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour empocher.")
+        Notify(source, GetPhrase('not_enough_to_pocket', label))
     end
 end)
 
@@ -123,7 +123,7 @@ AddEventHandler("core:labs:CheckGet", function(labo, weed, territory)
             AddInfluence(source, territory, 'weedCut')
         end
         xPlayer.addInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountFeuille)
-        Notify(source, string.format("Vous avez récolté ~g~%0d~s~ de ~g~feuilles de weed~s~.", _LABS.Weed.CountFeuille))
+        Notify(source, GetPhrase('weed_harvest_success', _LABS.Weed.CountFeuille))
     end
 end)
 
@@ -140,10 +140,10 @@ AddEventHandler("core:labs:CheckKerozen", function(labo, tray, timer, territory)
         if territory then
             AddInfluence(source, territory, 'cokeKerozen')
         end
-        Notify(source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
+        Notify(source, GetPhrase('item_added', label))
     else
         local label = GetItemLabel(_LABS.Coke.ItemKerozen)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        Notify(source, GetPhrase('not_enough_to_deposit', label))
     end
 end)
 
@@ -161,10 +161,10 @@ AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer, territory)
         if territory then
             AddInfluence(source, territory, 'cokeFeuille')
         end
-        Notify(source, "Vous avez ajouté des ~b~" .. label .. "~s~.")
+        Notify(source, GetPhrase('item_added', label))
     else
         local label = GetItemLabel(_LABS.Coke.ItemCoca)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        Notify(source, GetPhrase('not_enough_to_deposit', label))
     end
 end)
 
@@ -182,10 +182,10 @@ AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer, territor
         if territory then
             AddInfluence(source, territory, 'cokeWhiteWash')
         end
-        Notify(source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
+        Notify(source, GetPhrase('item_added', label))
     else
         local label = GetItemLabel(_LABS.Coke.ItemWhitewash)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        Notify(source, GetPhrase('not_enough_to_deposit', label))
     end
 end)
 
@@ -202,7 +202,7 @@ AddEventHandler("core:labs:takeCokeTray", function(labo, tray, territory)
     if territory then
         AddInfluence(source, territory, 'cokeTray')
     end
-    Notify(source, string.format("Vous avez récolté ~g~%0d~s~ de ~g~récipients de cocaine~s~.", _LABS.Coke.CountRecip))
+    Notify(source, GetPhrase('coke_tray_harvest_success', _LABS.Coke.CountRecip))
 end)
 
 RegisterServerEvent("core:labs:GetEmpocheCoke")
@@ -218,10 +218,10 @@ AddEventHandler("core:labs:GetEmpocheCoke", function(territory)
             AddInfluence(source, territory, 'cokeEmpoche')
         end
         local label = GetItemLabel(_LABS.Coke.ItemRecip)
-        Notify(source, "Vous avez ajouté du ~b~" .. label .. "~s~.")
+        Notify(source, GetPhrase('item_added', label))
     else
         local label = GetItemLabel(_LABS.Coke.ItemRecip)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        Notify(source, GetPhrase('not_enough_to_deposit', label))
     end
 end)
 
@@ -246,17 +246,17 @@ AddEventHandler("core:labs:addComponents", function(labo, spot)
                     Labs.CircuitsServer[labo][spot].synthesis.phenylacetone,
                     Labs.CircuitsServer[labo][spot].synthesis.methylamine)
 
-                Notify(source, "~g~Ajout de méthylamine et phénylacétone dans la cuve~s~.")
+                Notify(source, GetPhrase('meth_components_added'))
             else
                 local label = GetItemLabel(_LABS.Meth.ItemPhenylacetone)
-                Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+                Notify(source, GetPhrase('not_enough_to_deposit', label))
             end
         else
             local label = GetItemLabel(_LABS.Meth.ItemMethylamine)
-            Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+            Notify(source, GetPhrase('not_enough_to_deposit', label))
         end
     else
-        Notify(source, "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
+        Notify(source, GetPhrase('meth_tank_full'))
     end
 end)
 
@@ -273,17 +273,17 @@ AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer, territor
                     AddInfluence(source, territory, 'methStartSynthesis')
                 end
                 TriggerClientEvent("core:labs:startSynthesis", -1, labo, spot, timer)
-                Notify(source, "~g~Démarrage de la synthèse~s~.")
+                Notify(source, GetPhrase('meth_synthesis_started'))
             else
                 local label = GetItemLabel(_LABS.Meth.ItemMethylamine)
-                Notify(source, "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la synthèse.")
+                Notify(source, GetPhrase('meth_not_enough_synthesis', label))
             end
         else
             local label = GetItemLabel(_LABS.Meth.ItemPhenylacetone)
-            Notify(source, "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la synthèse.")
+            Notify(source, GetPhrase('meth_not_enough_synthesis', label))
         end
     else
-        Notify(source, "~r~Action impossible, une image de synthèse est déjà en cours~s~.")
+        Notify(source, GetPhrase('meth_synthesis_in_progress'))
     end
 end)
 
@@ -302,18 +302,18 @@ AddEventHandler("core:labs:sendToReduction", function(labo, spot, timer)
                     _LABS.Meth.CountRecip
                 TriggerClientEvent("core:labs:sendToReduction", -1, labo, spot,
                     Labs.CircuitsServer[labo][spot].reduction.plates)
-                Notify(source, "~g~Transfert vers la réduction effectuée~s~.")
+                Notify(source, GetPhrase('meth_reduction_transferred'))
             else
                 local label = GetItemLabel(_LABS.Meth.ItemMethylamine)
-                Notify(source, "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la reduction.")
+                Notify(source, GetPhrase('meth_not_enough_reduction', label))
             end
         else
             local label = GetItemLabel(_LABS.Meth.ItemPhenylacetone)
-            Notify(source, "~r~Il n'y a pas assez de ~b~" .. label .. "~r~ pour lancer la reduction.")
+            Notify(source, GetPhrase('meth_not_enough_reduction', label))
         end
     else
         local label = GetItemLabel(_LABS.Meth.ItemRecip)
-        Notify(source, "~r~La cuve est remplie impossible d'ajouter des liquides~s~.")
+        Notify(source, GetPhrase('meth_tank_full'))
     end
 end)
 
@@ -329,12 +329,12 @@ AddEventHandler("core:labs:startReduction", function(labo, spot, timer, territor
                 AddInfluence(source, territory, 'methStartReduction')
             end
             TriggerClientEvent("core:labs:startReduction", -1, labo, spot, timer)
-            Notify(source, "~g~Démarrage de la réduction~s~.")
+            Notify(source, GetPhrase('meth_reduction_started'))
         else
-            Notify(source, "~r~La cuve est vide.")
+            Notify(source, GetPhrase('meth_tank_empty'))
         end
     else
-        Notify(source, "~r~Action impossible, le processus de réduction est déjà en cours~s~.")
+        Notify(source, GetPhrase('meth_reduction_in_progress'))
     end
 end)
 
@@ -348,7 +348,7 @@ RegisterServerCallback("core:labs:TakePlateMeth", function(source, labo, spot, t
             AddInfluence(source, territory, 'methPlate')
         end
         TriggerClientEvent("core:labs:takePlate", -1, labo, spot, Labs.CircuitsServer[labo][spot].reduction.plates)
-        Notify(source, "~g~Récupération d'un plateau~s~.")
+        Notify(source, GetPhrase('meth_take_plate_success'))
         return true
     else
         Labs.CircuitsServer[labo][spot].reduction.start = nil
@@ -372,10 +372,10 @@ AddEventHandler("core:labs:GetBrisseMeth", function()
     if Required.count >= 1 then
         xPlayer.addInventoryItem(_LABS.Meth.ItemBack, 1)
         xPlayer.removeInventoryItem(_LABS.Meth.ItemRecip, 1)
-        Notify(source, "~g~Vous avez rempli un bac de meth~s~.")
+        Notify(source, GetPhrase('meth_break_success'))
     else
         local label = GetItemLabel(_LABS.Meth.ItemRecip)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        Notify(source, GetPhrase('not_enough_to_deposit', label))
     end
 end)
 
@@ -391,10 +391,10 @@ AddEventHandler("core:labs:GetEmpocheMeth", function(territory)
         if territory then
             AddInfluence(source, territory, 'methEmpoche')
         end
-        Notify(source, "~g~Vous avez empoché de la meth~s~.")
+        Notify(source, GetPhrase('meth_pocket_success'))
     else
         local label = GetItemLabel(_LABS.Meth.ItemBack)
-        Notify(source, "~r~Vous n'avez plus assez de ~b~" .. label .. "~r~ pour déposer.")
+        Notify(source, GetPhrase('not_enough_to_deposit', label))
     end
 end)
 
@@ -517,8 +517,8 @@ AddEventHandler("sxGroup:RegisterLaboratory", function(data)
             table.insert(AdminActivities, 1, {
                 id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
                 time = os.time(),
-                title = 'Labo Créé',
-                description = string.format("Le laboratoire %s (%s) a été créé par l'administration.", data.label, data.type:upper()),
+                title = GetPhrase('activity_lab_created_title'),
+                description = GetPhrase('activity_lab_created_desc', data.label, data.type:upper()),
                 type = 'lab',
                 severity = 'info'
             })
