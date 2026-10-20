@@ -29,7 +29,7 @@ Notifications are sent through the ESX `esx:showNotification` event and laborato
    git clone https://github.com/0xS4cha/sxIllegals.git
    ```
 
-2. Import `db.sql` into your database. The `statistics_logs` table and the `group_list.slots` column are created automatically on first start.
+2. Import `db.sql` into your database. On existing databases, the `statistics_logs` table and the `group_list.slots` and `group_list.created_at` columns are created automatically on first start.
 
 3. Build the interface.
 
@@ -57,6 +57,7 @@ All gameplay values live in the `shared` folder.
 | --- | --- |
 | `_GROUP.Unofficial` | When `false`, only official groups can hold influence on territories |
 | `_GROUP.Slots` | Default member slots, `[true]` for official groups and `[false]` for the others. A per-group value can be set from the admin panel |
+| `_GROUP.SaveInterval` | Minutes between two automatic saves of modified groups |
 
 ### `shared/territories.lua`
 
@@ -64,6 +65,7 @@ All gameplay values live in the `shared` folder.
 | --- | --- |
 | `_TERRITORY.InfluencePoint` | Influence points granted for each interaction |
 | `_TERRITORY.CouldownInfluence` | Cooldown in seconds, per player and per interaction, before the same interaction grants influence again |
+| `_TERRITORY.SaveInterval` | Minutes between two automatic saves of modified territories |
 
 ### `shared/laboratories.lua`
 
@@ -107,7 +109,7 @@ Client and server communicate through a promise based callback layer (`RegisterS
 
 ### Groups
 
-Groups are loaded from `group_list`, `group_grades` and `group_members` when the database is ready and kept in memory. Rank `0` is the leader, higher numbers are lower ranks. A new group is created with three default ranks: `Boss`, `Lieutenant` and `Recrue`. Modified groups are saved when the resource stops or immediately after an admin action.
+Groups are loaded from `group_list`, `group_grades` and `group_members` when the database is ready and kept in memory. Rank `0` is the leader, higher numbers are lower ranks. A new group is created with three default ranks: `Boss`, `Lieutenant` and `Recrue`. Modified groups are saved every `_GROUP.SaveInterval` minutes, when the resource stops and immediately after an admin action.
 
 ### Territories
 
@@ -119,7 +121,9 @@ Every time a player performs a tracked interaction inside a territory, the serve
 2. Checks the cooldown for this player and this interaction.
 3. Adds the configured points to the group's influence.
 4. Sorts influences, recolors the territory with the leader's color and syncs every client.
-5. Logs the action for the admin statistics.
+5. Logs the action and the influence gained for the admin statistics.
+
+Modified territories are saved every `_TERRITORY.SaveInterval` minutes and when the resource stops.
 
 Territories are created from the admin panel by recording points in game.
 
@@ -133,7 +137,7 @@ TriggerServerEvent("sxGroup:AddInfluence", territoryId, "sellDrugs")
 
 Laboratories are created from the admin panel at the admin's position. A marker is drawn at the entrance; pressing `E` spawns the shell above the entrance, teleports the player inside and moves them to a routing bucket dedicated to this laboratory, which is restored when they leave. The state of every plant, tray and circuit is kept on the server, synchronized to every client and saved to the database every 3 minutes.
 
-If the laboratory is inside a territory, each production step gives influence to the player's group.
+If the laboratory is inside a territory, each production step gives influence to the player's group. The territory is resolved by the server from the laboratory the player entered, never from data sent by the client.
 
 **Weed**
 
@@ -170,6 +174,8 @@ If the laboratory is inside a territory, each production step gives influence to
 ### Admin panel
 
 Players in the ESX `admin` or `superadmin` group can open the admin panel. Every server action checks the player's group again before running.
+
+Statistics are computed from the `statistics_logs` table: production steps, drug sales with their value, missions and influence gained. Charts stay empty until real activity is recorded.
 
 ### Commands
 
@@ -208,6 +214,7 @@ local group = exports.sxIllegals:GetGroup("GRP-1720000000-AB12")
     rgb = { r = 128, g = 0, b = 128 },
     isOfficial = true,
     slots = 15,
+    createdAt = "2026-07-22",
     members = {
         { identifier = "char1:abc", label = "John Doe", grade = 0 }
     },
@@ -332,12 +339,12 @@ Returns an array of the territories dominated by a group.
 local owned = exports.sxIllegals:GetGroupTerritories("GRP-1720000000-AB12")
 ```
 
-##### `AddPlayerInfluence(source, territoryId, interaction)`
+##### `AddPlayerInfluence(source, territoryId, interaction, value?)`
 
-Gives influence to the player's group using an interaction from `_TERRITORY.InfluencePoint`. Cooldowns and admin statistics apply exactly like for built-in actions. This is the recommended way to plug your own drug sales or missions into the territory system.
+Gives influence to the player's group using an interaction from `_TERRITORY.InfluencePoint`. Cooldowns and admin statistics apply exactly like for built-in actions. This is the recommended way to plug your own drug sales or missions into the territory system. For `sellDrugs`, `value` is the money earned by the sale and feeds the sales statistics.
 
 ```lua
-exports.sxIllegals:AddPlayerInfluence(source, territoryId, "sellDrugs")
+exports.sxIllegals:AddPlayerInfluence(source, territoryId, "sellDrugs", 1200)
 ```
 
 ##### `AddGroupInfluence(territoryId, groupId, points)`
