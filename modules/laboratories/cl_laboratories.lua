@@ -142,14 +142,19 @@ Citizen.CreateThread(function()
                          if dist < 1.5 then
                             ShowHelpNotification(GetPhrase('enter_in_lab'))
                             if IsControlJustReleased(0, 38) then
-                                local data = TriggerServerCallback('core:labs:GetDataFromLabs', lab.id)
-                                if data then
-                                    for k, v in pairs(data[1] or {}) do
-                                        lab[k] = v
+                                local access = TriggerServerCallback('sxIllegals:canEnterLab', lab.id)
+                                if access and access.ok then
+                                    local data = TriggerServerCallback('core:labs:GetDataFromLabs', lab.id)
+                                    if data then
+                                        for k, v in pairs(data[1] or {}) do
+                                            lab[k] = v
+                                        end
                                     end
+                                    Labs.LabosIndex = lab
+                                    Labs:enter()
+                                else
+                                    ShowNotification(GetPhrase('lab_access_' .. tostring(access and access.reason or 'not_owner')))
                                 end
-                                Labs.LabosIndex = lab
-                                Labs:enter()
                             end
                         end
                     end
@@ -178,6 +183,13 @@ Citizen.CreateThread(function()
 end)
 
 Labs:Init()
+
+RegisterNetEvent("sxIllegals:forceExitLab")
+AddEventHandler("sxIllegals:forceExitLab", function()
+    if Labs.IsInLab then
+        Labs:exit()
+    end
+end)
 
 RegisterNetEvent("sxIllegals:SyncLabsTable")
 AddEventHandler("sxIllegals:SyncLabsTable", function(tableData)

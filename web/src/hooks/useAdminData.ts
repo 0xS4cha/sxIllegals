@@ -9,6 +9,7 @@ import type {
   CreateTerritoryPayload,
   LaboratoryItem,
   CreateLaboratoryPayload,
+  UpdateLaboratoryPayload,
 } from '../types/admin'
 
 import { useNuiEvent } from './useNuiEvent'
@@ -268,6 +269,30 @@ export function useAdminData() {
     }
   }, [refreshData])
 
+  const updateLaboratory = useCallback(async (payload: UpdateLaboratoryPayload) => {
+    setLabs((prev) =>
+      prev.map((lab) =>
+        lab.id === payload.labId
+          ? {
+              ...lab,
+              level: payload.level,
+              ownerId: payload.ownerId,
+              ownerName: groups.find((g) => g.id === payload.ownerId)?.name ?? null,
+            }
+          : lab,
+      ),
+    )
+
+    if (!isEnvBrowser()) {
+      try {
+        await fetchNui('updateLaboratory', payload)
+      } catch (err) {
+        console.error('Failed to update laboratory:', err)
+      }
+      void refreshData()
+    }
+  }, [groups, refreshData])
+
   return {
     groups,
     territories,
@@ -289,5 +314,6 @@ export function useAdminData() {
     teleportToTerritory,
     createTerritory,
     createLaboratory,
+    updateLaboratory,
   }
 }

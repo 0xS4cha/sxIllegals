@@ -72,7 +72,7 @@ AddEventHandler("core:labs:WeedToJoint", function()
 
     if Required.count >= _LABS.Weed.CountRequiredJoint then
         xPlayer.removeInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountRequiredJoint)
-        xPlayer.addInventoryItem(_LABS.Weed.ItemJoint, _LABS.Weed.CountJoint)
+        xPlayer.addInventoryItem(_LABS.Weed.ItemJoint, GetLabOutput(source, _LABS.Weed.CountJoint))
         AddLabInfluence(source, 'weedJoint')
         Notify(source, GetPhrase('weed_joint_success', _LABS.Weed.CountJoint))
     else
@@ -92,7 +92,7 @@ AddEventHandler("core:labs:WeedToPack", function()
         if Required2.count >= _LABS.Weed.CountRequiredBags then
             xPlayer.removeInventoryItem(_LABS.Weed.ItemFeuille, _LABS.Weed.CountRequiredPack)
             xPlayer.removeInventoryItem(_LABS.Weed.ItemBags, _LABS.Weed.CountRequiredBags)
-            xPlayer.addInventoryItem(_LABS.Weed.ItemWeed, _LABS.Weed.CountWeed)
+            xPlayer.addInventoryItem(_LABS.Weed.ItemWeed, GetLabOutput(source, _LABS.Weed.CountWeed))
             AddLabInfluence(source, 'weedEmpoche')
             Notify(source, GetPhrase('weed_pack_success', _LABS.Weed.CountWeed))
         else
@@ -194,7 +194,7 @@ AddEventHandler("core:labs:GetEmpocheCoke", function()
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemRecip)
 
     if Required.count >= 1 then
-        xPlayer.addInventoryItem(_LABS.Coke.ItemCoke, _LABS.Coke.CountCocaine)
+        xPlayer.addInventoryItem(_LABS.Coke.ItemCoke, GetLabOutput(source, _LABS.Coke.CountCocaine))
         xPlayer.removeInventoryItem(_LABS.Coke.ItemRecip, 1)
         AddLabInfluence(source, 'cokeEmpoche')
         local label = GetItemLabel(_LABS.Coke.ItemRecip)
@@ -360,7 +360,7 @@ AddEventHandler("core:labs:GetEmpocheMeth", function()
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemBack)
 
     if Required.count >= 1 then
-        xPlayer.addInventoryItem(_LABS.Meth.ItemMeth, _LABS.Meth.CountMeth)
+        xPlayer.addInventoryItem(_LABS.Meth.ItemMeth, GetLabOutput(source, _LABS.Meth.CountMeth))
         xPlayer.removeInventoryItem(_LABS.Meth.ItemBack, 1)
         AddLabInfluence(source, 'methEmpoche')
         Notify(source, GetPhrase('meth_pocket_success'))
@@ -370,9 +370,9 @@ AddEventHandler("core:labs:GetEmpocheMeth", function()
     end
 end)
 
-local PlayerLabs = {}
+PlayerLabs = {}
 
-local function GetLabFromId(id)
+function GetLabFromId(id)
     for k, v in pairs(Labs.Table or {}) do
         if v.id == id then
             return v
@@ -383,6 +383,57 @@ end
 
 local LabBuckets = {}
 local PreviousBuckets = {}
+
+function GetLabOutput(source, base)
+    local lab = GetLabFromId(PlayerLabs[source])
+    local multiplier = lab and _LABS.OutputMultiplier[lab.level or 1] or 1.0
+    return math.max(1, math.floor(base * multiplier))
+end
+
+function CanPlayerEnterLab(source, lab)
+    if not lab then return false, 'not_found' end
+    if IsPlayerAdmin(source) then return true end
+    if CanPoliceEnterLab and CanPoliceEnterLab(source, lab) then return true end
+    if IsLabSealed and IsLabSealed(lab.id) then return false, 'sealed' end
+
+    if not lab.owner then
+        return _LABS.AllowUnowned == true, 'not_owner'
+    end
+
+    local playerGroup = GetGroupFromLicense(Bridge.GetIdentifier(source))
+    if playerGroup and playerGroup.id == lab.owner then
+        return true
+    end
+
+    return false, 'not_owner'
+end
+
+function SetLabOwner(labId, groupId)
+    local lab = GetLabFromId(labId)
+    if not lab then return false end
+    if groupId and not GetGroupFromId(groupId) then return false end
+
+    lab.owner = groupId
+    MySQL.Async.execute('UPDATE `labs` SET `owner` = ? WHERE `id` = ?', { groupId, labId })
+    TriggerClientEvent("sxIllegals:SyncLabsTable", -1, Labs.Table)
+    return true
+end
+
+function SetLabLevel(labId, level)
+    local lab = GetLabFromId(labId)
+    level = math.floor(tonumber(level) or 0)
+    if not lab or level < 1 or level > _LABS.MaxLevel then return false end
+
+    lab.level = level
+    MySQL.Async.execute('UPDATE `labs` SET `level` = ? WHERE `id` = ?', { level, labId })
+    TriggerClientEvent("sxIllegals:SyncLabsTable", -1, Labs.Table)
+    return true
+end
+
+RegisterServerCallback('sxIllegals:canEnterLab', function(source, labId)
+    local ok, reason = CanPlayerEnterLab(source, GetLabFromId(labId))
+    return { ok = ok, reason = reason }
+end)
 
 function AddLabInfluence(source, interaction)
     local lab = GetLabFromId(PlayerLabs[source])
@@ -397,7 +448,12 @@ local NextBucket = 1000
 
 RegisterNetEvent("sxIllegals:enterLab", function(labId)
     local src = source
-    if not GetLabFromId(labId) then return end
+    local lab = GetLabFromId(labId)
+    if not lab then return end
+    if not CanPlayerEnterLab(src, lab) then
+        TriggerClientEvent("sxIllegals:forceExitLab", src)
+        return
+    end
 
     if not LabBuckets[labId] then
         NextBucket = NextBucket + 1
@@ -529,6 +585,7 @@ end)
 
 Citizen.CreateThread(function()
     Wait(50)
+    MySQL.Sync.execute("ALTER TABLE `labs` ADD COLUMN IF NOT EXISTS `owner` VARCHAR(50) DEFAULT NULL")
     local result = MySQL.Sync.fetchAll("SELECT * FROM labs")
     if result then
         for k, v in pairs(result) do
@@ -584,8 +641,8 @@ Citizen.CreateThread(function()
                 label = v.label,
                 coords = v.coords,
                 type = v.type,
-                level = v
-                    .level,
+                level = v.level,
+                owner = v.owner,
                 weeds = { Labs.WeedsServer[v.id] },
                 circuits = { Labs.CircuitsServer[v.id] },
                 trays = { Labs.TraysServer[v.id] },

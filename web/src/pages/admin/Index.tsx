@@ -45,6 +45,7 @@ export function AdminPanel() {
     teleportToTerritory,
     createTerritory,
     createLaboratory,
+    updateLaboratory,
   } = useAdminData()
 
   const contestedCount = territories.filter((t) => t.attackState > 0).length
@@ -171,6 +172,8 @@ export function AdminPanel() {
               {activeCategory === 'laboratories' && (
                 <LaboratoriesView
                   labs={labs}
+                  groups={groups}
+                  onUpdateLab={updateLaboratory}
                   onOpenCreateModal={() => setIsCreateLabModalOpen(true)}
                 />
               )}

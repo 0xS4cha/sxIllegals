@@ -254,7 +254,17 @@ local my_language = {
     group_perm_canManageRanks = "Manage ranks",
     group_none_title = "No group",
     group_none_subtitle = "You are not part of a criminal group",
-    group_none_desc = "Ask a group leader to invite you."
+    group_none_desc = "Ask a group leader to invite you.",
+
+    lab_access_not_owner = "This laboratory belongs to another group.",
+    lab_access_not_found = "This laboratory no longer exists.",
+    lab_access_sealed = "This laboratory has been ~r~sealed~s~ by the police.",
+    activity_lab_updated_title = "Laboratory updated",
+    activity_lab_updated_desc = "The laboratory %s was updated.",
+    notify_lab_updated = "Laboratory ~b~%s~s~ updated.",
+    lab_owner = "Owner",
+    lab_owner_none = "No owner",
+    lab_level = "Level"
 }
 
 AddLanguage("en", my_language)

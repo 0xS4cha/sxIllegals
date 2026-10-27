@@ -273,7 +273,10 @@ RegisterServerCallback('sxAdmin:getLabs', function(source)
             },
             territoryName = territoryLabel,
             productionPercentage = percentage,
-            productionStatus = status
+            productionStatus = status,
+            ownerId = l.owner,
+            ownerName = l.owner and GetGroupFromId(l.owner) and GetGroupFromId(l.owner).name or nil,
+            maxLevel = _LABS.MaxLevel
         })
     end
 
@@ -547,6 +550,35 @@ RegisterNetEvent('sxAdmin:updateGroup', function(data)
 
         Notify(src, GetPhrase('notify_group_updated', group.name))
     end
+end)
+
+RegisterServerCallback('sxAdmin:updateLaboratory', function(source, data)
+    if not IsPlayerAdmin(source) or type(data) ~= 'table' then return { ok = false, error = 'no_permission' } end
+
+    local lab = GetLabFromId(data.labId)
+    if not lab then return { ok = false, error = 'not_found' } end
+
+    local owner = data.ownerId
+    if owner == '' then owner = nil end
+    if owner ~= lab.owner and not SetLabOwner(lab.id, owner) then
+        return { ok = false, error = 'invalid_owner' }
+    end
+
+    if data.level and tonumber(data.level) ~= lab.level and not SetLabLevel(lab.id, data.level) then
+        return { ok = false, error = 'invalid_level' }
+    end
+
+    table.insert(AdminActivities, 1, {
+        id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
+        time = os.time(),
+        title = GetPhrase('activity_lab_updated_title'),
+        description = GetPhrase('activity_lab_updated_desc', lab.label or lab.id),
+        type = 'lab',
+        severity = 'info'
+    })
+
+    Notify(source, GetPhrase('notify_lab_updated', lab.label or lab.id))
+    return { ok = true }
 end)
 
 RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)

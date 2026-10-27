@@ -8,16 +8,20 @@ import {
   Plus,
   Search,
 } from 'lucide-react'
-import type { LaboratoryItem } from '../../../types/admin'
+import { useTranslation } from '../../../hooks/useTranslation'
+import type { GroupItem, LaboratoryItem, UpdateLaboratoryPayload } from '../../../types/admin'
 
 interface LaboratoriesViewProps {
   labs: LaboratoryItem[]
+  groups: GroupItem[]
+  onUpdateLab: (payload: UpdateLaboratoryPayload) => void
   onOpenCreateModal: () => void
 }
 
 type LaboratoryFilter = 'all' | 'weed' | 'coke' | 'meth'
 
-export function LaboratoriesView({ labs, onOpenCreateModal }: LaboratoriesViewProps) {
+export function LaboratoriesView({ labs, groups, onUpdateLab, onOpenCreateModal }: LaboratoriesViewProps) {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [filterState, setFilterState] = useState<LaboratoryFilter>('all')
 
@@ -184,6 +188,36 @@ export function LaboratoriesView({ labs, onOpenCreateModal }: LaboratoriesViewPr
                   <div className="flex items-center gap-1 text-zinc-300">
                     <FlaskRound className="h-3 w-3 text-zinc-500" />
                     <span>{lab.territoryName}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 text-[11px]">
+                  <span className="text-zinc-500">{t('lab_owner')}</span>
+                  <select
+                    value={lab.ownerId ?? ''}
+                    onChange={(e) => onUpdateLab({ labId: lab.id, ownerId: e.target.value || null, level: lab.level })}
+                    className="max-w-[60%] rounded-md border border-zinc-800 bg-zinc-950 px-2 py-1 text-[11px] text-zinc-200 focus:border-zinc-700 focus:outline-none"
+                  >
+                    <option value="">{t('lab_owner_none')}</option>
+                    {groups.map((g) => (
+                      <option key={g.id} value={String(g.id)}>{g.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 text-[11px]">
+                  <span className="text-zinc-500">{t('lab_level')}</span>
+                  <div className="flex gap-1">
+                    {Array.from({ length: lab.maxLevel ?? 3 }, (_, i) => i + 1).map((level) => (
+                      <button
+                        key={level}
+                        type="button"
+                        onClick={() => onUpdateLab({ labId: lab.id, ownerId: lab.ownerId ?? null, level })}
+                        className={`h-6 w-6 rounded-md border text-[11px] font-bold transition ${lab.level === level ? 'border-zinc-500 bg-zinc-700 text-zinc-100' : 'border-zinc-800 bg-zinc-950 text-zinc-500 hover:text-zinc-300'}`}
+                      >
+                        {level}
+                      </button>
+                    ))}
                   </div>
                 </div>
 

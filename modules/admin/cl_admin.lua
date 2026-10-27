@@ -84,6 +84,10 @@ function SX.Admin:Initialize()
         cb(labs or {})
     end)
 
+    RegisterNUICallback('updateLaboratory', function(data, cb)
+        cb(TriggerServerCallback('sxAdmin:updateLaboratory', data) or { ok = false, error = 'timeout' })
+    end)
+
     RegisterNUICallback('createLaboratory', function(data, cb)
         if data and data.label and data.type and data.coords then
             TriggerServerEvent('sxGroup:RegisterLaboratory', data)

@@ -1,5 +1,9 @@
 _LABS = _LABS or {}
 
+_LABS.AllowUnowned = true
+_LABS.MaxLevel = 3
+_LABS.OutputMultiplier = { 1.0, 1.25, 1.5 }
+
 _LABS.Shell = {
 	['weed'] = { 
 		name = 'weed_business_empty',
@@ -139,7 +143,7 @@ _LABS.Meth.CountMeth = 8
 _LABS.Meth.SynthesisDuration = 60
 _LABS.Meth.ReductionDuration = 3600
 _LABS.Meth.Tanks = {
-    25, 25
+    25, 35, 50
 }
 
 

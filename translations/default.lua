@@ -254,7 +254,17 @@ local my_language = {
     group_perm_canManageRanks = "Gérer les rangs",
     group_none_title = "Aucun groupe",
     group_none_subtitle = "Vous ne faites partie d'aucun groupe criminel",
-    group_none_desc = "Demandez à un chef de groupe de vous inviter."
+    group_none_desc = "Demandez à un chef de groupe de vous inviter.",
+
+    lab_access_not_owner = "Ce laboratoire appartient à un autre groupe.",
+    lab_access_not_found = "Ce laboratoire n'existe plus.",
+    lab_access_sealed = "Ce laboratoire a été ~r~scellé~s~ par la police.",
+    activity_lab_updated_title = "Laboratoire modifié",
+    activity_lab_updated_desc = "Le laboratoire %s a été modifié.",
+    notify_lab_updated = "Laboratoire ~b~%s~s~ modifié.",
+    lab_owner = "Propriétaire",
+    lab_owner_none = "Aucun propriétaire",
+    lab_level = "Niveau"
 }
 
 RegisterDefaultPhrases(my_language)
