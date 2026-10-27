@@ -550,6 +550,26 @@ RegisterNetEvent('sxAdmin:updateGroup', function(data)
     end
 end)
 
+RegisterServerCallback('sxAdmin:deleteLaboratory', function(source, labId)
+    if not IsPlayerAdmin(source) then return { ok = false, error = 'no_permission' } end
+
+    local lab = GetLabFromId(labId)
+    if not lab then return { ok = false, error = 'not_found' } end
+
+    local label = lab.label or lab.id
+    if not DeleteLab(lab.id) then return { ok = false, error = 'not_found' } end
+
+    AddAdminActivity({
+        title = GetPhrase('activity_lab_deleted_title'),
+        description = GetPhrase('activity_lab_deleted_desc', label, Bridge.GetName(source)),
+        type = 'lab',
+        severity = 'warning'
+    }, 'lab_deleted')
+
+    Notify(source, GetPhrase('notify_lab_deleted', label))
+    return { ok = true }
+end)
+
 RegisterServerCallback('sxAdmin:updateLaboratory', function(source, data)
     if not IsPlayerAdmin(source) or type(data) ~= 'table' then return { ok = false, error = 'no_permission' } end
 

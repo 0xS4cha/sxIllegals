@@ -523,7 +523,13 @@ local my_language = {
     modal_lab_capture_position = "Capture my current position",
     modal_lab_coords_placeholder = "Ex: vector3(125.4, -1450.2, 29.5) or 125.4, -1450.2, 29.5",
     modal_lab_position_saved = "Saved entrance:",
-    modal_lab_no_position = "No entrance set yet"
+    modal_lab_no_position = "No entrance set yet",
+
+    activity_lab_deleted_title = "Laboratory deleted",
+    activity_lab_deleted_desc = "The laboratory %s was deleted by %s.",
+    notify_lab_deleted = "Laboratory ~r~%s~s~ deleted.",
+    labs_delete = "Delete",
+    btn_confirm_delete = "Click again to confirm"
 }
 
 AddLanguage("en", my_language)

@@ -470,6 +470,31 @@ function ResetLabProduction(labId)
     return true
 end
 
+function DeleteLab(labId)
+    local index = nil
+    for i, lab in ipairs(Labs.Table) do
+        if lab.id == labId then
+            index = i
+            break
+        end
+    end
+    if not index then return false end
+
+    for _, target in ipairs(GetPlayersInLab(labId)) do
+        TriggerClientEvent('sxIllegals:forceExitLab', target)
+    end
+
+    table.remove(Labs.Table, index)
+    Labs.WeedsServer[labId] = nil
+    Labs.CircuitsServer[labId] = nil
+    Labs.TraysServer[labId] = nil
+    MySQL.Async.execute('DELETE FROM `labs` WHERE `id` = ?', { labId })
+
+    TriggerClientEvent("sxIllegals:SyncLabsTable", -1, Labs.Table)
+    TriggerEvent('sxIllegals:labDeleted', labId)
+    return true
+end
+
 function GetPlayersInLab(labId)
     local result = {}
     for source, id in pairs(PlayerLabs) do

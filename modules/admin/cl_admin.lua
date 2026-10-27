@@ -84,6 +84,10 @@ function SX.Admin:Initialize()
         cb(labs or {})
     end)
 
+    RegisterNUICallback('deleteLaboratory', function(data, cb)
+        cb(TriggerServerCallback('sxAdmin:deleteLaboratory', data and data.labId) or { ok = false, error = 'timeout' })
+    end)
+
     RegisterNUICallback('updateLaboratory', function(data, cb)
         cb(TriggerServerCallback('sxAdmin:updateLaboratory', data) or { ok = false, error = 'timeout' })
     end)

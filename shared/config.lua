@@ -26,6 +26,7 @@ _CONFIG.Webhook = {
         territory_captured = true,
         lab_created = true,
         lab_updated = true,
+        lab_deleted = true,
         lab_raided = true,
         police_alert = false,
     },

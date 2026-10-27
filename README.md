@@ -504,6 +504,7 @@ Group functions accept a server id or an identifier for `target`.
 | `ResetTerritoryInfluence(territoryId)` | `boolean` | Removes every influence from a territory |
 | `GetTerritoryWar(territoryId)` | `table` | `{ attackState, contested, attacker, defender, progress, cooldown }`, `progress` in percent and `cooldown` in seconds |
 | `SetLaboratoryOwner(labId, groupId?)` | `boolean` | Gives a laboratory to a group, `nil` removes the owner |
+| `DeleteLaboratory(labId)` | `boolean` | Deletes a laboratory and sends out the players inside |
 | `SetLaboratoryLevel(labId, level)` | `boolean` | Sets the level, from `1` to `_LABS.MaxLevel` |
 | `SealLaboratory(labId, source?)` | `boolean` | Seals a laboratory as if it was raided |
 | `UnsealLaboratory(labId)` | `boolean` | Lifts the seal |
@@ -531,6 +532,7 @@ Server events triggered with `TriggerEvent`, other resources can listen to them 
 | `sxIllegals:territoryAttackEnded` | `territoryId`, `attackerId`, `defenderId`, `reason` |
 | `sxIllegals:territoryCaptured` | `territoryId`, `attackerId`, `defenderId` |
 | `sxIllegals:territoryLostByDecay` | `territoryId`, `previousOwnerId`, `newOwnerId` |
+| `sxIllegals:labDeleted` | `labId` |
 | `sxIllegals:labRaided` | `labId`, `source`, `ownerId` |
 | `sxIllegals:policeAlert` | `labId`, `coords`, `interaction` |
 

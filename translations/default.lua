@@ -523,7 +523,13 @@ local my_language = {
     modal_lab_capture_position = "Capturer ma position actuelle",
     modal_lab_coords_placeholder = "Ex : vector3(125.4, -1450.2, 29.5) ou 125.4, -1450.2, 29.5",
     modal_lab_position_saved = "Entrée enregistrée :",
-    modal_lab_no_position = "Aucune entrée configurée"
+    modal_lab_no_position = "Aucune entrée configurée",
+
+    activity_lab_deleted_title = "Laboratoire supprimé",
+    activity_lab_deleted_desc = "Le laboratoire %s a été supprimé par %s.",
+    notify_lab_deleted = "Laboratoire ~r~%s~s~ supprimé.",
+    labs_delete = "Supprimer",
+    btn_confirm_delete = "Cliquez encore pour confirmer"
 }
 
 RegisterDefaultPhrases(my_language)

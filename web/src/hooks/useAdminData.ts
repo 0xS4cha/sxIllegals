@@ -294,6 +294,19 @@ export function useAdminData() {
     }
   }, [groups, refreshData])
 
+  const deleteLaboratory = useCallback(async (labId: string | number) => {
+    setLabs((prev) => prev.filter((lab) => lab.id !== labId))
+
+    if (!isEnvBrowser()) {
+      try {
+        await fetchNui('deleteLaboratory', { labId })
+      } catch (err) {
+        console.error('Failed to delete laboratory:', err)
+      }
+      void refreshData()
+    }
+  }, [refreshData])
+
   return {
     groups,
     territories,
@@ -316,5 +329,6 @@ export function useAdminData() {
     createTerritory,
     createLaboratory,
     updateLaboratory,
+    deleteLaboratory,
   }
 }

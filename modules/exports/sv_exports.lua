@@ -319,6 +319,10 @@ exports("SetLaboratoryOwner", function(labId, groupId)
     return SetLabOwner(labId, groupId)
 end)
 
+exports("DeleteLaboratory", function(labId)
+    return DeleteLab(labId)
+end)
+
 exports("SetLaboratoryLevel", function(labId, level)
     return SetLabLevel(labId, level)
 end)
