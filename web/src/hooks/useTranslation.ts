@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNuiEvent } from './useNuiEvent'
-import type { PhraseDictionary, SetLocaleData, SetTranslationsData } from '../types/nui'
+import type { NuiMessage, PhraseDictionary, SetLocaleData, SetTranslationsData } from '../types/nui'
 
 export type Locale = string
 
@@ -41,6 +40,22 @@ function setGlobalTranslations(locale: Locale, translations: PhraseDictionary) {
   notifyListeners()
 }
 
+window.addEventListener('message', (event: MessageEvent<NuiMessage<SetTranslationsData | SetLocaleData>>) => {
+  const { action, data } = event.data ?? {}
+
+  if (action === 'setTranslations') {
+    const payload = data as SetTranslationsData
+    if (payload && payload.locale && payload.translations) {
+      setGlobalTranslations(payload.locale, payload.translations)
+    }
+  } else if (action === 'setLocale') {
+    const payload = data as SetLocaleData
+    if (payload && payload.locale) {
+      setGlobalLocale(payload.locale)
+    }
+  }
+})
+
 export function useTranslation() {
   const [locale, setLocale] = useState<Locale>(currentLocale)
   const [translations, setTranslations] = useState<PhraseDictionary>(currentTranslations)
@@ -57,18 +72,6 @@ export function useTranslation() {
       listeners.delete(handler)
     }
   }, [])
-
-  useNuiEvent<SetTranslationsData>('setTranslations', (data) => {
-    if (data && data.locale && data.translations) {
-      setGlobalTranslations(data.locale, data.translations)
-    }
-  })
-
-  useNuiEvent<SetLocaleData>('setLocale', (data) => {
-    if (data && data.locale) {
-      setGlobalLocale(data.locale)
-    }
-  })
 
   const t = useCallback((key: string, replacements?: Record<string, string | number>): string => {
     let text = translations[key] || key
