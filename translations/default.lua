@@ -264,7 +264,13 @@ local my_language = {
     notify_lab_updated = "Laboratoire ~b~%s~s~ modifié.",
     lab_owner = "Propriétaire",
     lab_owner_none = "Aucun propriétaire",
-    lab_level = "Niveau"
+    lab_level = "Niveau",
+
+    alert_member_left_title = "Départ d'un membre",
+    alert_member_left = "%s a quitté le groupe.",
+    alert_member_kicked = "%s a été exclu du groupe.",
+    alert_member_joined_title = "Nouveau membre",
+    alert_member_joined = "%s a rejoint le groupe."
 }
 
 RegisterDefaultPhrases(my_language)

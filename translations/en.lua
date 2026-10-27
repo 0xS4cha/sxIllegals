@@ -264,7 +264,13 @@ local my_language = {
     notify_lab_updated = "Laboratory ~b~%s~s~ updated.",
     lab_owner = "Owner",
     lab_owner_none = "No owner",
-    lab_level = "Level"
+    lab_level = "Level",
+
+    alert_member_left_title = "Member left",
+    alert_member_left = "%s left the group.",
+    alert_member_kicked = "%s was kicked from the group.",
+    alert_member_joined_title = "New member",
+    alert_member_joined = "%s joined the group."
 }
 
 AddLanguage("en", my_language)

@@ -14,3 +14,9 @@ _GROUP.DefaultRanks = {
     { label = 'grade_lieutenant', rank = 1, perms = { canInvite = true, canKick = true, canPromote = true } },
     { label = 'grade_recruit', rank = 2, perms = {} },
 }
+
+_GROUP.Alerts = {
+    icon = 'CHAR_LESTER',
+    sound = true,
+    blipDuration = 60,
+}

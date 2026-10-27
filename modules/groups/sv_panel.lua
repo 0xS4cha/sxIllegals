@@ -218,7 +218,7 @@ RegisterServerCallback('sxGroup:kickMember', function(source, targetIdentifier)
 
     AddGroupActivity(group.id, 'member', GetPhrase('group_activity_kicked_title'), GetPhrase('group_activity_kicked_desc', label, actor.label))
     NotifyGroupMember(targetIdentifier, GetPhrase('notify_group_kicked', group.name))
-    TriggerEvent('sxIllegals:groupMemberRemoved', group.id, targetIdentifier, 'kick')
+    TriggerEvent('sxIllegals:groupMemberRemoved', group.id, targetIdentifier, 'kick', label)
     return Result(source, group, identifier)
 end)
 
@@ -240,7 +240,7 @@ RegisterServerCallback('sxGroup:leaveGroup', function(source)
     if not group:kickPlayer(identifier) then return Result(source, group, identifier, 'unknown') end
 
     AddGroupActivity(group.id, 'member', GetPhrase('group_activity_left_title'), GetPhrase('group_activity_left_desc', label))
-    TriggerEvent('sxIllegals:groupMemberRemoved', group.id, identifier, 'leave')
+    TriggerEvent('sxIllegals:groupMemberRemoved', group.id, identifier, 'leave', label)
     Notify(source, GetPhrase('notify_group_left', group.name))
     return { ok = true, group = nil }
 end)
