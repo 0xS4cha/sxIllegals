@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Edit3, UserPlus, X } from 'lucide-react'
+import { useTranslation } from '../../../hooks/useTranslation'
 
 interface InviteMemberModalProps {
   isOpen: boolean
@@ -9,6 +10,7 @@ interface InviteMemberModalProps {
 }
 
 export function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberModalProps) {
+  const { t } = useTranslation()
   const [targetId, setTargetId] = useState('')
 
   if (!isOpen) return null
@@ -39,7 +41,7 @@ export function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberMod
           <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
             <div className="flex items-center gap-2">
               <UserPlus className="h-5 w-5 text-zinc-200" />
-              <h3 className="text-base font-bold text-zinc-100">Inviter un Joueur</h3>
+              <h3 className="text-base font-bold text-zinc-100">{t('group_invite_title')}</h3>
             </div>
             <button
               type="button"
@@ -53,7 +55,7 @@ export function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberMod
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300">
-                ID Serveur du Joueur
+                {t('group_invite_label')}
               </label>
               <input
                 type="text"
@@ -64,7 +66,7 @@ export function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberMod
                 className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
               />
               <p className="text-[11px] text-zinc-500">
-                Le joueur doit être à proximité pour recevoir l'invitation de faction.
+                {t('group_invite_hint')}
               </p>
             </div>
 
@@ -74,13 +76,13 @@ export function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberMod
                 onClick={onClose}
                 className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition"
               >
-                Annuler
+                {t('btn_cancel')}
               </button>
               <button
                 type="submit"
                 className="rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 hover:bg-white transition"
               >
-                Envoyer l'invitation
+                {t('group_invite_submit')}
               </button>
             </div>
           </form>
@@ -103,6 +105,7 @@ export function EditDeviseModal({
   onClose,
   onSave,
 }: EditDeviseModalProps) {
+  const { t } = useTranslation()
   const [devise, setDevise] = useState(currentDevise)
 
   if (!isOpen) return null
@@ -131,7 +134,7 @@ export function EditDeviseModal({
           <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
             <div className="flex items-center gap-2">
               <Edit3 className="h-5 w-5 text-zinc-200" />
-              <h3 className="text-base font-bold text-zinc-100">Modifier la Devise de Faction</h3>
+              <h3 className="text-base font-bold text-zinc-100">{t('group_devise_title')}</h3>
             </div>
             <button
               type="button"
@@ -145,14 +148,14 @@ export function EditDeviseModal({
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300">
-                Slogan / Devise
+                {t('group_devise_label')}
               </label>
               <input
                 type="text"
                 required
                 value={devise}
                 onChange={(e) => setDevise(e.target.value)}
-                placeholder="Devise du groupe..."
+                placeholder={t('group_devise_placeholder')}
                 className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
               />
             </div>
@@ -163,13 +166,13 @@ export function EditDeviseModal({
                 onClick={onClose}
                 className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition"
               >
-                Annuler
+                {t('btn_cancel')}
               </button>
               <button
                 type="submit"
                 className="rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 hover:bg-white transition"
               >
-                Enregistrer
+                {t('btn_save')}
               </button>
             </div>
           </form>

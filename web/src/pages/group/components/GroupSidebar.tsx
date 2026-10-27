@@ -94,13 +94,13 @@ export function GroupSidebar({
                   {group.name}
                 </span>
                 {group.is_official && (
-                  <span title="Groupe Officiel">
+                  <span title={t('group_official_badge')}>
                     <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
                   </span>
                 )}
               </div>
               <span className="truncate text-[10px] text-zinc-400 font-medium">
-                {group.devise || 'Faction Illegale'}
+                {group.devise || t('group_no_devise')}
               </span>
             </motion.div>
           )}
@@ -110,7 +110,7 @@ export function GroupSidebar({
           type="button"
           onClick={onToggleCollapse}
           className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 transition hover:bg-zinc-800/60 hover:text-zinc-200"
-          title={collapsed ? 'Déplier le menu' : 'Réduire le menu'}
+          title={collapsed ? t('menu_expand') : t('menu_collapse')}
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>

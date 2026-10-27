@@ -117,7 +117,7 @@ export function AdminSidebar({
           type="button"
           onClick={onToggleCollapse}
           className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 transition hover:bg-zinc-800/60 hover:text-zinc-200"
-          title={collapsed ? 'Déplier le menu' : 'Réduire le menu'}
+          title={collapsed ? t('menu_expand') : t('menu_collapse')}
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
@@ -182,7 +182,7 @@ export function AdminSidebar({
             <div className="flex items-center justify-between text-xs text-zinc-400">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                Système NUI
+                {t('admin_system_status')}
               </span>
               <span className="text-[11px] text-zinc-500">v1.0.0</span>
             </div>

@@ -12,6 +12,7 @@ import {
   Users,
   X,
 } from 'lucide-react'
+import { useTranslation } from '../../../hooks/useTranslation'
 import type { CreateGroupPayload, GroupItem, UpdateGroupPayload } from '../../../types/admin'
 
 interface GroupsViewProps {
@@ -37,6 +38,7 @@ export function GroupsView({
   onSelectGroup,
   onOpenCreateModal,
 }: GroupsViewProps) {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all')
 
@@ -63,7 +65,7 @@ export function GroupsView({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher un groupe, chef, devise..."
+              placeholder={t('groups_search')}
               className="w-full rounded-lg border border-zinc-800 bg-zinc-900/80 pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
             />
           </div>
@@ -77,7 +79,7 @@ export function GroupsView({
                 : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
-              Tous ({groups.length})
+              {t('filter_all', { count: groups.length })}
             </button>
             <button
               type="button"
@@ -87,7 +89,7 @@ export function GroupsView({
                 : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
-              Officiels ({groups.filter((g) => g.is_official).length})
+              {t('groups_filter_official', { count: groups.filter((g) => g.is_official).length })}
             </button>
             <button
               type="button"
@@ -97,7 +99,7 @@ export function GroupsView({
                 : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
-              Non-officiels ({groups.filter((g) => !g.is_official).length})
+              {t('groups_filter_unofficial', { count: groups.filter((g) => !g.is_official).length })}
             </button>
           </div>
         </div>
@@ -108,7 +110,7 @@ export function GroupsView({
           className="flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 transition hover:bg-white hover:shadow-md"
         >
           <Plus className="h-4 w-4" />
-          <span>Créer un Groupe</span>
+          <span>{t('groups_create')}</span>
         </button>
       </div>
 
@@ -138,9 +140,9 @@ export function GroupsView({
                     <span className="text-xs font-mono text-zinc-500">#{group.id}</span>
                   </div>
                   <p className="mt-1 text-xs text-zinc-400">
-                    Devise:{' '}
+                    {t('groups_devise')}{' '}
                     <span className="font-semibold text-zinc-200">
-                      {group.devise || 'Sans devise'}
+                      {group.devise || t('group_no_devise')}
                     </span>
                   </p>
                 </div>
@@ -149,7 +151,7 @@ export function GroupsView({
                 <button
                   type="button"
                   onClick={() => onToggleOfficial(group.id)}
-                  title={group.is_official ? 'Rétrograder en non-officiel' : 'Promouvoir en officiel'}
+                  title={group.is_official ? t('groups_make_unofficial') : t('groups_make_official')}
                   className={`rounded-lg p-1.5 transition ${group.is_official
                     ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
                     : 'bg-zinc-800/60 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
@@ -166,10 +168,10 @@ export function GroupsView({
               <div className="mt-5 space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-zinc-400 flex items-center gap-1.5">
-                    <Users className="h-3.5 w-3.5 text-zinc-400" /> Membres
+                    <Users className="h-3.5 w-3.5 text-zinc-400" /> {t('group_members_title')}
                   </span>
                   <span className="font-semibold text-zinc-200">
-                    {group.membersCount} / {group.slots} slots
+                    {t('groups_slots', { count: group.membersCount, slots: group.slots })}
                   </span>
                 </div>
                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
@@ -184,7 +186,7 @@ export function GroupsView({
 
               <div className="mt-4 flex items-center justify-between rounded-lg border border-zinc-800/60 bg-zinc-950/60 px-3 py-2 text-xs">
                 <span className="text-zinc-400 flex items-center gap-1.5">
-                  <Crown className="h-3.5 w-3.5 text-amber-400" /> Leader
+                  <Crown className="h-3.5 w-3.5 text-amber-400" /> {t('group_kpi_leader')}
                 </span>
                 <span className="font-medium text-zinc-200">{group.leaderName}</span>
               </div>
@@ -196,14 +198,14 @@ export function GroupsView({
                 onClick={() => onSelectGroup(group)}
                 className="text-xs font-medium text-zinc-300 hover:text-white transition"
               >
-                Gérer les membres ({group.members?.length ?? 0}) →
+                {t('groups_manage_members', { count: group.members?.length ?? 0 })} →
               </button>
 
               <button
                 type="button"
                 onClick={() => onDeleteGroup(group.id)}
                 className="p-1 text-zinc-500 hover:text-rose-400 transition"
-                title="Supprimer le groupe"
+                title={t('groups_delete')}
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -253,11 +255,11 @@ export function GroupsView({
                 <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-semibold text-zinc-300">Statut du Groupe</span>
+                      <span className="text-xs font-semibold text-zinc-300">{t('groups_status')}</span>
                       <p className="text-[11px] text-zinc-400">
                         {selectedGroup.is_official
-                          ? 'Le groupe bénéficie des avantages Officiel (15 slots, accès labos)'
-                          : 'Groupe non-officiel (5 slots max par défaut)'}
+                          ? t('groups_status_official_desc')
+                          : t('groups_status_unofficial_desc')}
                       </p>
                     </div>
                     <button
@@ -268,13 +270,13 @@ export function GroupsView({
                         : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
                         }`}
                     >
-                      {selectedGroup.is_official ? 'Officiel' : 'Non-officiel'}
+                      {selectedGroup.is_official ? t('group_official') : t('group_unofficial')}
                     </button>
                   </div>
                 </div>
 
                 <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-3">
-                  <span className="text-xs font-semibold text-zinc-300">Slots Membres Maximaux</span>
+                  <span className="text-xs font-semibold text-zinc-300">{t('groups_max_slots')}</span>
                   <div className="flex items-center gap-3">
                     <input
                       type="number"
@@ -290,14 +292,14 @@ export function GroupsView({
                       className="w-24 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-100 focus:outline-none"
                     />
                     <span className="text-xs text-zinc-400">
-                      Actuellement occupés: {selectedGroup.membersCount}
+                      {t('groups_slots_used', { count: selectedGroup.membersCount })}
                     </span>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-                    Liste des Membres ({selectedGroup.members?.length ?? 0})
+                    {t('groups_member_list', { count: selectedGroup.members?.length ?? 0 })}
                   </h4>
 
                   <div className="space-y-2">
@@ -334,7 +336,7 @@ export function GroupsView({
                   className="flex w-full items-center justify-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 py-2.5 text-xs font-semibold text-rose-400 transition hover:bg-rose-500/20"
                 >
                   <ShieldAlert className="h-4 w-4" />
-                  Dissoudre le Groupe
+                  {t('groups_disband')}
                 </button>
               </div>
             </motion.div>

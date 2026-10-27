@@ -101,7 +101,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
             </span>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold text-zinc-100">
-                {stats.totalDrugSales24h.toLocaleString('fr-FR')} $
+                {t('money', { amount: stats.totalDrugSales24h.toLocaleString() })}
               </span>
               <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400">
                 <TrendingUp className="h-3.5 w-3.5" /> +14.2%
@@ -112,7 +112,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
           <div className="flex items-center gap-4 text-xs">
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-full bg-zinc-300" />
-              <span className="text-zinc-400">{t('stats_sales_evolution').replace('Evolution des ', '')}</span>
+              <span className="text-zinc-400">{t('overview_sales')}</span>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
                 {points[hoveredPointIndex].label}
               </span>
               <span className="ml-2 font-mono text-emerald-400">
-                {points[hoveredPointIndex].sales.toLocaleString('fr-FR')} $
+                {t('money', { amount: points[hoveredPointIndex].sales.toLocaleString() })}
               </span>
             </motion.div>
           )}
@@ -205,7 +205,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
             <h4 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
               <Zap className="h-4 w-4 text-zinc-300" /> {t('stats_prod_category')}
             </h4>
-            <span className="text-xs text-zinc-500">Volume total</span>
+            <span className="text-xs text-zinc-500">{t('stats_total_volume')}</span>
           </div>
 
           <div className="mt-4 space-y-3">
@@ -214,7 +214,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-medium text-zinc-300">{item.label}</span>
                   <span className="font-mono text-zinc-400">
-                    {item.value.toLocaleString('fr-FR')} $ ({item.percentage}%)
+                    {item.value.toLocaleString()} ({item.percentage}%)
                   </span>
                 </div>
                 <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-800">
@@ -247,7 +247,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
                 {t('stats_avg_cart')}
               </span>
               <p className="mt-1 text-lg font-bold text-zinc-100">1,537 $</p>
-              <p className="mt-0.5 text-[10px] text-zinc-400">Pochon street level</p>
+              <p className="mt-0.5 text-[10px] text-zinc-400">{t('stats_avg_cart_sub')}</p>
             </div>
 
             <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5">
@@ -255,7 +255,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
                 {t('stats_peak_hour')}
               </span>
               <p className="mt-1 text-lg font-bold text-zinc-100">20:00 - 22:00</p>
-              <p className="mt-0.5 text-[10px] text-zinc-400">Activité maximale</p>
+              <p className="mt-0.5 text-[10px] text-zinc-400">{t('stats_peak_hour_sub')}</p>
             </div>
 
             <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5">
@@ -263,7 +263,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
                 {t('stats_top_seller')}
               </span>
               <p className="mt-1 text-lg font-bold text-zinc-100">Vagos</p>
-              <p className="mt-0.5 text-[10px] text-zinc-400">2,100 pts influence</p>
+              <p className="mt-0.5 text-[10px] text-zinc-400">{t('stats_top_seller_sub')}</p>
             </div>
 
             <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5">
@@ -271,7 +271,7 @@ export function StatisticsView({ stats, timeFrame, onTimeFrameChange }: Statisti
                 {t('stats_success_ratio')}
               </span>
               <p className="mt-1 text-lg font-bold text-emerald-400">98.4 %</p>
-              <p className="mt-0.5 text-[10px] text-zinc-400">Rendement optimal</p>
+              <p className="mt-0.5 text-[10px] text-zinc-400">{t('stats_success_ratio_sub')}</p>
             </div>
           </div>
         </motion.div>

@@ -7,6 +7,7 @@ import {
   Users,
   Zap,
 } from 'lucide-react'
+import { useTranslation } from '../../../hooks/useTranslation'
 import type { GroupCategory, GroupDetail } from '../../../types/group'
 
 interface GroupOverviewViewProps {
@@ -20,34 +21,35 @@ export function GroupOverviewView({
   onSelectCategory,
   onOpenEditDeviseModal,
 }: GroupOverviewViewProps) {
+  const { t } = useTranslation()
   const onlineCount = group.members.filter((m) => m.isOnline).length
 
   const kpiCards = [
     {
-      title: 'Membres Connectés',
+      title: t('group_kpi_online'),
       value: `${onlineCount} / ${group.members.length}`,
-      subtitle: `Slots maximaux : ${group.slots}`,
+      subtitle: t('group_kpi_online_sub', { slots: group.slots }),
       icon: Users,
       actionCat: 'members' as GroupCategory,
     },
     {
-      title: 'Influence du Groupe',
-      value: `${group.influenceTotal} pts`,
-      subtitle: 'Cumul des missions et ventes',
+      title: t('group_kpi_influence'),
+      value: t('group_points', { points: group.influenceTotal.toLocaleString() }),
+      subtitle: t('group_kpi_influence_sub'),
       icon: Flame,
       actionCat: 'stats' as GroupCategory,
     },
     {
-      title: 'Statut de Faction',
-      value: group.is_official ? 'Officiel' : 'Non-officiel',
-      subtitle: group.is_official ? 'Accès complet aux labos' : 'Faction en développement',
+      title: t('group_kpi_status'),
+      value: group.is_official ? t('group_official') : t('group_unofficial'),
+      subtitle: group.is_official ? t('group_kpi_status_official_sub') : t('group_kpi_status_unofficial_sub'),
       icon: ShieldCheck,
       actionCat: 'overview' as GroupCategory,
     },
     {
-      title: 'Chef de Faction',
+      title: t('group_kpi_leader'),
       value: group.leaderName,
-      subtitle: `Leader principal de ${group.name}`,
+      subtitle: t('group_kpi_leader_sub', { name: group.name }),
       icon: Zap,
       actionCat: 'members' as GroupCategory,
     },
@@ -75,12 +77,12 @@ export function GroupOverviewView({
                 <h3 className="text-xl font-bold text-zinc-100">{group.name}</h3>
                 {group.is_official && (
                   <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
-                    Groupe Officiel
+                    {t('group_official_badge')}
                   </span>
                 )}
               </div>
               <p className="mt-1 text-xs text-zinc-300 italic">
-                "{group.devise || 'Aucune devise définie'}"
+                "{group.devise || t('group_no_devise')}"
               </p>
             </div>
           </div>
@@ -92,7 +94,7 @@ export function GroupOverviewView({
               className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800/80 px-3.5 py-2 text-xs font-semibold text-zinc-200 hover:bg-zinc-700 hover:text-white transition shadow-xs"
             >
               <Edit3 className="h-3.5 w-3.5" />
-              <span>Modifier Devise</span>
+              <span>{t('group_edit_devise')}</span>
             </button>
           )}
         </div>
@@ -135,14 +137,14 @@ export function GroupOverviewView({
           <div className="flex items-center justify-between pb-4 border-b border-zinc-800/60">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-zinc-300" />
-              <h3 className="text-sm font-semibold text-zinc-200">Membres du Groupe</h3>
+              <h3 className="text-sm font-semibold text-zinc-200">{t('group_members_title')}</h3>
             </div>
             <button
               type="button"
               onClick={() => onSelectCategory('members')}
               className="text-xs text-zinc-400 hover:text-zinc-200 transition"
             >
-              Voir l'annuaire complet ({group.members.length}) →
+              {t('group_members_see_all', { count: group.members.length })} →
             </button>
           </div>
 
@@ -157,7 +159,7 @@ export function GroupOverviewView({
                     className={`h-2.5 w-2.5 rounded-full ${
                       member.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-600'
                     }`}
-                    title={member.isOnline ? 'En ligne' : 'Hors ligne'}
+                    title={member.isOnline ? t('group_online') : t('group_offline')}
                   />
                   <div>
                     <span className="text-xs font-semibold text-zinc-100">{member.name}</span>
@@ -186,11 +188,14 @@ export function GroupOverviewView({
           <div className="flex items-center justify-between pb-4 border-b border-zinc-800/60">
             <div className="flex items-center gap-2">
               <Activity className="h-4 w-4 text-zinc-300" />
-              <h3 className="text-sm font-semibold text-zinc-200">Journal du Groupe</h3>
+              <h3 className="text-sm font-semibold text-zinc-200">{t('group_activity_title')}</h3>
             </div>
           </div>
 
           <div className="mt-4 flex-1 space-y-4 overflow-auto">
+            {group.activities.length === 0 && (
+              <p className="py-6 text-center text-xs text-zinc-500">{t('group_activity_empty')}</p>
+            )}
             {group.activities.map((act) => (
               <div
                 key={act.id}

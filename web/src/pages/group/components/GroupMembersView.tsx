@@ -51,7 +51,7 @@ export function GroupMembersView({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher un membre par nom, rang, identifiant..."
+            placeholder={t('group_members_search')}
             className="w-full rounded-lg border border-zinc-800 bg-zinc-900/80 pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
           />
         </div>
@@ -74,7 +74,7 @@ export function GroupMembersView({
             className="flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 hover:bg-white transition shadow-xs"
           >
             <UserPlus className="h-4 w-4" />
-            <span>Inviter un Membre</span>
+            <span>{t('group_invite_button')}</span>
           </button>
         )}
         </div>
@@ -94,14 +94,14 @@ export function GroupMembersView({
                 className={`h-3 w-3 rounded-full shrink-0 ${
                   member.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-600'
                 }`}
-                title={member.isOnline ? 'En ligne' : 'Hors ligne'}
+                title={member.isOnline ? t('group_online') : t('group_offline')}
               />
 
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-zinc-100">{member.name}</span>
                   {member.isLeader && (
-                    <span title="Chef du groupe">
+                    <span title={t('group_kpi_leader')}>
                       <Crown className="h-3.5 w-3.5 text-amber-400" />
                     </span>
                   )}
@@ -116,15 +116,12 @@ export function GroupMembersView({
               </div>
 
               <div className="text-zinc-400">
-                Contributions :{' '}
+                {t('group_member_contributions')}{' '}
                 <span className="font-semibold text-zinc-200">
-                  {member.contributions.toLocaleString('fr-FR')} $
+                  {t('group_points', { points: member.contributions.toLocaleString() })}
                 </span>
               </div>
 
-              <div className="text-zinc-400 hidden md:block">
-                Arrivée : <span className="text-zinc-300">{member.joinedAt}</span>
-              </div>
             </div>
 
             {member.rankLevel < myLevel && (permissions.canPromote || permissions.canKick) && (
@@ -134,21 +131,21 @@ export function GroupMembersView({
                 <button
                   type="button"
                   onClick={() => onPromote(member.identifier)}
-                  title="Promouvoir le membre"
+                  title={t('group_action_promote')}
                   className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-950 px-2.5 py-1 text-xs font-medium text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/10 transition"
                 >
                   <ArrowUp className="h-3.5 w-3.5" />
-                  <span className="hidden lg:inline">Promouvoir</span>
+                  <span className="hidden lg:inline">{t('group_action_promote')}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => onDemote(member.identifier)}
-                  title="Rétrograder le membre"
+                  title={t('group_action_demote')}
                   className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-950 px-2.5 py-1 text-xs font-medium text-amber-400 hover:border-amber-500/30 hover:bg-amber-500/10 transition"
                 >
                   <ArrowDown className="h-3.5 w-3.5" />
-                  <span className="hidden lg:inline">Rétrograder</span>
+                  <span className="hidden lg:inline">{t('group_action_demote')}</span>
                 </button>
                 </>
                 )}
@@ -157,7 +154,7 @@ export function GroupMembersView({
                 <button
                   type="button"
                   onClick={() => onKick(member.identifier)}
-                  title="Exclure du groupe"
+                  title={t('group_action_kick')}
                   className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-950 p-1.5 text-xs font-medium text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10 transition ml-1"
                 >
                   <UserX className="h-4 w-4" />

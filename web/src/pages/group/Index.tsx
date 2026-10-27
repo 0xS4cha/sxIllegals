@@ -70,23 +70,23 @@ export function GroupPanel() {
 
   const categoryHeaders: Record<GroupCategory, { title: string; subtitle: string; icon: typeof LayoutDashboard }> = {
     overview: {
-      title: 'Accueil & Vue d\'ensemble de la Faction',
-      subtitle: `Informations générales et actualités du groupe ${group.name}`,
+      title: t('group_header_overview'),
+      subtitle: t('group_header_overview_sub', { name: group.name }),
       icon: LayoutDashboard,
     },
     members: {
-      title: 'Membres du Groupe & Rôles',
-      subtitle: `Gestion de l'effectif (${group.members.length} / ${group.slots} slots)`,
+      title: t('group_header_members'),
+      subtitle: t('group_header_members_sub', { count: group.members.length, slots: group.slots }),
       icon: Users,
     },
     ranks: {
-      title: 'Rangs & Permissions de Faction',
-      subtitle: 'Hiérarchie interne et attribution des droits',
+      title: t('group_header_ranks'),
+      subtitle: t('group_header_ranks_sub'),
       icon: ShieldHalf,
     },
     stats: {
-      title: 'Statistiques & Ventes du Groupe',
-      subtitle: `Analyse exclusive de l'activité commerciale de ${group.name}`,
+      title: t('group_header_stats'),
+      subtitle: t('group_header_stats_sub', { name: group.name }),
       icon: BarChart3,
     },
   }
@@ -125,10 +125,10 @@ export function GroupPanel() {
               }}
               disabled={loading}
               className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white disabled:opacity-50"
-              title="Rafraîchir les données de groupe"
+              title={t('btn_refresh')}
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Actualiser</span>
+              <span className="hidden sm:inline">{t('btn_refresh')}</span>
             </button>
           </div>
         </header>

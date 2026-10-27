@@ -17,9 +17,9 @@ import { fetchNui } from '../utils/fetchNui'
 import { isEnvBrowser } from '../utils/nui'
 
 const INITIAL_MOCK_LABS: LaboratoryItem[] = [
-  { id: 1, label: 'Labo Rancho meth', type: 'meth', level: 1, coords: { x: 300, y: -1500, z: 29.5 }, territoryName: 'Rancho Central', productionPercentage: 45, productionStatus: 'Synthèse en cours (1/2)' },
-  { id: 2, label: 'Labo Davis coke', type: 'coke', level: 2, coords: { x: -80, y: -1600, z: 30.2 }, territoryName: 'Davis Street', productionPercentage: 0, productionStatus: 'En attente de matière première' },
-  { id: 3, label: 'Labo Chamberlain weed', type: 'weed', level: 1, coords: { x: -200, y: -1400, z: 31.0 }, territoryName: 'Chamberlain Hills', productionPercentage: 80, productionStatus: 'Prêt à récolter (4/6)' }
+  { id: 1, label: 'Rancho meth lab', type: 'meth', level: 1, coords: { x: 300, y: -1500, z: 29.5 }, territoryName: 'Rancho Central', productionPercentage: 45, productionStatus: 'Synthesis running (1/2)' },
+  { id: 2, label: 'Davis coke lab', type: 'coke', level: 2, coords: { x: -80, y: -1600, z: 30.2 }, territoryName: 'Davis Street', productionPercentage: 0, productionStatus: 'Waiting for ingredients' },
+  { id: 3, label: 'Chamberlain weed lab', type: 'weed', level: 1, coords: { x: -200, y: -1400, z: 31.0 }, territoryName: 'Chamberlain Hills', productionPercentage: 80, productionStatus: 'Ready to harvest (4/6)' }
 ]
 
 const EMPTY_STATS: AdminStats = {
@@ -73,18 +73,18 @@ export function useAdminData() {
         { label: '20:00', sales: 67000, influence: 1650, production: 620 },
         { label: '23:59', sales: 54100, influence: 1410, production: 530 }
       ] : tf === '7d' ? [
-        { label: 'Lun', sales: 45000, influence: 300, production: 100 },
-        { label: 'Mar', sales: 52000, influence: 350, production: 110 },
-        { label: 'Mer', sales: 48000, influence: 320, production: 105 },
-        { label: 'Jeu', sales: 61000, influence: 410, production: 130 },
-        { label: 'Ven', sales: 85000, influence: 560, production: 180 },
-        { label: 'Sam', sales: 98000, influence: 620, production: 210 },
-        { label: 'Dim', sales: 72000, influence: 490, production: 160 }
+        { label: 'Mon', sales: 45000, influence: 300, production: 100 },
+        { label: 'Tue', sales: 52000, influence: 350, production: 110 },
+        { label: 'Wed', sales: 48000, influence: 320, production: 105 },
+        { label: 'Thu', sales: 61000, influence: 410, production: 130 },
+        { label: 'Fri', sales: 85000, influence: 560, production: 180 },
+        { label: 'Sat', sales: 98000, influence: 620, production: 210 },
+        { label: 'Sun', sales: 72000, influence: 490, production: 160 }
       ] : [
-        { label: 'Sem 1', sales: 650000, influence: 1200, production: 500 },
-        { label: 'Sem 2', sales: 810000, influence: 1400, production: 620 },
-        { label: 'Sem 3', sales: 780000, influence: 1300, production: 580 },
-        { label: 'Sem 4', sales: 1020000, influence: 1900, production: 850 }
+        { label: 'Week 1', sales: 650000, influence: 1200, production: 500 },
+        { label: 'Week 2', sales: 810000, influence: 1400, production: 620 },
+        { label: 'Week 3', sales: 780000, influence: 1300, production: 580 },
+        { label: 'Week 4', sales: 1020000, influence: 1900, production: 850 }
       ]
       setStats((prev) => ({
         ...prev,
@@ -263,7 +263,7 @@ export function useAdminData() {
         coords: payload.coords,
         territoryName: 'Rancho Central',
         productionPercentage: 0,
-        productionStatus: 'Inactif'
+        productionStatus: 'Idle'
       }
       setLabs((prev) => [newMockLab, ...prev])
     }

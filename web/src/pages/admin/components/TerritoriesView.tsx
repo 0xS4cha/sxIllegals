@@ -10,6 +10,7 @@ import {
   Plus,
   Zap,
 } from 'lucide-react'
+import { useTranslation } from '../../../hooks/useTranslation'
 import type { TerritoryItem } from '../../../types/admin'
 
 interface TerritoriesViewProps {
@@ -27,6 +28,7 @@ export function TerritoriesView({
   onTeleport,
   onOpenCreateModal,
 }: TerritoriesViewProps) {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [filterState, setFilterState] = useState<TerritoryFilter>('all')
 
@@ -54,7 +56,7 @@ export function TerritoriesView({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher par nom de zone, ID ou groupe contrôleur..."
+              placeholder={t('territories_search')}
               className="w-full rounded-lg border border-zinc-800 bg-zinc-900/80 pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
             />
           </div>
@@ -69,7 +71,7 @@ export function TerritoriesView({
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              Tous ({territories.length})
+              {t('filter_all', { count: territories.length })}
             </button>
             <button
               type="button"
@@ -80,7 +82,7 @@ export function TerritoriesView({
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              Attaques ({territories.filter((t) => t.attackState === 1).length})
+              {t('territories_filter_attack', { count: territories.filter((item) => item.attackState === 1).length })}
             </button>
             <button
               type="button"
@@ -91,7 +93,7 @@ export function TerritoriesView({
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              Contestés ({territories.filter((t) => t.attackState === 2).length})
+              {t('territories_filter_contested', { count: territories.filter((item) => item.attackState === 2).length })}
             </button>
           </div>
           <button
@@ -100,7 +102,7 @@ export function TerritoriesView({
             className="flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 transition hover:bg-white hover:shadow-md"
           >
             <Plus className="h-4 w-4" />
-            <span>Créer un Territoire</span>
+            <span>{t('territories_create')}</span>
           </button>
         </div>
       </div>
@@ -123,9 +125,9 @@ export function TerritoriesView({
                     <span className="text-xs font-mono text-zinc-500">#{territory.id}</span>
                   </div>
                   <p className="mt-1 text-xs text-zinc-400">
-                    Contrôlé par:{' '}
+                    {t('territories_controlled_by')}{' '}
                     <span className="font-semibold text-zinc-200">
-                      {territory.controlledBy?.name ?? 'Aucun'}
+                      {territory.controlledBy?.name ?? t('territories_nobody')}
                     </span>
                   </p>
                 </div>
@@ -133,17 +135,17 @@ export function TerritoriesView({
                 <div>
                   {territory.attackState === 1 && (
                     <span className="flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-1 text-[11px] font-semibold text-rose-400 border border-rose-500/20 animate-pulse">
-                      <Flame className="h-3 w-3" /> Attaque
+                      <Flame className="h-3 w-3" /> {t('territory_state_attack')}
                     </span>
                   )}
                   {territory.attackState === 2 && (
                     <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-400 border border-amber-500/20">
-                      <Zap className="h-3 w-3" /> Contesté
+                      <Zap className="h-3 w-3" /> {t('territory_state_contested')}
                     </span>
                   )}
                   {territory.attackState === 0 && (
                     <span className="flex items-center gap-1 rounded-full bg-zinc-800 px-2.5 py-1 text-[11px] font-medium text-zinc-400">
-                      <ShieldCheck className="h-3 w-3" /> Calme
+                      <ShieldCheck className="h-3 w-3" /> {t('territory_state_calm')}
                     </span>
                   )}
                 </div>
@@ -151,9 +153,9 @@ export function TerritoriesView({
 
               <div className="mt-4 flex items-center justify-between rounded-lg border border-zinc-800/60 bg-zinc-950/60 px-3.5 py-2 text-xs">
                 <span className="text-zinc-400">
-                  Influence Totale:{' '}
+                  {t('territories_total_influence')}{' '}
                   <span className="font-semibold text-zinc-200">
-                    {territory.totalInfluence} pts
+                    {t('group_points', { points: territory.totalInfluence })}
                   </span>
                 </span>
                 <span className="text-zinc-400 font-mono text-[11px]">
@@ -163,8 +165,8 @@ export function TerritoriesView({
 
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between text-xs text-zinc-400">
-                  <span>Répartition d'influence</span>
-                  <span>{territory.influences.length} groupes présents</span>
+                  <span>{t('territories_influence_split')}</span>
+                  <span>{t('territories_groups_present', { count: territory.influences.length })}</span>
                 </div>
 
                 <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-800 flex">
@@ -201,7 +203,7 @@ export function TerritoriesView({
                 className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800 hover:text-white transition"
               >
                 <Navigation className="h-3.5 w-3.5" />
-                <span>Téléporter TP</span>
+                <span>{t('btn_teleport')}</span>
               </button>
 
               <button
@@ -210,7 +212,7 @@ export function TerritoriesView({
                 className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-400 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400 transition"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
-                <span>Réinitialiser influence</span>
+                <span>{t('territories_reset')}</span>
               </button>
             </div>
           </motion.div>

@@ -40,10 +40,10 @@ export function GroupRangsView({ group, onRenameRank, onUpdatePermissions }: Gro
       <div>
         <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
           <Shield className="h-5 w-5 text-zinc-300" />
-          Hiérarchie & Permissions des Rangs
+          {t('group_ranks_title')}
         </h3>
         <p className="text-xs text-zinc-400">
-          Organisation des grades de la faction et droits associés à chaque niveau
+          {canEditPermissions ? t('group_ranks_subtitle_leader') : t('group_ranks_subtitle')}
         </p>
       </div>
 
@@ -58,7 +58,7 @@ export function GroupRangsView({ group, onRenameRank, onUpdatePermissions }: Gro
           >
             <div className="flex items-center gap-3">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800 text-xs font-bold text-zinc-200">
-                Lvl {rank.level}
+                {t('group_rank_level', { level: rank.level })}
               </span>
 
               <div>
@@ -86,7 +86,7 @@ export function GroupRangsView({ group, onRenameRank, onUpdatePermissions }: Gro
                         type="button"
                         onClick={() => handleStartEdit(rank.id, rank.name)}
                         className="text-zinc-500 hover:text-zinc-300 transition"
-                        title="Renommer ce rang"
+                        title={t('group_rank_rename')}
                       >
                         <Edit2 className="h-3.5 w-3.5" />
                       </button>
@@ -95,10 +95,10 @@ export function GroupRangsView({ group, onRenameRank, onUpdatePermissions }: Gro
                 )}
                 <span className="text-[11px] text-zinc-400">
                   {rank.id === 0
-                    ? 'Niveau Suprême (Chef)'
+                    ? t('group_rank_leader')
                     : rank.level === (group.ranks[0]?.level ?? 0) - 1
-                    ? 'Commandement Secondaire'
-                    : 'Grade Opérationnel'}
+                    ? t('group_rank_officer')
+                    : t('group_rank_member')}
                 </span>
               </div>
             </div>

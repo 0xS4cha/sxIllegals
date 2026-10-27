@@ -15,11 +15,13 @@ import { CreateGroupModal, CreateTerritoryModal, CreateLaboratoryModal } from '.
 import { AdminSidebar } from './components/AdminSidebar'
 import { GroupsView } from './components/GroupsView'
 import { OverviewView } from './components/OverviewView'
+import { useTranslation } from '../../hooks/useTranslation'
 import { StatisticsView } from './components/StatisticsView'
 import { TerritoriesView } from './components/TerritoriesView'
 import { LaboratoriesView } from './components/LaboratoriesView'
 
 export function AdminPanel() {
+  const { t } = useTranslation()
   const [activeCategory, setActiveCategory] = useState<AdminCategory>('overview')
   const [collapsedSidebar, setCollapsedSidebar] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -52,28 +54,28 @@ export function AdminPanel() {
 
   const categoryHeaders: Record<AdminCategory, { title: string; subtitle: string; icon: typeof LayoutDashboard }> = {
     overview: {
-      title: 'Vue globale du Système',
-      subtitle: 'Indicateurs majeurs d\'activité illégale et gestion générale',
+      title: t('admin_header_overview'),
+      subtitle: t('admin_header_overview_sub'),
       icon: LayoutDashboard,
     },
     groups: {
-      title: 'Gestion des Groupes (Groups List)',
-      subtitle: 'Contrôle des factions, attribution des slots et statuts officiels',
+      title: t('admin_header_groups'),
+      subtitle: t('admin_header_groups_sub'),
       icon: Users,
     },
     territories: {
-      title: 'Territoires & Influences (Territory List)',
-      subtitle: 'Surveillance des zones sous contrôle, conflits et réinitialisations',
+      title: t('admin_header_territories'),
+      subtitle: t('admin_header_territories_sub'),
       icon: MapPin,
     },
     laboratories: {
-      title: 'Laboratoires & Production',
-      subtitle: 'Suivi des laboratoires de Cocaïne, Méthamphétamine et Weed',
+      title: t('admin_header_laboratories'),
+      subtitle: t('admin_header_laboratories_sub'),
       icon: FlaskConical,
     },
     statistics: {
-      title: 'Statistiques & Graphiques de Ventes',
-      subtitle: 'Analyse approfondie du trafic de stupéfiants et de la rentabilité',
+      title: t('admin_header_statistics'),
+      subtitle: t('admin_header_statistics_sub'),
       icon: BarChart3,
     },
   }
@@ -112,10 +114,10 @@ export function AdminPanel() {
               onClick={() => void refreshData()}
               disabled={loading}
               className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white disabled:opacity-50"
-              title="Rafraîchir les données NUI"
+              title={t('btn_refresh')}
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Actualiser</span>
+              <span className="hidden sm:inline">{t('btn_refresh')}</span>
             </button>
           </div>
         </header>

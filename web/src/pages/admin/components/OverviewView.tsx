@@ -30,28 +30,28 @@ export function OverviewView({
     {
       title: t('overview_card_groups'),
       value: stats.totalGroups,
-      subtitle: `${stats.officialGroups} officiels • ${stats.unofficialGroups} non-officiels`,
+      subtitle: t('overview_groups_sub', { official: stats.officialGroups, unofficial: stats.unofficialGroups }),
       icon: Users,
       actionCat: 'groups' as AdminCategory,
     },
     {
       title: t('overview_card_territories'),
       value: stats.totalTerritories,
-      subtitle: `${stats.contestedTerritories} en conflit d'influence`,
+      subtitle: t('overview_territories_sub', { count: stats.contestedTerritories }),
       icon: MapPin,
       actionCat: 'territories' as AdminCategory,
     },
     {
-      title: t('stats_sales_evolution').replace('Evolution des ', ''),
-      value: `${stats.totalDrugSales24h.toLocaleString('fr-FR')} $`,
-      subtitle: '+14.2% par rapport à hier',
+      title: t('overview_sales'),
+      value: t('money', { amount: stats.totalDrugSales24h.toLocaleString() }),
+      subtitle: t('overview_sales_sub'),
       icon: DollarSign,
       actionCat: 'statistics' as AdminCategory,
     },
     {
       title: t('overview_card_labs'),
       value: stats.activeLabsCount,
-      subtitle: 'Coke, Meth & Weed sous tension',
+      subtitle: t('overview_labs_sub'),
       icon: FlaskConical,
       actionCat: 'statistics' as AdminCategory,
     },
@@ -105,7 +105,7 @@ export function OverviewView({
                 onClick={() => onSelectCategory('groups')}
                 className="text-xs text-zinc-400 transition hover:text-zinc-200"
               >
-                Voir tout ({groups.length}) →
+                {t('overview_see_all', { count: groups.length })} →
               </button>
             </div>
 
@@ -127,16 +127,16 @@ export function OverviewView({
                         <span className="text-sm font-medium text-zinc-100">{group.name}</span>
                         {group.is_official && (
                           <span className="flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
-                            <ShieldCheck className="h-3 w-3" /> Officiel
+                            <ShieldCheck className="h-3 w-3" /> {t('group_official')}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-400">{group.devise || 'Aucune devise'}</p>
+                      <p className="text-xs text-zinc-400">{group.devise || t('group_no_devise')}</p>
                     </div>
                   </div>
                   <div className="text-right text-xs">
                     <span className="font-semibold text-zinc-200">{group.membersCount}</span>
-                    <span className="text-zinc-400"> / {group.slots} membres</span>
+                    <span className="text-zinc-400"> {t('overview_members_slots', { slots: group.slots })}</span>
                   </div>
                 </div>
               ))}
@@ -152,14 +152,14 @@ export function OverviewView({
             <div className="flex items-center justify-between pb-4 border-b border-zinc-800/60">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-zinc-300" />
-                <h3 className="text-sm font-semibold text-zinc-200">Territoires sous Tension</h3>
+                <h3 className="text-sm font-semibold text-zinc-200">{t('overview_territories_title')}</h3>
               </div>
               <button
                 type="button"
                 onClick={() => onSelectCategory('territories')}
                 className="text-xs text-zinc-400 transition hover:text-zinc-200"
               >
-                Gérer les territoires →
+                {t('overview_manage_territories')} →
               </button>
             </div>
 
@@ -174,17 +174,17 @@ export function OverviewView({
                       <span className="text-sm font-medium text-zinc-100">{territory.label}</span>
                       {territory.attackState === 1 && (
                         <span className="rounded bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-400 border border-rose-500/20 animate-pulse">
-                          Attaque en cours
+                          {t('territory_state_attack')}
                         </span>
                       )}
                       {territory.attackState === 2 && (
                         <span className="rounded bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400 border border-amber-500/20">
-                          Contesté
+                          {t('territory_state_contested')}
                         </span>
                       )}
                     </div>
                     <span className="text-xs text-zinc-400">
-                      Total: {territory.totalInfluence} pts
+                      {t('overview_total_points', { points: territory.totalInfluence })}
                     </span>
                   </div>
 
@@ -213,7 +213,7 @@ export function OverviewView({
           <div className="flex items-center justify-between pb-4 border-b border-zinc-800/60">
             <div className="flex items-center gap-2">
               <Activity className="h-4 w-4 text-zinc-300" />
-              <h3 className="text-sm font-semibold text-zinc-200">Activités Récentes</h3>
+              <h3 className="text-sm font-semibold text-zinc-200">{t('overview_recent_activity')}</h3>
             </div>
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
           </div>

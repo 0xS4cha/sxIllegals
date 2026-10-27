@@ -4,6 +4,7 @@ import { ShieldCheck, Plus, X, MapPin, Trash2, FlaskConical } from 'lucide-react
 import type { CreateGroupPayload, CreateTerritoryPayload, CreateLaboratoryPayload } from '../../../types/admin'
 import { fetchNui } from '../../../utils/fetchNui'
 import { isEnvBrowser } from '../../../utils/nui'
+import { useTranslation } from '../../../hooks/useTranslation'
 
 interface CreateGroupModalProps {
   isOpen: boolean
@@ -18,10 +19,11 @@ const PRESET_COLORS = [
   { r: 14, g: 165, b: 233, hex: '#0ea5e9', label: 'Marabunta' },
   { r: 239, g: 68, b: 68, hex: '#ef4444', label: 'Triads' },
   { r: 236, g: 72, b: 153, hex: '#ec4899', label: 'Magenta' },
-  { r: 107, g: 114, b: 128, hex: '#6b7280', label: 'Gris' },
+  { r: 107, g: 114, b: 128, hex: '#6b7280', label: 'Gray' },
 ]
 
 export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModalProps) {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [devise, setDevise] = useState('')
   const [isOfficial, setIsOfficial] = useState(false)
@@ -67,7 +69,7 @@ export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModal
           <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
             <div className="flex items-center gap-2">
               <Plus className="h-5 w-5 text-zinc-200" />
-              <h3 className="text-base font-bold text-zinc-100">Créer un Nouveau Groupe</h3>
+              <h3 className="text-base font-bold text-zinc-100">{t('modal_group_title')}</h3>
             </div>
             <button
               type="button"
@@ -80,11 +82,11 @@ export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModal
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Nom du Groupe</label>
+              <label className="text-xs font-semibold text-zinc-300">{t('modal_group_name')}</label>
               <input
                 type="text"
                 required
-                placeholder="Ex: Ballas, Cartel de Sinaloa..."
+                placeholder={t('modal_group_name_placeholder')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
@@ -92,10 +94,10 @@ export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModal
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Devise / Slogan</label>
+              <label className="text-xs font-semibold text-zinc-300">{t('group_devise_label')}</label>
               <input
                 type="text"
-                placeholder="Ex: Purple till we die..."
+                placeholder={t('modal_group_devise_placeholder')}
                 value={devise}
                 onChange={(e) => setDevise(e.target.value)}
                 className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
@@ -103,7 +105,7 @@ export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModal
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-300">Couleur d'Identité (RGB)</label>
+              <label className="text-xs font-semibold text-zinc-300">{t('modal_group_color')}</label>
               <div className="flex flex-wrap gap-2">
                 {PRESET_COLORS.map((color) => (
                   <button
@@ -127,7 +129,7 @@ export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModal
 
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Nombre de Slots</label>
+                <label className="text-xs font-semibold text-zinc-300">{t('modal_group_slots')}</label>
                 <input
                   type="number"
                   min={1}
@@ -141,7 +143,7 @@ export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModal
               <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/60 px-3.5 py-2">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                  <span className="text-xs font-semibold text-zinc-200">Groupe Officiel</span>
+                  <span className="text-xs font-semibold text-zinc-200">{t('group_official_badge')}</span>
                 </div>
                 <input
                   type="checkbox"
@@ -159,13 +161,13 @@ export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModal
                 onClick={onClose}
                 className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition"
               >
-                Annuler
+                {t('btn_cancel')}
               </button>
               <button
                 type="submit"
                 className="rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 hover:bg-white transition"
               >
-                Créer le Groupe
+                {t('groups_create')}
               </button>
             </div>
           </form>
@@ -211,6 +213,7 @@ export interface CreateTerritoryModalProps {
 }
 
 export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerritoryModalProps) {
+  const { t } = useTranslation()
   const [label, setLabel] = useState('')
   const [minZ, setMinZ] = useState(-50)
   const [maxZ, setMaxZ] = useState(150)
@@ -325,7 +328,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
           <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
             <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-zinc-200" />
-              <h3 className="text-base font-bold text-zinc-100">Créer un Nouveau Territoire</h3>
+              <h3 className="text-base font-bold text-zinc-100">{t('modal_territory_title')}</h3>
             </div>
             <button
               type="button"
@@ -338,11 +341,11 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Nom de la Zone / Label</label>
+              <label className="text-xs font-semibold text-zinc-300">{t('modal_territory_name')}</label>
               <input
                 type="text"
                 required
-                placeholder="Ex: Rancho Central, Cypress Flats..."
+                placeholder={t('modal_territory_name_placeholder')}
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
                 className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
@@ -351,7 +354,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Min Z (Hauteur Basse)</label>
+                <label className="text-xs font-semibold text-zinc-300">{t('modal_territory_min_z')}</label>
                 <input
                   type="number"
                   step="any"
@@ -362,7 +365,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Max Z (Hauteur Haute)</label>
+                <label className="text-xs font-semibold text-zinc-300">{t('modal_territory_max_z')}</label>
                 <input
                   type="number"
                   step="any"
@@ -374,7 +377,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-300">Mode de saisie des coordonnées</label>
+              <label className="text-xs font-semibold text-zinc-300">{t('modal_coords_mode')}</label>
               <div className="flex border border-zinc-800 bg-zinc-900/60 rounded-lg p-1">
                 <button
                   type="button"
@@ -384,7 +387,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
                     : 'text-zinc-400 hover:text-zinc-200'
                     }`}
                 >
-                  Position en jeu
+                  {t('modal_coords_position')}
                 </button>
                 <button
                   type="button"
@@ -394,14 +397,14 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
                     : 'text-zinc-400 hover:text-zinc-200'
                     }`}
                 >
-                  Coller du texte (vector2/3)
+                  {t('modal_coords_paste_vectors')}
                 </button>
               </div>
             </div>
 
             {inputMode === 'manual' && (
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-400">Coller les coordonnées</label>
+                <label className="text-xs font-semibold text-zinc-400">{t('modal_coords_paste')}</label>
                 <textarea
                   rows={4}
                   value={rawText}
@@ -410,7 +413,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
                   className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-mono text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
                 />
                 <p className="text-[10px] text-zinc-500">
-                  Collez vos vecteurs de zone Lua ou une liste de coordonnées séparées par des virgules.
+                  {t('modal_coords_paste_hint')}
                 </p>
               </div>
             )}
@@ -418,7 +421,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-zinc-300 font-medium">
-                  Points de contour PolyZone ({coords.length})
+                  {t('modal_territory_points', { count: coords.length })}
                 </label>
                 {inputMode === 'position' && (
                   <button
@@ -428,7 +431,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
                     className="flex items-center gap-1 rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-xs text-zinc-200 hover:bg-zinc-800 disabled:opacity-50"
                   >
                     <MapPin className="h-3.5 w-3.5 text-rose-400" />
-                    <span>{loading ? 'Récupération...' : 'Ajouter ma position'}</span>
+                    <span>{loading ? t('modal_coords_loading') : t('modal_coords_add_position')}</span>
                   </button>
                 )}
               </div>
@@ -436,7 +439,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
               <div className="max-h-40 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-900/40 p-2 space-y-1.5">
                 {coords.length === 0 ? (
                   <p className="text-center py-4 text-xs text-zinc-500 italic">
-                    Aucun point configuré.
+                    {t('modal_territory_no_points')}
                   </p>
                 ) : (
                   coords.map((point, index) => (
@@ -462,7 +465,7 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
               </div>
               {coords.length < 3 && coords.length > 0 && (
                 <p className="text-[11px] text-amber-400">
-                  ⚠️ Un polygone nécessite au moins 3 points de coordonnées pour être valide.
+                  {t('modal_territory_min_points')}
                 </p>
               )}
             </div>
@@ -473,14 +476,14 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
                 onClick={handleCancel}
                 className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition"
               >
-                Annuler
+                {t('btn_cancel')}
               </button>
               <button
                 type="submit"
                 disabled={coords.length < 3 || !label.trim()}
                 className="rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 hover:bg-white transition disabled:opacity-50"
               >
-                Créer le Territoire
+                {t('territories_create')}
               </button>
             </div>
           </form>
@@ -520,6 +523,7 @@ export interface CreateLaboratoryModalProps {
 }
 
 export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLaboratoryModalProps) {
+  const { t } = useTranslation()
   const [label, setLabel] = useState('')
   const [type, setType] = useState<'coke' | 'meth' | 'weed'>('weed')
   const [coords, setCoords] = useState<{ x: number; y: number; z: number } | null>(null)
@@ -597,18 +601,18 @@ export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLabor
               <FlaskConical className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-zinc-100">Créer un Laboratoire</h3>
-              <p className="text-[10px] text-zinc-400">Configurez l'entrée et le type de drogue du labo</p>
+              <h3 className="text-sm font-bold text-zinc-100">{t('labs_create')}</h3>
+              <p className="text-[10px] text-zinc-400">{t('modal_lab_subtitle')}</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Nom du Laboratoire</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t('modal_lab_name')}</label>
               <input
                 type="text"
                 required
-                placeholder="Ex: Labo Coke Sud"
+                placeholder={t('modal_lab_name_placeholder')}
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
                 className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/60 px-3.5 py-2 text-xs text-zinc-200 placeholder-zinc-500 transition focus:border-zinc-700 focus:outline-none focus:ring-0"
@@ -616,26 +620,26 @@ export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLabor
             </div>
 
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Type de Production</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t('modal_lab_type')}</label>
               <div className="mt-1.5 grid grid-cols-3 gap-2">
-                {(['weed', 'meth', 'coke'] as const).map((t) => (
+                {(['weed', 'meth', 'coke'] as const).map((labType) => (
                   <button
-                    key={t}
+                    key={labType}
                     type="button"
-                    onClick={() => setType(t)}
-                    className={`flex flex-col items-center gap-1.5 rounded-lg border p-2.5 transition text-center ${type === t
+                    onClick={() => setType(labType)}
+                    className={`flex flex-col items-center gap-1.5 rounded-lg border p-2.5 transition text-center ${type === labType
                       ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-semibold'
                       : 'border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                       }`}
                   >
-                    <span className="text-xs capitalize">{t === 'coke' ? 'Cocaïne' : t === 'meth' ? 'Méthamphétamine' : 'Weed'}</span>
+                    <span className="text-xs capitalize">{t(`lab_type_${labType}`)}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Méthode de Position</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t('modal_coords_mode')}</label>
               <div className="mt-1.5 flex rounded-lg border border-zinc-800 bg-zinc-900/40 p-1">
                 <button
                   type="button"
@@ -645,7 +649,7 @@ export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLabor
                     : 'text-zinc-400 hover:text-zinc-200'
                     }`}
                 >
-                  Position en Jeu
+                  {t('modal_coords_position')}
                 </button>
                 <button
                   type="button"
@@ -655,7 +659,7 @@ export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLabor
                     : 'text-zinc-400 hover:text-zinc-200'
                     }`}
                 >
-                  Coller Coordonnées
+                  {t('modal_coords_paste')}
                 </button>
               </div>
             </div>
@@ -669,14 +673,14 @@ export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLabor
                   className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/40 py-2.5 text-xs text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white"
                 >
                   <MapPin className="h-4 w-4" />
-                  {coords ? 'Mettre à jour la position' : 'Capturer ma position actuelle'}
+                  {coords ? t('modal_lab_update_position') : t('modal_lab_capture_position')}
                 </button>
               </div>
             ) : (
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Coller les coordonnées</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t('modal_coords_paste')}</label>
                 <textarea
-                  placeholder="Ex: vector3(125.4, -1450.2, 29.5) ou 125.4, -1450.2, 29.5"
+                  placeholder={t('modal_lab_coords_placeholder')}
                   value={rawText}
                   onChange={(e) => handleManualTextChange(e.target.value)}
                   className="mt-1.5 h-16 w-full resize-none rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-xs text-zinc-200 placeholder-zinc-500 transition focus:border-zinc-700 focus:outline-none focus:ring-0"
@@ -687,7 +691,7 @@ export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLabor
             {coords ? (
               <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/20 px-3.5 py-2.5">
                 <div className="flex items-center justify-between text-[11px] font-medium">
-                  <span className="text-zinc-400">Position d'entrée enregistrée :</span>
+                  <span className="text-zinc-400">{t('modal_lab_position_saved')}</span>
                   <span className="font-mono text-emerald-400">
                     X: {coords.x.toFixed(2)}, Y: {coords.y.toFixed(2)}, Z: {coords.z.toFixed(2)}
                   </span>
@@ -695,7 +699,7 @@ export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLabor
               </div>
             ) : (
               <div className="rounded-lg border border-dashed border-zinc-800 bg-zinc-900/10 px-3.5 py-2.5 text-center">
-                <p className="text-[10px] text-zinc-500">Aucune position d'entrée configurée</p>
+                <p className="text-[10px] text-zinc-500">{t('modal_lab_no_position')}</p>
               </div>
             )}
 
@@ -705,14 +709,14 @@ export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLabor
                 onClick={handleCancel}
                 className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition"
               >
-                Annuler
+                {t('btn_cancel')}
               </button>
               <button
                 type="submit"
                 disabled={!coords || !label.trim()}
                 className="rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 hover:bg-white transition disabled:opacity-50"
               >
-                Créer le Laboratoire
+                {t('labs_create')}
               </button>
             </div>
           </form>
