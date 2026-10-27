@@ -30,6 +30,9 @@ function territory:new(data)
     local self = setmetatable({}, territory)
     self.id = data.id or Generate.Code({ includeNumbers = true, includeLetters = true, length = 6 })
     self.influence = data.influence or {}
+    for _, influence in pairs(self.influence) do
+        influence.lastActivity = influence.lastActivity or os.time()
+    end
     self.label = data.label or self.id
     self.totalInfluence = 0
     self.coords = data.coords
@@ -98,13 +101,14 @@ function territory:addInfluence(group, point)
     for i = 1, #self.influence do
         if self.influence[i].id == group then
             self.influence[i].points += point
+            self.influence[i].lastActivity = os.time()
             found = true
             break
         end
     end
 
     if not found then
-        self.influence[#self.influence + 1] = { points = point, id = group }
+        self.influence[#self.influence + 1] = { points = point, id = group, lastActivity = os.time() }
     end
 
     self.influenceChanged = true

@@ -324,7 +324,12 @@ local my_language = {
     war_contested_owner = "~o~%s~s~ is challenging your control of ~y~%s~s~.",
     war_contested_challenger = "You can now attack ~y~%s~s~.",
     war_contested_admin = "%s held by %s is contested by %s.",
-    war_progress = "Capture of ~y~%s~s~: ~g~%d%%~s~"
+    war_progress = "Capture of ~y~%s~s~: ~g~%d%%~s~",
+
+    decay_title = "Influence fading",
+    decay_desc = "Without activity, your influence dropped by %d%% on ~o~%d~s~ territories.",
+    decay_lost_title = "Territory lost",
+    decay_lost_desc = "You lost the control of ~r~%s~s~ because of your inactivity."
 }
 
 AddLanguage("en", my_language)

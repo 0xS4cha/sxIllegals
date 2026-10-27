@@ -49,3 +49,10 @@ _TERRITORY.War = {
     captureTransfer = 0.25,
     cooldown = 1800,
 }
+
+_TERRITORY.Decay = {
+    enabled = true,
+    interval = 3600,
+    idleTime = 24 * 3600,
+    percent = 5,
+}

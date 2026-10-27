@@ -324,7 +324,12 @@ local my_language = {
     war_contested_owner = "~o~%s~s~ conteste votre contrôle de ~y~%s~s~.",
     war_contested_challenger = "Vous pouvez maintenant attaquer ~y~%s~s~.",
     war_contested_admin = "%s tenu par %s est contesté par %s.",
-    war_progress = "Capture de ~y~%s~s~ : ~g~%d%%~s~"
+    war_progress = "Capture de ~y~%s~s~ : ~g~%d%%~s~",
+
+    decay_title = "Influence en baisse",
+    decay_desc = "Faute d'activité, votre influence a baissé de %d%% sur ~o~%d~s~ territoires.",
+    decay_lost_title = "Territoire perdu",
+    decay_lost_desc = "Vous avez perdu le contrôle de ~r~%s~s~ par inactivité."
 }
 
 RegisterDefaultPhrases(my_language)
