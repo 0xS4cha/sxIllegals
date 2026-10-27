@@ -1,3 +1,3 @@
 SX.Territories = {}
 
-SX.Modules:Register("Laboratories")
+SX.Modules:Register("Territories")

@@ -1,3 +1,3 @@
 SX.Group = {}
 
-SX.Modules:Register("Groups")
+SX.Modules:Register("Group")

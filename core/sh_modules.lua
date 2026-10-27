@@ -13,23 +13,28 @@ function SX.Modules:Register(name, priority, submodules)
     })
 end
 
+local function safeCall(label, fn, obj)
+    local ok, err = pcall(fn, obj)
+    if not ok then
+        Logger:error("Module", label, err)
+    end
+end
+
 function SX:InitializeModules()
     table.sort(self.Modules.List, function(a, b)
         return a.priority < b.priority
     end)
 
-    TriggerEvent("onGamemodeInitialize")
-
-    local startTime = GetGameTimer()
+    TriggerEvent("sxIllegals:initialize")
 
     for _, module in pairs(self.Modules.List) do
         local name = module.name
         if not self.Modules.Disabled[name] and self[name] then
+            local startTime = GetGameTimer()
+
             if self[name].Initialize then
                 Logger:info("Module", "Initializing", name)
-                ProfilerEnterScope(name)
-                self[name]:Initialize()
-                ProfilerExitScope()
+                safeCall(name, self[name].Initialize, self[name])
             end
 
             if self[name].InitializeAsync then
@@ -40,16 +45,15 @@ function SX:InitializeModules()
 
             if module.submodules then
                 for _, submodule in pairs(module.submodules) do
-                    if self[name][submodule] then
-                        if self[name][submodule].Initialize then
-                            ProfilerEnterScope(name .. "." .. submodule)
-                            self[name][submodule]:Initialize()
-                            ProfilerExitScope()
+                    local sub = self[name][submodule]
+                    if sub then
+                        if sub.Initialize then
+                            safeCall(name .. "." .. submodule, sub.Initialize, sub)
                         end
 
-                        if self[name][submodule].InitializeAsync then
+                        if sub.InitializeAsync then
                             CreateThread(function()
-                                self[name][submodule]:InitializeAsync()
+                                sub:InitializeAsync()
                             end)
                         end
                     end
@@ -63,13 +67,11 @@ function SX:InitializeModules()
             end
             Logger:info("Module", "Initialized " .. name .. " in " .. timeStr .. "ms")
 
-            if not self.State.IsDuplicity then
-                if self[name].Think then
-                    table.insert(SX.Modules.HasFunction.Think, name)
-                end
+            if not IsDuplicityVersion() and self[name].Think then
+                table.insert(SX.Modules.HasFunction.Think, name)
             end
         end
     end
 
-    TriggerEvent("onGamemodeInitialized")
+    TriggerEvent("sxIllegals:initialized")
 end

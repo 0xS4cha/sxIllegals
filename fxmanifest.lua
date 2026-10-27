@@ -32,11 +32,13 @@ client_scripts {
     'core/cl_entities.lua',
     'core/cl_base.lua',
     'modules/**/cl_*.lua',
+    'core/sh_init.lua',
 }
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'modules/**/sv_*.lua',
+    'core/sh_init.lua',
 }
 
 ui_page 'web/dist/index.html'
