@@ -17,6 +17,13 @@ A FiveM resource for ESX or standalone servers that brings together **criminal g
 - **Translations**: English and French out of the box, easily extendable.
 - **Exports**: a server and client API to integrate the resource with your other scripts.
 
+<div align="center">
+
+![sxIllegals](previews/image2.png)
+![sxIllegals](previews/image.png)
+
+</div>
+
 ## Dependencies
 
 | Resource | Purpose |
@@ -288,6 +295,7 @@ Statistics are computed from the `statistics_logs` table: production steps, drug
 | `/groupaccept` | Accepts the latest group invitation |
 | `/groupdecline` | Declines the latest group invitation |
 | `/raidlab` | Police only, raids the closest laboratory. Bound to `G` by default |
+| `/giveinfluence [amount]` | Admin only, gives influence to your group in the territory you are standing in. Defaults to 100 |
 
 Panel and raid commands can be bound to a key from the FiveM key bindings settings.
 
