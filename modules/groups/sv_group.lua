@@ -349,6 +349,79 @@ function group:saveGroup()
     end
 end
 
+function GenerateUniqueGroupId()
+    local id
+    repeat
+        id = "GRP-" .. os.time() .. "-" .. Generate.Code({ includeNumbers = true, includeLetters = true, length = 4 }):upper()
+    until not GetGroupFromId(id)
+    return id
+end
+
+function IsGroupNameTaken(name)
+    local lower = name:lower()
+    for _, data in pairs(GroupList) do
+        if data.name:lower() == lower then
+            return true
+        end
+    end
+    return false
+end
+
+function CreateGroup(data, leaderSource)
+    if type(data) ~= 'table' or type(data.name) ~= 'string' then return nil, 'invalid_data' end
+
+    local name = data.name:gsub('^%s+', ''):gsub('%s+$', ''):sub(1, 50)
+    if name == '' then return nil, 'invalid_data' end
+    if IsGroupNameTaken(name) then return nil, 'name_taken' end
+
+    local id = GenerateUniqueGroupId()
+    local rgb = type(data.rgb) == 'table' and data.rgb or { r = 255, g = 255, b = 255 }
+    local isOfficial = data.is_official == true
+
+    MySQL.Sync.execute("INSERT INTO group_list (id, name, devise, rgb, is_official, slots) VALUES (?, ?, ?, ?, ?, ?)", {
+        id,
+        name,
+        (data.devise or ''):sub(1, 120),
+        json.encode(rgb),
+        isOfficial and 1 or 0,
+        data.slots
+    })
+
+    local ranks = {}
+    for _, gradeData in ipairs(_GROUP.DefaultRanks) do
+        local gradeId = MySQL.Sync.insert("INSERT INTO group_grades (name, rank, perms, groupId) VALUES (?, ?, ?, ?)", {
+            GetPhrase(gradeData.label),
+            gradeData.rank,
+            json.encode(gradeData.perms),
+            id
+        })
+        ranks[#ranks + 1] = {
+            id = gradeId,
+            name = GetPhrase(gradeData.label),
+            rank = gradeData.rank,
+            perms = gradeData.perms
+        }
+    end
+
+    local newGroup = group:new({
+        id = id,
+        name = name,
+        devise = (data.devise or ''):sub(1, 120),
+        rgb = rgb,
+        is_official = isOfficial,
+        slots = data.slots,
+        ranks = ranks,
+        members = {}
+    })
+
+    if leaderSource then
+        newGroup:recruitPlayer(Bridge.GetIdentifier(leaderSource), 0)
+    end
+
+    TriggerEvent('sxIllegals:groupCreated', id, leaderSource)
+    return newGroup
+end
+
 local function SaveGroups()
     for _, data in pairs(GetAllGroup()) do
         if data:getNeedSave() then

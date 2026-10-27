@@ -483,75 +483,34 @@ RegisterNetEvent('sxAdmin:deleteGroup', function(data)
     end
 end)
 
-local function GenerateUniqueGroupId()
-    local id
-    repeat
-        id = "GRP-" .. os.time() .. "-" .. Generate.Code({ includeNumbers = true, includeLetters = true, length = 4 }):upper()
-    until not GetGroupFromId(id)
-    return id
-end
-
 RegisterNetEvent('sxAdmin:createGroup', function(data)
     local src = source
-    if not IsPlayerAdmin(src) then return end
+    if not IsPlayerAdmin(src) or type(data) ~= 'table' or type(data.name) ~= 'string' then return end
 
-    local name = data.name
-    local devise = data.devise or ""
-    local rgb = data.rgb or { r = 255, g = 255, b = 255 }
-    local isOfficial = data.is_official or false
+    local leader = nil
+    if _GROUP.AutomaticAdminJoin and not GetGroupFromLicense(Bridge.GetIdentifier(src)) then
+        leader = src
+    end
 
-    local id = GenerateUniqueGroupId()
-    MySQL.Sync.execute("INSERT INTO group_list (id, name, devise, rgb, is_official) VALUES (?, ?, ?, ?, ?)", {
-        id,
-        name,
-        devise,
-        json.encode(rgb),
-        isOfficial and 1 or 0
-    })
+    local newGroup = CreateGroup({
+        name = data.name,
+        devise = data.devise,
+        rgb = data.rgb,
+        is_official = data.is_official,
+        slots = tonumber(data.slots)
+    }, leader)
 
-    if id then
-        local defaultGrades = {
-            { name = GetPhrase('grade_boss'),       rank = 0 },
-            { name = GetPhrase('grade_lieutenant'), rank = 1 },
-            { name = GetPhrase('grade_recruit'),    rank = 2 }
-        }
-        local ranks = {}
-        for _, gradeData in ipairs(defaultGrades) do
-            local gradeId = MySQL.Sync.insert("INSERT INTO group_grades (name, rank, perms, groupId) VALUES (?, ?, ?, ?)", {
-                gradeData.name,
-                gradeData.rank,
-                json.encode({}),
-                id
-            })
-            table.insert(ranks, {
-                id = gradeId,
-                name = gradeData.name,
-                rank = gradeData.rank,
-                perms = {}
-            })
-        end
-
-        local newGroupData = {
-            id = id,
-            name = name,
-            devise = devise,
-            rgb = rgb,
-            is_official = isOfficial,
-            ranks = ranks,
-            members = {}
-        }
-        group:new(newGroupData)
-
+    if newGroup then
         table.insert(AdminActivities, 1, {
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
             title = GetPhrase('activity_group_created_title'),
-            description = GetPhrase('activity_group_created_desc', name),
+            description = GetPhrase('activity_group_created_desc', newGroup.name),
             type = 'group',
             severity = 'info'
         })
 
-        Notify(src, GetPhrase('notify_group_created', name))
+        Notify(src, GetPhrase('notify_group_created', newGroup.name))
     end
 end)
 

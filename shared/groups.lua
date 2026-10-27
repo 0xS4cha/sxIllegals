@@ -8,3 +8,9 @@ _GROUP.Slots = {
     [true] = 15,
     [false] = 5
 }
+
+_GROUP.DefaultRanks = {
+    { label = 'grade_boss', rank = 0, perms = {} },
+    { label = 'grade_lieutenant', rank = 1, perms = { canInvite = true, canKick = true, canPromote = true } },
+    { label = 'grade_recruit', rank = 2, perms = {} },
+}
