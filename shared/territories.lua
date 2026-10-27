@@ -39,3 +39,13 @@ _TERRITORY.CouldownInfluence = {
     ['weedJoint'] = 2 * 60,
     ['weedEmpoche'] = 2 * 60
 }
+_TERRITORY.War = {
+    enabled = true,
+    contestRatio = 0.8,
+    requireContest = true,
+    minAttackers = 2,
+    captureTime = 300,
+    checkInterval = 10,
+    captureTransfer = 0.25,
+    cooldown = 1800,
+}

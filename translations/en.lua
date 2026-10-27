@@ -305,7 +305,26 @@ local my_language = {
     group_create_name_hint = "{min} to {max} characters.",
     group_create_devise = "Motto",
     group_create_color = "Color",
-    group_create_submit = "Found the group"
+    group_create_submit = "Found the group",
+
+    war_attack_title = "Territory under attack",
+    war_attack_defender = "~r~%s~s~ is attacking ~y~%s~s~! Send members to defend it.",
+    war_attack_attacker = "Attack on ~y~%s~s~ started. Hold the zone for %d min without defenders.",
+    war_attack_admin = "%s is attacking %s, held by %s.",
+    war_failed_title = "Attack failed",
+    war_failed_attacker = "Your attack on ~y~%s~s~ failed.",
+    war_defended_title = "Territory defended",
+    war_defended_defender = "The attack on ~y~%s~s~ was repelled.",
+    war_captured_title = "Territory captured",
+    war_captured_attacker = "You captured ~g~%s~s~!",
+    war_captured_admin = "%s captured %s from %s.",
+    war_lost_title = "Territory lost",
+    war_lost_defender = "You lost ~r~%s~s~ to %s.",
+    war_contested_title = "Territory contested",
+    war_contested_owner = "~o~%s~s~ is challenging your control of ~y~%s~s~.",
+    war_contested_challenger = "You can now attack ~y~%s~s~.",
+    war_contested_admin = "%s held by %s is contested by %s.",
+    war_progress = "Capture of ~y~%s~s~: ~g~%d%%~s~"
 }
 
 AddLanguage("en", my_language)

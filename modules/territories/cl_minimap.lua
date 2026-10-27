@@ -125,8 +125,10 @@ AddEventHandler("sxGroup:RefreshTerritories", function(data, id)
         InitializeTerritory(id, data)
     else
         TerritoriesList[id].influence = data.influence
+        TerritoriesList[id].totalInfluence = data.totalInfluence or TerritoriesList[id].totalInfluence
         TerritoriesList[id].date = data.date
         TerritoriesList[id].label = data.label
+        TerritoriesList[id].attackState = data.attackState or 0
         ShowTerritories(false)
         
         local r, g, b = 255, 255, 255

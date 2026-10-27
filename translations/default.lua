@@ -305,7 +305,26 @@ local my_language = {
     group_create_name_hint = "{min} à {max} caractères.",
     group_create_devise = "Devise",
     group_create_color = "Couleur",
-    group_create_submit = "Fonder le groupe"
+    group_create_submit = "Fonder le groupe",
+
+    war_attack_title = "Territoire attaqué",
+    war_attack_defender = "~r~%s~s~ attaque ~y~%s~s~ ! Envoyez des membres le défendre.",
+    war_attack_attacker = "L'attaque sur ~y~%s~s~ a commencé. Tenez la zone %d min sans défenseurs.",
+    war_attack_admin = "%s attaque %s, tenu par %s.",
+    war_failed_title = "Attaque échouée",
+    war_failed_attacker = "Votre attaque sur ~y~%s~s~ a échoué.",
+    war_defended_title = "Territoire défendu",
+    war_defended_defender = "L'attaque sur ~y~%s~s~ a été repoussée.",
+    war_captured_title = "Territoire capturé",
+    war_captured_attacker = "Vous avez capturé ~g~%s~s~ !",
+    war_captured_admin = "%s a capturé %s à %s.",
+    war_lost_title = "Territoire perdu",
+    war_lost_defender = "Vous avez perdu ~r~%s~s~ face à %s.",
+    war_contested_title = "Territoire contesté",
+    war_contested_owner = "~o~%s~s~ conteste votre contrôle de ~y~%s~s~.",
+    war_contested_challenger = "Vous pouvez maintenant attaquer ~y~%s~s~.",
+    war_contested_admin = "%s tenu par %s est contesté par %s.",
+    war_progress = "Capture de ~y~%s~s~ : ~g~%d%%~s~"
 }
 
 RegisterDefaultPhrases(my_language)
