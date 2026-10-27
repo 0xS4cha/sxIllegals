@@ -69,8 +69,17 @@ export interface GroupDetail {
   topContributors: MemberContribution[]
 }
 
+export interface GroupInvitation {
+  groupId: string
+  groupName: string
+  rgb: { r: number; g: number; b: number }
+  inviter: string
+  expiresIn: number
+}
+
 export interface GroupActionResult {
   ok: boolean
   error?: string
   group?: GroupDetail | null
+  invitations?: GroupInvitation[]
 }

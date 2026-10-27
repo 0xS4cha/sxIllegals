@@ -34,6 +34,22 @@ function SX.Group:Initialize()
         cb(GroupCall('sxGroup:renameRank', data and data.rankId, data and data.newName))
     end)
 
+    RegisterNUICallback('invitePlayerToGroup', function(data, cb)
+        cb(GroupCall('sxGroup:invitePlayer', data and data.targetId))
+    end)
+
+    RegisterNUICallback('respondGroupInvitation', function(data, cb)
+        cb(GroupCall('sxGroup:respondInvitation', data and data.groupId, data and data.accept == true))
+    end)
+
+    RegisterCommand('groupaccept', function()
+        TriggerServerEvent('sxGroup:acceptLatestInvitation')
+    end, false)
+
+    RegisterCommand('groupdecline', function()
+        TriggerServerEvent('sxGroup:declineLatestInvitation')
+    end, false)
+
     RegisterNUICallback('setGroupRankPermissions', function(data, cb)
         cb(GroupCall('sxGroup:setRankPermissions', data and data.rankId, data and data.permissions))
     end)

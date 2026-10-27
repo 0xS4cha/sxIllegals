@@ -13,7 +13,7 @@ import {
 import { useGroupData } from '../../hooks/useGroupData'
 import { useTranslation } from '../../hooks/useTranslation'
 import type { GroupCategory } from '../../types/group'
-import { EditDeviseModal } from './components/GroupModals'
+import { EditDeviseModal, InviteMemberModal } from './components/GroupModals'
 import { NoGroupView } from './components/NoGroupView'
 import { GroupMembersView } from './components/GroupMembersView'
 import { GroupOverviewView } from './components/GroupOverviewView'
@@ -25,10 +25,12 @@ export function GroupPanel() {
   const [activeCategory, setActiveCategory] = useState<GroupCategory>('overview')
   const [collapsedSidebar, setCollapsedSidebar] = useState(false)
   const [isEditDeviseModalOpen, setIsEditDeviseModalOpen] = useState(false)
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const { t } = useTranslation()
 
   const {
     group,
+    invitations,
     loading,
     error,
     clearError,
@@ -38,13 +40,24 @@ export function GroupPanel() {
     demoteMember,
     kickMember,
     leaveGroup,
+    inviteMember,
+    respondInvitation,
     updateDevise,
     updateRankName,
     updateRankPermissions,
   } = useGroupData()
 
   if (!group) {
-    return <NoGroupView loading={loading} onRefresh={refreshGroupData} runAction={runAction} />
+    return (
+      <NoGroupView
+        loading={loading}
+        error={error}
+        invitations={invitations}
+        onRefresh={refreshGroupData}
+        onRespond={respondInvitation}
+        runAction={runAction}
+      />
+    )
   }
 
   const categoryHeaders: Record<GroupCategory, { title: string; subtitle: string; icon: typeof LayoutDashboard }> = {
@@ -146,6 +159,7 @@ export function GroupPanel() {
                   onDemote={demoteMember}
                   onKick={kickMember}
                   onLeave={leaveGroup}
+                  onOpenInviteModal={() => setIsInviteModalOpen(true)}
                 />
               )}
 
@@ -164,6 +178,12 @@ export function GroupPanel() {
           </AnimatePresence>
         </main>
       </div>
+
+      <InviteMemberModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        onInvite={(targetId) => void inviteMember(targetId)}
+      />
 
       <EditDeviseModal
         isOpen={isEditDeviseModalOpen}

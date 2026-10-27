@@ -164,7 +164,9 @@ end
 
 RegisterServerCallback('sxGroup:getMyGroup', function(source)
     local group, _, identifier = GetContext(source)
-    if not group then return { ok = true, group = nil } end
+    if not group then
+        return { ok = true, group = nil, invitations = GetPlayerInvitations(source) }
+    end
     return Result(source, group, identifier)
 end)
 

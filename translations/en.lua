@@ -270,7 +270,26 @@ local my_language = {
     alert_member_left = "%s left the group.",
     alert_member_kicked = "%s was kicked from the group.",
     alert_member_joined_title = "New member",
-    alert_member_joined = "%s joined the group."
+    alert_member_joined = "%s joined the group.",
+
+    notify_group_invited = "~b~%s~s~ invites you to join ~y~%s~s~. Type /groupaccept or /groupdecline, or open the group panel.",
+    notify_group_invite_sent = "Invitation sent to ~b~%s~s~.",
+    notify_group_invite_declined = "~b~%s~s~ declined your invitation.",
+    notify_group_joined = "You joined ~g~%s~s~.",
+    group_activity_joined_title = "New member",
+    group_activity_joined_desc = "%s joined the group, invited by %s.",
+    activity_member_joined_title = "Member joined",
+    activity_member_joined_desc = "%s joined %s.",
+    group_error_player_not_found = "No player with this server id.",
+    group_error_invalid_target = "You cannot invite yourself.",
+    group_error_already_in_group = "This player is already in a group.",
+    group_error_group_full = "The group has no free slot.",
+    group_error_already_invited = "This player already has a pending invitation.",
+    group_error_invitation_expired = "This invitation expired.",
+    group_invitations_title = "Invitations",
+    group_invitation_from = "Invited by {name}, expires in {seconds}s",
+    group_invitation_accept = "Accept",
+    group_invitation_decline = "Decline"
 }
 
 AddLanguage("en", my_language)

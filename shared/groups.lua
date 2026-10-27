@@ -4,6 +4,7 @@ _GROUP.AutomaticAdminJoin = true
 _GROUP.PlayersCanCreate = true
 _GROUP.Unofficial = true
 _GROUP.SaveInterval = 5
+_GROUP.InvitationDuration = 120
 _GROUP.Slots = {
     [true] = 15,
     [false] = 5

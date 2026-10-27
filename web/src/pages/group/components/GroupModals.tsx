@@ -53,12 +53,12 @@ export function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberMod
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300">
-                ID Serveur ou Nom du Joueur
+                ID Serveur du Joueur
               </label>
               <input
                 type="text"
                 required
-                placeholder="Ex: 42 ou Marcus..."
+                placeholder="Ex: 42" inputMode="numeric"
                 value={targetId}
                 onChange={(e) => setTargetId(e.target.value)}
                 className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"

@@ -270,7 +270,26 @@ local my_language = {
     alert_member_left = "%s a quitté le groupe.",
     alert_member_kicked = "%s a été exclu du groupe.",
     alert_member_joined_title = "Nouveau membre",
-    alert_member_joined = "%s a rejoint le groupe."
+    alert_member_joined = "%s a rejoint le groupe.",
+
+    notify_group_invited = "~b~%s~s~ vous invite à rejoindre ~y~%s~s~. Tapez /groupaccept ou /groupdecline, ou ouvrez le panel de groupe.",
+    notify_group_invite_sent = "Invitation envoyée à ~b~%s~s~.",
+    notify_group_invite_declined = "~b~%s~s~ a refusé votre invitation.",
+    notify_group_joined = "Vous avez rejoint ~g~%s~s~.",
+    group_activity_joined_title = "Nouveau membre",
+    group_activity_joined_desc = "%s a rejoint le groupe, invité par %s.",
+    activity_member_joined_title = "Membre recruté",
+    activity_member_joined_desc = "%s a rejoint %s.",
+    group_error_player_not_found = "Aucun joueur avec cet ID serveur.",
+    group_error_invalid_target = "Vous ne pouvez pas vous inviter vous-même.",
+    group_error_already_in_group = "Ce joueur fait déjà partie d'un groupe.",
+    group_error_group_full = "Le groupe n'a plus de place.",
+    group_error_already_invited = "Ce joueur a déjà une invitation en attente.",
+    group_error_invitation_expired = "Cette invitation a expiré.",
+    group_invitations_title = "Invitations",
+    group_invitation_from = "Invité par {name}, expire dans {seconds}s",
+    group_invitation_accept = "Accepter",
+    group_invitation_decline = "Refuser"
 }
 
 AddLanguage("fr", my_language)

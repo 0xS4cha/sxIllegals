@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { INITIAL_MOCK_GROUP_DETAIL } from '../data/mockGroupData'
-import type { GroupActionResult, GroupDetail, GroupPermissions } from '../types/group'
+import type { GroupActionResult, GroupDetail, GroupInvitation, GroupPermissions } from '../types/group'
 
 import { useNuiEvent } from './useNuiEvent'
 import { fetchNui } from '../utils/fetchNui'
@@ -10,6 +10,7 @@ export function useGroupData() {
   const [group, setGroup] = useState<GroupDetail | null>(isEnvBrowser() ? INITIAL_MOCK_GROUP_DETAIL : null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [invitations, setInvitations] = useState<GroupInvitation[]>([])
 
   useNuiEvent<GroupDetail | null>('setMyGroupData', (data) => {
     setGroup(data && data.name ? data : null)
@@ -22,6 +23,7 @@ export function useGroupData() {
     try {
       const res = await fetchNui<GroupActionResult>('getMyGroupData')
       setGroup(res?.group ?? null)
+      setInvitations(res?.invitations ?? [])
     } catch (err) {
       console.error('Failed to fetch player group data via NUI:', err)
     } finally {
@@ -44,6 +46,7 @@ export function useGroupData() {
     try {
       const res = await fetchNui<GroupActionResult>(event, data)
       setGroup(res?.group ?? null)
+      setInvitations(res?.invitations ?? [])
       return true
     } catch (err) {
       setError(err instanceof Error ? err.message : 'unknown')
@@ -73,6 +76,11 @@ export function useGroupData() {
       ranks: prev.ranks.map((r) => (r.id === rankId ? { ...r, name: newName } : r)),
     })), [runAction])
 
+  const inviteMember = useCallback((targetId: string) => runAction('invitePlayerToGroup', { targetId }), [runAction])
+
+  const respondInvitation = useCallback((groupId: string, accept: boolean) =>
+    runAction('respondGroupInvitation', { groupId, accept }), [runAction])
+
   const updateRankPermissions = useCallback((rankId: number, permissions: GroupPermissions) =>
     runAction('setGroupRankPermissions', { rankId, permissions }, (prev) => ({
       ...prev,
@@ -81,6 +89,7 @@ export function useGroupData() {
 
   return {
     group,
+    invitations,
     loading,
     error,
     clearError: () => setError(null),
@@ -90,6 +99,8 @@ export function useGroupData() {
     demoteMember,
     kickMember,
     leaveGroup,
+    inviteMember,
+    respondInvitation,
     updateDevise,
     updateRankName,
     updateRankPermissions,
