@@ -501,6 +501,7 @@ Group functions accept a server id or an identifier for `target`.
 | `InvitePlayer(groupId, targetSource)` | `boolean, error?` | Sends an invitation to an online player |
 | `SendGroupAlert(groupId, title, message, coords?)` | `boolean` | Alerts every online member, with a blip when `coords` is given |
 | `SetGroupInfluence(territoryId, groupId, points)` | `boolean` | Sets the influence of a group on a territory, `0` removes it |
+| `DeleteTerritory(territoryId)` | `boolean` | Deletes a territory and removes it from every map |
 | `ResetTerritoryInfluence(territoryId)` | `boolean` | Removes every influence from a territory |
 | `GetTerritoryWar(territoryId)` | `table` | `{ attackState, contested, attacker, defender, progress, cooldown }`, `progress` in percent and `cooldown` in seconds |
 | `SetLaboratoryOwner(labId, groupId?)` | `boolean` | Gives a laboratory to a group, `nil` removes the owner |
@@ -532,6 +533,7 @@ Server events triggered with `TriggerEvent`, other resources can listen to them 
 | `sxIllegals:territoryAttackEnded` | `territoryId`, `attackerId`, `defenderId`, `reason` |
 | `sxIllegals:territoryCaptured` | `territoryId`, `attackerId`, `defenderId` |
 | `sxIllegals:territoryLostByDecay` | `territoryId`, `previousOwnerId`, `newOwnerId` |
+| `sxIllegals:territoryDeleted` | `territoryId` |
 | `sxIllegals:labDeleted` | `labId` |
 | `sxIllegals:labRaided` | `labId`, `source`, `ownerId` |
 | `sxIllegals:policeAlert` | `labId`, `coords`, `interaction` |

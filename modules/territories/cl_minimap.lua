@@ -160,6 +160,26 @@ AddEventHandler("sxGroup:RefreshTerritories", function(data, id)
     end
 end)
 
+RegisterNetEvent("sxGroup:RemoveTerritory")
+AddEventHandler("sxGroup:RemoveTerritory", function(id)
+    local territory = TerritoriesList and TerritoriesList[id]
+    if not territory then return end
+
+    Territories.ResetPoints(territory.id)
+    Territories.Draw(territory.id, 0xffffff, 0)
+    Territories.SetVisible(territory.id, false)
+    if territory.PolyZone then
+        territory.PolyZone:destroy()
+    end
+    if territory.isInside then
+        ShowDisplayTerritory(false)
+    end
+    if PlayerInTerritory == id then
+        PlayerInTerritory = nil
+    end
+    TerritoriesList[id] = nil
+end)
+
 Citizen.CreateThread(function()
     AddTextEntry('IB_POI', GetPhrase('territory_toggle_display'))
     AddTextEntry(GetHashKey('0x86A9740F'), GetPhrase('territory_toggle_display'))

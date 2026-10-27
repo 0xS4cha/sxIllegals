@@ -44,6 +44,7 @@ export function AdminPanel() {
     createGroup,
     updateGroup,
     resetTerritoryInfluence,
+    deleteTerritory,
     teleportToTerritory,
     createTerritory,
     createLaboratory,
@@ -159,6 +160,7 @@ export function AdminPanel() {
                 <TerritoriesView
                   territories={territories}
                   onResetInfluence={resetTerritoryInfluence}
+                  onDelete={deleteTerritory}
                   onTeleport={teleportToTerritory}
                   onOpenCreateModal={() => setIsCreateTerritoryModalOpen(true)}
                 />

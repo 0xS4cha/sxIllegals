@@ -45,6 +45,10 @@ function SX.Admin:Initialize()
         cb({ ok = true })
     end)
 
+    RegisterNUICallback('deleteTerritory', function(data, cb)
+        cb(TriggerServerCallback('sxAdmin:deleteTerritory', data and data.territoryId) or { ok = false, error = 'timeout' })
+    end)
+
     RegisterNUICallback('resetTerritoryInfluence', function(data, cb)
         if data and data.territoryId then
             TriggerServerEvent('sxAdmin:resetTerritoryInfluence', data)

@@ -294,6 +294,19 @@ export function useAdminData() {
     }
   }, [groups, refreshData])
 
+  const deleteTerritory = useCallback(async (territoryId: string) => {
+    setTerritories((prev) => prev.filter((territory) => territory.id !== territoryId))
+
+    if (!isEnvBrowser()) {
+      try {
+        await fetchNui('deleteTerritory', { territoryId })
+      } catch (err) {
+        console.error('Failed to delete territory:', err)
+      }
+      void refreshData()
+    }
+  }, [refreshData])
+
   const deleteLaboratory = useCallback(async (labId: string | number) => {
     setLabs((prev) => prev.filter((lab) => lab.id !== labId))
 
@@ -325,6 +338,7 @@ export function useAdminData() {
     createGroup,
     updateGroup,
     resetTerritoryInfluence,
+    deleteTerritory,
     teleportToTerritory,
     createTerritory,
     createLaboratory,

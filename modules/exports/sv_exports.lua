@@ -307,6 +307,10 @@ exports("SetGroupInfluence", function(territoryId, groupId, points)
     return SetTerritoryGroupInfluence(territoryId, groupId, points)
 end)
 
+exports("DeleteTerritory", function(territoryId)
+    return DeleteTerritory(territoryId)
+end)
+
 exports("ResetTerritoryInfluence", function(territoryId)
     return ResetTerritoryInfluence(territoryId)
 end)

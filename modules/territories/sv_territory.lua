@@ -244,6 +244,16 @@ function ResetTerritoryInfluence(territoryId)
     return true
 end
 
+function DeleteTerritory(territoryId)
+    if not TerritoriesList[territoryId] then return false end
+
+    TerritoriesList[territoryId] = nil
+    MySQL.Async.execute('DELETE FROM `territories` WHERE `id` = ?', { territoryId })
+    TriggerClientEvent('sxGroup:RemoveTerritory', -1, territoryId)
+    TriggerEvent('sxIllegals:territoryDeleted', territoryId)
+    return true
+end
+
 function SetTerritoryGroupInfluence(territoryId, groupId, points)
     local target = TerritoriesList[territoryId]
     points = math.floor(tonumber(points) or -1)

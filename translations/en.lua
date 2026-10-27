@@ -529,7 +529,12 @@ local my_language = {
     activity_lab_deleted_desc = "The laboratory %s was deleted by %s.",
     notify_lab_deleted = "Laboratory ~r~%s~s~ deleted.",
     labs_delete = "Delete",
-    btn_confirm_delete = "Click again to confirm"
+    btn_confirm_delete = "Click again to confirm",
+
+    activity_territory_deleted_title = "Territory deleted",
+    activity_territory_deleted_desc = "The territory %s was deleted by %s.",
+    notify_territory_deleted = "Territory ~r~%s~s~ deleted.",
+    territories_delete = "Delete"
 }
 
 AddLanguage("en", my_language)

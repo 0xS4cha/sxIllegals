@@ -603,6 +603,26 @@ RegisterServerCallback('sxAdmin:updateLaboratory', function(source, data)
     return { ok = true }
 end)
 
+RegisterServerCallback('sxAdmin:deleteTerritory', function(source, territoryId)
+    if not IsPlayerAdmin(source) then return { ok = false, error = 'no_permission' } end
+
+    local territory = GetTerritoriesFromId(territoryId)
+    if not territory then return { ok = false, error = 'not_found' } end
+
+    local label = territory:getLabel() or territory.id
+    DeleteTerritory(territory.id)
+
+    AddAdminActivity({
+        title = GetPhrase('activity_territory_deleted_title'),
+        description = GetPhrase('activity_territory_deleted_desc', label, Bridge.GetName(source)),
+        type = 'territory',
+        severity = 'warning'
+    }, 'territory_deleted')
+
+    Notify(source, GetPhrase('notify_territory_deleted', label))
+    return { ok = true }
+end)
+
 RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)
     local src = source
     if not IsPlayerAdmin(src) then return end

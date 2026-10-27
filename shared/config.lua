@@ -21,6 +21,7 @@ _CONFIG.Webhook = {
         member_left = true,
         territory_created = true,
         territory_reset = true,
+        territory_deleted = true,
         territory_contested = true,
         territory_attacked = true,
         territory_captured = true,
