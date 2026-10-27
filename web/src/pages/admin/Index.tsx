@@ -176,6 +176,7 @@ export function AdminPanel() {
                   labs={labs}
                   groups={groups}
                   onUpdateLab={updateLaboratory}
+                  onTeleport={teleportToTerritory}
                   onOpenCreateModal={() => setIsCreateLabModalOpen(true)}
                 />
               )}

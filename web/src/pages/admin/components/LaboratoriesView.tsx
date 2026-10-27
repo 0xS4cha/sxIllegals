@@ -4,6 +4,7 @@ import {
   FlaskConical,
   Leaf,
   FlaskRound,
+  Navigation,
   Package,
   Plus,
   Search,
@@ -15,12 +16,13 @@ interface LaboratoriesViewProps {
   labs: LaboratoryItem[]
   groups: GroupItem[]
   onUpdateLab: (payload: UpdateLaboratoryPayload) => void
+  onTeleport: (coords: { x: number; y: number; z: number }) => void
   onOpenCreateModal: () => void
 }
 
 type LaboratoryFilter = 'all' | 'weed' | 'coke' | 'meth'
 
-export function LaboratoriesView({ labs, groups, onUpdateLab, onOpenCreateModal }: LaboratoriesViewProps) {
+export function LaboratoriesView({ labs, groups, onUpdateLab, onTeleport, onOpenCreateModal }: LaboratoriesViewProps) {
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [filterState, setFilterState] = useState<LaboratoryFilter>('all')
@@ -267,6 +269,17 @@ export function LaboratoriesView({ labs, groups, onUpdateLab, onOpenCreateModal 
                       {lab.productionStatus}
                     </p>
                   </div>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-zinc-800/60 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => onTeleport(lab.coords)}
+                    className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white"
+                  >
+                    <Navigation className="h-3.5 w-3.5" />
+                    <span>{t('btn_teleport')}</span>
+                  </button>
                 </div>
               </div>
             </div>
