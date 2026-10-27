@@ -9,6 +9,7 @@ import {
   UserPlus,
   UserX,
 } from 'lucide-react'
+import { useConfirm } from '../../../hooks/useConfirm'
 import { useTranslation } from '../../../hooks/useTranslation'
 import type { GroupDetail } from '../../../types/group'
 
@@ -31,7 +32,7 @@ export function GroupMembersView({
 }: GroupMembersViewProps) {
   const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
-  const [confirmLeave, setConfirmLeave] = useState(false)
+  const confirmLeave = useConfirm<boolean>()
 
   const filteredMembers = group.members.filter(
     (m) =>
@@ -59,12 +60,11 @@ export function GroupMembersView({
         <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={() => (confirmLeave ? onLeave() : setConfirmLeave(true))}
-          onMouseLeave={() => setConfirmLeave(false)}
+          onClick={() => confirmLeave.request(true, onLeave)}
           className="flex items-center justify-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/20 transition"
         >
           <LogOut className="h-4 w-4" />
-          <span>{confirmLeave ? t('group_leave_confirm') : t('group_leave')}</span>
+          <span>{confirmLeave.pending ? t('group_leave_confirm') : t('group_leave')}</span>
         </button>
 
         {permissions.canInvite && onOpenInviteModal && (

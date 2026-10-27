@@ -11,6 +11,7 @@ import {
   Trash2,
   Zap,
 } from 'lucide-react'
+import { useConfirm } from '../../../hooks/useConfirm'
 import { useTranslation } from '../../../hooks/useTranslation'
 import type { TerritoryItem } from '../../../types/admin'
 
@@ -32,7 +33,7 @@ export function TerritoriesView({
   onOpenCreateModal,
 }: TerritoriesViewProps) {
   const { t } = useTranslation()
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const confirmDelete = useConfirm<string>()
   const [searchQuery, setSearchQuery] = useState('')
   const [filterState, setFilterState] = useState<TerritoryFilter>('all')
 
@@ -221,12 +222,11 @@ export function TerritoriesView({
 
               <button
                 type="button"
-                onClick={() => (confirmDelete === territory.id ? onDelete(territory.id) : setConfirmDelete(territory.id))}
-                onMouseLeave={() => setConfirmDelete(null)}
-                className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-400 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400 transition"
+                onClick={() => confirmDelete.request(territory.id, () => onDelete(territory.id))}
+                className="flex min-w-[160px] items-center justify-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-400 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400 transition"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                <span>{confirmDelete === territory.id ? t('btn_confirm_delete') : t('territories_delete')}</span>
+                <span>{confirmDelete.pending === territory.id ? t('btn_confirm_delete') : t('territories_delete')}</span>
               </button>
             </div>
           </motion.div>

@@ -10,6 +10,7 @@ import {
   Search,
   Trash2,
 } from 'lucide-react'
+import { useConfirm } from '../../../hooks/useConfirm'
 import { useTranslation } from '../../../hooks/useTranslation'
 import type { GroupItem, LaboratoryItem, UpdateLaboratoryPayload } from '../../../types/admin'
 
@@ -26,7 +27,7 @@ type LaboratoryFilter = 'all' | 'weed' | 'coke' | 'meth'
 
 export function LaboratoriesView({ labs, groups, onUpdateLab, onTeleport, onDelete, onOpenCreateModal }: LaboratoriesViewProps) {
   const { t } = useTranslation()
-  const [confirmDelete, setConfirmDelete] = useState<string | number | null>(null)
+  const confirmDelete = useConfirm<string | number>()
   const [search, setSearch] = useState('')
   const [filterState, setFilterState] = useState<LaboratoryFilter>('all')
 
@@ -286,12 +287,11 @@ export function LaboratoriesView({ labs, groups, onUpdateLab, onTeleport, onDele
 
                   <button
                     type="button"
-                    onClick={() => (confirmDelete === lab.id ? onDelete(lab.id) : setConfirmDelete(lab.id))}
-                    onMouseLeave={() => setConfirmDelete(null)}
-                    className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-400 transition hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400"
+                    onClick={() => confirmDelete.request(lab.id, () => onDelete(lab.id))}
+                    className="flex min-w-[160px] items-center justify-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-400 transition hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                    <span>{confirmDelete === lab.id ? t('btn_confirm_delete') : t('labs_delete')}</span>
+                    <span>{confirmDelete.pending === lab.id ? t('btn_confirm_delete') : t('labs_delete')}</span>
                   </button>
                 </div>
               </div>
