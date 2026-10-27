@@ -557,14 +557,14 @@ AddEventHandler("sxGroup:RegisterLaboratory", function(data)
         table.insert(Labs.Table, newLab)
         
         if AdminActivities then
-            table.insert(AdminActivities, 1, {
+            AddAdminActivity({
                 id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
                 time = os.time(),
                 title = GetPhrase('activity_lab_created_title'),
                 description = GetPhrase('activity_lab_created_desc', data.label, data.type:upper()),
                 type = 'lab',
                 severity = 'info'
-            })
+            }, 'lab_created')
         end
         
         TriggerClientEvent("sxIllegals:SyncLabsTable", -1, Labs.Table)

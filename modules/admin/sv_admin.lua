@@ -447,14 +447,14 @@ RegisterNetEvent('sxAdmin:toggleGroupOfficial', function(data)
         group:setNeedSave(true)
         group:saveGroup()
 
-        table.insert(AdminActivities, 1, {
+        AddAdminActivity({
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
             title = GetPhrase('activity_official_title'),
             description = GetPhrase(newStatus and 'activity_official_promoted_desc' or 'activity_official_demoted_desc', group.name),
             type = 'group',
             severity = 'info'
-        })
+        }, 'group_updated')
 
         Notify(src, GetPhrase(newStatus and 'notify_group_official' or 'notify_group_unofficial', group.name))
     end
@@ -469,14 +469,14 @@ RegisterNetEvent('sxAdmin:deleteGroup', function(data)
     if group then
         local groupName = group.name
 
-        table.insert(AdminActivities, 1, {
+        AddAdminActivity({
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
             title = GetPhrase('activity_group_deleted_title'),
             description = GetPhrase('activity_group_deleted_desc', groupName),
             type = 'group',
             severity = 'warning'
-        })
+        }, 'group_deleted')
 
         MySQL.Async.execute("DELETE FROM group_members WHERE groupId = ?", { groupId })
         MySQL.Async.execute("DELETE FROM group_grades WHERE groupId = ?", { groupId })
@@ -504,14 +504,14 @@ RegisterNetEvent('sxAdmin:createGroup', function(data)
     }, leader)
 
     if newGroup then
-        table.insert(AdminActivities, 1, {
+        AddAdminActivity({
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
             title = GetPhrase('activity_group_created_title'),
             description = GetPhrase('activity_group_created_desc', newGroup.name),
             type = 'group',
             severity = 'info'
-        })
+        }, 'group_created')
 
         Notify(src, GetPhrase('notify_group_created', newGroup.name))
     end
@@ -539,14 +539,14 @@ RegisterNetEvent('sxAdmin:updateGroup', function(data)
         group:setNeedSave(true)
         group:saveGroup()
 
-        table.insert(AdminActivities, 1, {
+        AddAdminActivity({
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
             title = GetPhrase('activity_group_updated_title'),
             description = GetPhrase('activity_group_updated_desc', group.name),
             type = 'group',
             severity = 'info'
-        })
+        }, 'group_updated')
 
         Notify(src, GetPhrase('notify_group_updated', group.name))
     end
@@ -568,14 +568,14 @@ RegisterServerCallback('sxAdmin:updateLaboratory', function(source, data)
         return { ok = false, error = 'invalid_level' }
     end
 
-    table.insert(AdminActivities, 1, {
+    AddAdminActivity({
         id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
         time = os.time(),
         title = GetPhrase('activity_lab_updated_title'),
         description = GetPhrase('activity_lab_updated_desc', lab.label or lab.id),
         type = 'lab',
         severity = 'info'
-    })
+    }, 'lab_updated')
 
     Notify(source, GetPhrase('notify_lab_updated', lab.label or lab.id))
     return { ok = true }
@@ -594,14 +594,14 @@ RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)
         territory:setNeedSave(true)
         territory:refreshZoneData()
 
-        table.insert(AdminActivities, 1, {
+        AddAdminActivity({
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
             title = GetPhrase('activity_territory_reset_title'),
             description = GetPhrase('activity_territory_reset_desc', territory.label or territory.id),
             type = 'territory',
             severity = 'warning'
-        })
+        }, 'territory_reset')
 
         Notify(src, GetPhrase('notify_territory_reset', territory.label or territory.id))
     end
@@ -667,7 +667,7 @@ function TrackAdminActivity(group, territory, interaction, point, value)
         actType = "territory"
     end
 
-    table.insert(AdminActivities, 1, {
+    AddAdminActivity({
         id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
         time = os.time(),
         title = title,
@@ -676,7 +676,4 @@ function TrackAdminActivity(group, territory, interaction, point, value)
         severity = severity
     })
 
-    if #AdminActivities > 20 then
-        table.remove(AdminActivities, #AdminActivities)
-    end
 end

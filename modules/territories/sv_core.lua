@@ -67,14 +67,14 @@ AddEventHandler('sxGroup:RegisterTerritory', function(data)
     territory:new(data)
     
     if AdminActivities then
-        table.insert(AdminActivities, 1, {
+        AddAdminActivity({
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
             time = os.time(),
             title = GetPhrase('activity_territory_created_title'),
             description = GetPhrase('activity_territory_created_desc', data.label),
             type = 'territory',
             severity = 'info'
-        })
+        }, 'territory_created')
     end
     
     TriggerClientEvent('sxGroup:RefreshTerritories', -1, GetTerritoriesFromId(data.id), data.id)
