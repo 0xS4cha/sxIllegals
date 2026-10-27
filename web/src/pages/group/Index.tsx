@@ -14,6 +14,7 @@ import { useGroupData } from '../../hooks/useGroupData'
 import { useTranslation } from '../../hooks/useTranslation'
 import type { GroupCategory } from '../../types/group'
 import { EditDeviseModal, InviteMemberModal } from './components/GroupModals'
+import { CreateGroupForm } from './components/CreateGroupForm'
 import { NoGroupView } from './components/NoGroupView'
 import { GroupMembersView } from './components/GroupMembersView'
 import { GroupOverviewView } from './components/GroupOverviewView'
@@ -31,6 +32,7 @@ export function GroupPanel() {
   const {
     group,
     invitations,
+    creation,
     loading,
     error,
     clearError,
@@ -42,6 +44,7 @@ export function GroupPanel() {
     leaveGroup,
     inviteMember,
     respondInvitation,
+    createGroup,
     updateDevise,
     updateRankName,
     updateRankPermissions,
@@ -56,7 +59,9 @@ export function GroupPanel() {
         onRefresh={refreshGroupData}
         onRespond={respondInvitation}
         runAction={runAction}
-      />
+      >
+        {creation?.enabled && <CreateGroupForm settings={creation} onCreate={createGroup} />}
+      </NoGroupView>
     )
   }
 

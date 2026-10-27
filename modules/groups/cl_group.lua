@@ -34,6 +34,10 @@ function SX.Group:Initialize()
         cb(GroupCall('sxGroup:renameRank', data and data.rankId, data and data.newName))
     end)
 
+    RegisterNUICallback('createPlayerGroup', function(data, cb)
+        cb(GroupCall('sxGroup:createGroup', data))
+    end)
+
     RegisterNUICallback('invitePlayerToGroup', function(data, cb)
         cb(GroupCall('sxGroup:invitePlayer', data and data.targetId))
     end)

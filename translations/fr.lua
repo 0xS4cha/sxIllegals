@@ -289,7 +289,23 @@ local my_language = {
     group_invitations_title = "Invitations",
     group_invitation_from = "Invité par {name}, expire dans {seconds}s",
     group_invitation_accept = "Accepter",
-    group_invitation_decline = "Refuser"
+    group_invitation_decline = "Refuser",
+
+    group_activity_created_title = "Groupe fondé",
+    group_activity_created_desc = "%s a fondé le groupe.",
+    activity_group_player_created_desc = "Le groupe %s a été fondé par %s.",
+    group_error_creation_disabled = "Les joueurs ne peuvent pas créer de groupe sur ce serveur.",
+    group_error_invalid_name = "Ce nom est trop court ou trop long.",
+    group_error_name_taken = "Un groupe utilise déjà ce nom.",
+    group_error_not_enough_money = "Vous n'avez pas assez d'argent.",
+    group_create_title = "Fonder un groupe",
+    group_create_price = "Coût : {price} $",
+    group_create_name = "Nom",
+    group_create_name_placeholder = "Grove Street Families",
+    group_create_name_hint = "{min} à {max} caractères.",
+    group_create_devise = "Devise",
+    group_create_color = "Couleur",
+    group_create_submit = "Fonder le groupe"
 }
 
 AddLanguage("fr", my_language)

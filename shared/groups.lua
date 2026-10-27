@@ -2,6 +2,8 @@ _GROUP = _GROUP or {}
 
 _GROUP.AutomaticAdminJoin = true
 _GROUP.PlayersCanCreate = true
+_GROUP.CreationPrice = 50000
+_GROUP.NameLength = { min = 3, max = 30 }
 _GROUP.Unofficial = true
 _GROUP.SaveInterval = 5
 _GROUP.InvitationDuration = 120

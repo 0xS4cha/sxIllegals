@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { INITIAL_MOCK_GROUP_DETAIL } from '../data/mockGroupData'
-import type { GroupActionResult, GroupDetail, GroupInvitation, GroupPermissions } from '../types/group'
+import type { CreateGroupPayload, GroupActionResult, GroupCreationSettings, GroupDetail, GroupInvitation, GroupPermissions } from '../types/group'
 
 import { useNuiEvent } from './useNuiEvent'
 import { fetchNui } from '../utils/fetchNui'
@@ -11,6 +11,7 @@ export function useGroupData() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [invitations, setInvitations] = useState<GroupInvitation[]>([])
+  const [creation, setCreation] = useState<GroupCreationSettings | null>(null)
 
   useNuiEvent<GroupDetail | null>('setMyGroupData', (data) => {
     setGroup(data && data.name ? data : null)
@@ -24,6 +25,7 @@ export function useGroupData() {
       const res = await fetchNui<GroupActionResult>('getMyGroupData')
       setGroup(res?.group ?? null)
       setInvitations(res?.invitations ?? [])
+      setCreation(res?.creation ?? null)
     } catch (err) {
       console.error('Failed to fetch player group data via NUI:', err)
     } finally {
@@ -78,6 +80,8 @@ export function useGroupData() {
 
   const inviteMember = useCallback((targetId: string) => runAction('invitePlayerToGroup', { targetId }), [runAction])
 
+  const createGroup = useCallback((payload: CreateGroupPayload) => runAction('createPlayerGroup', payload), [runAction])
+
   const respondInvitation = useCallback((groupId: string, accept: boolean) =>
     runAction('respondGroupInvitation', { groupId, accept }), [runAction])
 
@@ -90,6 +94,7 @@ export function useGroupData() {
   return {
     group,
     invitations,
+    creation,
     loading,
     error,
     clearError: () => setError(null),
@@ -101,6 +106,7 @@ export function useGroupData() {
     leaveGroup,
     inviteMember,
     respondInvitation,
+    createGroup,
     updateDevise,
     updateRankName,
     updateRankPermissions,

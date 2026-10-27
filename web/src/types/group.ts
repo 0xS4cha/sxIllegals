@@ -77,9 +77,23 @@ export interface GroupInvitation {
   expiresIn: number
 }
 
+export interface GroupCreationSettings {
+  enabled: boolean
+  price: number
+  minLength: number
+  maxLength: number
+}
+
+export interface CreateGroupPayload {
+  name: string
+  devise: string
+  rgb: { r: number; g: number; b: number }
+}
+
 export interface GroupActionResult {
   ok: boolean
   error?: string
   group?: GroupDetail | null
   invitations?: GroupInvitation[]
+  creation?: GroupCreationSettings
 }

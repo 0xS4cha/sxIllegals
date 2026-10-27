@@ -289,7 +289,23 @@ local my_language = {
     group_invitations_title = "Invitations",
     group_invitation_from = "Invited by {name}, expires in {seconds}s",
     group_invitation_accept = "Accept",
-    group_invitation_decline = "Decline"
+    group_invitation_decline = "Decline",
+
+    group_activity_created_title = "Group founded",
+    group_activity_created_desc = "%s founded the group.",
+    activity_group_player_created_desc = "The group %s was founded by %s.",
+    group_error_creation_disabled = "Players cannot create groups on this server.",
+    group_error_invalid_name = "This name is too short or too long.",
+    group_error_name_taken = "A group already uses this name.",
+    group_error_not_enough_money = "You do not have enough money.",
+    group_create_title = "Found a group",
+    group_create_price = "Cost: ${price}",
+    group_create_name = "Name",
+    group_create_name_placeholder = "Grove Street Families",
+    group_create_name_hint = "{min} to {max} characters.",
+    group_create_devise = "Motto",
+    group_create_color = "Color",
+    group_create_submit = "Found the group"
 }
 
 AddLanguage("en", my_language)

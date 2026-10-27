@@ -165,7 +165,12 @@ end
 RegisterServerCallback('sxGroup:getMyGroup', function(source)
     local group, _, identifier = GetContext(source)
     if not group then
-        return { ok = true, group = nil, invitations = GetPlayerInvitations(source) }
+        return {
+            ok = true,
+            group = nil,
+            invitations = GetPlayerInvitations(source),
+            creation = { enabled = _GROUP.PlayersCanCreate == true, price = _GROUP.CreationPrice, minLength = _GROUP.NameLength.min, maxLength = _GROUP.NameLength.max }
+        }
     end
     return Result(source, group, identifier)
 end)
@@ -293,4 +298,41 @@ RegisterServerCallback('sxGroup:setRankPermissions', function(source, rankId, pe
     group:saveGroup()
     AddGroupActivity(group.id, 'rank', GetPhrase('group_activity_permissions_title'), GetPhrase('group_activity_permissions_desc', GetRankName(group, rankId), actor.label))
     return Result(source, group, identifier)
+end)
+
+RegisterServerCallback('sxGroup:createGroup', function(source, data)
+    if not _GROUP.PlayersCanCreate then return { ok = false, error = 'creation_disabled' } end
+    if type(data) ~= 'table' or type(data.name) ~= 'string' then return { ok = false, error = 'invalid_data' } end
+
+    local identifier = Bridge.GetIdentifier(source)
+    if GetGroupFromLicense(identifier) then return { ok = false, error = 'already_in_group' } end
+
+    local name = data.name:gsub('^%s+', ''):gsub('%s+$', '')
+    if #name < _GROUP.NameLength.min or #name > _GROUP.NameLength.max then return { ok = false, error = 'invalid_name' } end
+    if IsGroupNameTaken(name) then return { ok = false, error = 'name_taken' } end
+
+    if _GROUP.CreationPrice > 0 then
+        if Bridge.GetMoney(source) < _GROUP.CreationPrice then return { ok = false, error = 'not_enough_money' } end
+        if not Bridge.RemoveMoney(source, _GROUP.CreationPrice) then return { ok = false, error = 'not_enough_money' } end
+    end
+
+    local rgb = type(data.rgb) == 'table' and {
+        r = math.min(255, math.max(0, math.floor(tonumber(data.rgb.r) or 255))),
+        g = math.min(255, math.max(0, math.floor(tonumber(data.rgb.g) or 255))),
+        b = math.min(255, math.max(0, math.floor(tonumber(data.rgb.b) or 255)))
+    } or nil
+
+    local newGroup, err = CreateGroup({ name = name, devise = type(data.devise) == 'string' and data.devise or '', rgb = rgb, is_official = false }, source)
+    if not newGroup then return { ok = false, error = err } end
+
+    AddGroupActivity(newGroup.id, 'member', GetPhrase('group_activity_created_title'), GetPhrase('group_activity_created_desc', Bridge.GetName(source)))
+    AddAdminActivity({
+        title = GetPhrase('activity_group_created_title'),
+        description = GetPhrase('activity_group_player_created_desc', newGroup.name, Bridge.GetName(source)),
+        type = 'group',
+        severity = 'info'
+    }, 'group_created')
+    Notify(source, GetPhrase('notify_group_created', newGroup.name))
+
+    return { ok = true, group = SerializeGroupForPlayer(newGroup, identifier) }
 end)
