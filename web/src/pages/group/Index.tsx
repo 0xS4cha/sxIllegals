@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import {
+  AlertCircle,
   BarChart3,
   LayoutDashboard,
   RefreshCw,
   ShieldHalf,
   Users,
+  X,
 } from 'lucide-react'
 
 import { useGroupData } from '../../hooks/useGroupData'
+import { useTranslation } from '../../hooks/useTranslation'
 import type { GroupCategory } from '../../types/group'
-import { EditDeviseModal, InviteMemberModal } from './components/GroupModals'
+import { EditDeviseModal } from './components/GroupModals'
+import { NoGroupView } from './components/NoGroupView'
 import { GroupMembersView } from './components/GroupMembersView'
 import { GroupOverviewView } from './components/GroupOverviewView'
 import { GroupRangsView } from './components/GroupRangsView'
@@ -20,20 +24,28 @@ import { GroupStatsView } from './components/GroupStatsView'
 export function GroupPanel() {
   const [activeCategory, setActiveCategory] = useState<GroupCategory>('overview')
   const [collapsedSidebar, setCollapsedSidebar] = useState(false)
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const [isEditDeviseModalOpen, setIsEditDeviseModalOpen] = useState(false)
+  const { t } = useTranslation()
 
   const {
     group,
     loading,
+    error,
+    clearError,
     refreshGroupData,
+    runAction,
     promoteMember,
     demoteMember,
     kickMember,
-    inviteMember,
+    leaveGroup,
     updateDevise,
     updateRankName,
+    updateRankPermissions,
   } = useGroupData()
+
+  if (!group) {
+    return <NoGroupView loading={loading} onRefresh={refreshGroupData} runAction={runAction} />
+  }
 
   const categoryHeaders: Record<GroupCategory, { title: string; subtitle: string; icon: typeof LayoutDashboard }> = {
     overview: {
@@ -97,6 +109,18 @@ export function GroupPanel() {
           </div>
         </header>
 
+        {error && (
+          <div className="flex items-center justify-between gap-3 border-b border-rose-500/20 bg-rose-500/10 px-6 py-2 text-xs text-rose-300">
+            <span className="flex items-center gap-2">
+              <AlertCircle className="h-3.5 w-3.5" />
+              {t(`group_error_${error}`)}
+            </span>
+            <button type="button" onClick={clearError} className="text-rose-300 hover:text-rose-100">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
+
         <main className="flex-1 overflow-auto p-6">
           <AnimatePresence mode="wait">
             <motion.div
@@ -121,7 +145,7 @@ export function GroupPanel() {
                   onPromote={promoteMember}
                   onDemote={demoteMember}
                   onKick={kickMember}
-                  onOpenInviteModal={() => setIsInviteModalOpen(true)}
+                  onLeave={leaveGroup}
                 />
               )}
 
@@ -129,6 +153,7 @@ export function GroupPanel() {
                 <GroupRangsView
                   group={group}
                   onRenameRank={updateRankName}
+                  onUpdatePermissions={updateRankPermissions}
                 />
               )}
 
@@ -139,12 +164,6 @@ export function GroupPanel() {
           </AnimatePresence>
         </main>
       </div>
-
-      <InviteMemberModal
-        isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
-        onInvite={inviteMember}
-      />
 
       <EditDeviseModal
         isOpen={isEditDeviseModalOpen}

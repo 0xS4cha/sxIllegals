@@ -114,12 +114,10 @@ function group:promotePlayer(identifier)
         local member = self.members[i]
         if member.identifier == identifier then
             local newGrade = member.id_grade - 1
-            while not self:getRankExistFromId(newGrade) and newGrade >= 0 do
-                Wait(100)
+            while newGrade >= 0 and not self:getRankExistFromId(newGrade) do
                 newGrade = newGrade - 1
-                if newGrade > 100 then break end
             end
-            if self:getRankExistFromId(newGrade) then
+            if newGrade >= 0 then
                 self:setNeedSave(true)
                 member.id_grade = newGrade
                 return member.id_grade
@@ -211,13 +209,12 @@ function group:demotePlayer(identifier)
     for i = 1, #self.members do
         local member = self.members[i]
         if member.identifier == identifier then
+            local lastRank = self:getLastRank()
             local newGrade = member.id_grade + 1
-            while not self:getRankExistFromId(newGrade) and newGrade >= 0 do
-                Wait(100)
+            while newGrade <= lastRank and not self:getRankExistFromId(newGrade) do
                 newGrade = newGrade + 1
-                if newGrade > 100 then break end
             end
-            if newGrade then
+            if newGrade <= lastRank then
                 member.id_grade = newGrade
                 self:setNeedSave(true)
                 return member.id_grade

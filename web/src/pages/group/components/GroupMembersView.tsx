@@ -4,10 +4,12 @@ import {
   ArrowDown,
   ArrowUp,
   Crown,
+  LogOut,
   Search,
   UserPlus,
   UserX,
 } from 'lucide-react'
+import { useTranslation } from '../../../hooks/useTranslation'
 import type { GroupDetail } from '../../../types/group'
 
 interface GroupMembersViewProps {
@@ -15,7 +17,8 @@ interface GroupMembersViewProps {
   onPromote: (identifier: string) => void
   onDemote: (identifier: string) => void
   onKick: (identifier: string) => void
-  onOpenInviteModal: () => void
+  onLeave: () => void
+  onOpenInviteModal?: () => void
 }
 
 export function GroupMembersView({
@@ -23,9 +26,12 @@ export function GroupMembersView({
   onPromote,
   onDemote,
   onKick,
+  onLeave,
   onOpenInviteModal,
 }: GroupMembersViewProps) {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
+  const [confirmLeave, setConfirmLeave] = useState(false)
 
   const filteredMembers = group.members.filter(
     (m) =>
@@ -34,7 +40,7 @@ export function GroupMembersView({
       m.rank.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
-  const canManageMembers = group.myRole.canManage
+  const { permissions, level: myLevel } = group.myRole
 
   return (
     <div className="space-y-6">
@@ -50,7 +56,18 @@ export function GroupMembersView({
           />
         </div>
 
-        {canManageMembers && (
+        <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => (confirmLeave ? onLeave() : setConfirmLeave(true))}
+          onMouseLeave={() => setConfirmLeave(false)}
+          className="flex items-center justify-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/20 transition"
+        >
+          <LogOut className="h-4 w-4" />
+          <span>{confirmLeave ? t('group_leave_confirm') : t('group_leave')}</span>
+        </button>
+
+        {permissions.canInvite && onOpenInviteModal && (
           <button
             type="button"
             onClick={onOpenInviteModal}
@@ -60,6 +77,7 @@ export function GroupMembersView({
             <span>Inviter un Membre</span>
           </button>
         )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3">
@@ -109,8 +127,10 @@ export function GroupMembersView({
               </div>
             </div>
 
-            {canManageMembers && !member.isLeader && (
+            {member.rankLevel < myLevel && (permissions.canPromote || permissions.canKick) && (
               <div className="flex items-center gap-1.5 self-end sm:self-auto">
+                {permissions.canPromote && (
+                <>
                 <button
                   type="button"
                   onClick={() => onPromote(member.identifier)}
@@ -130,7 +150,10 @@ export function GroupMembersView({
                   <ArrowDown className="h-3.5 w-3.5" />
                   <span className="hidden lg:inline">Rétrograder</span>
                 </button>
+                </>
+                )}
 
+                {permissions.canKick && (
                 <button
                   type="button"
                   onClick={() => onKick(member.identifier)}
@@ -139,6 +162,7 @@ export function GroupMembersView({
                 >
                   <UserX className="h-4 w-4" />
                 </button>
+                )}
               </div>
             )}
           </motion.div>

@@ -1,14 +1,18 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Check, Edit2, Shield, ShieldAlert, ShieldCheck } from 'lucide-react'
-import type { GroupDetail } from '../../../types/group'
+import { useTranslation } from '../../../hooks/useTranslation'
+import { GROUP_PERMISSION_KEYS } from '../../../types/group'
+import type { GroupDetail, GroupPermissionKey, GroupRankDetail } from '../../../types/group'
 
 interface GroupRangsViewProps {
   group: GroupDetail
   onRenameRank: (rankId: number, newName: string) => void
+  onUpdatePermissions: (rankId: number, permissions: GroupRankDetail['permissions']) => void
 }
 
-export function GroupRangsView({ group, onRenameRank }: GroupRangsViewProps) {
+export function GroupRangsView({ group, onRenameRank, onUpdatePermissions }: GroupRangsViewProps) {
+  const { t } = useTranslation()
   const [editingRankId, setEditingRankId] = useState<number | null>(null)
   const [tempRankName, setTempRankName] = useState('')
 
@@ -24,7 +28,12 @@ export function GroupRangsView({ group, onRenameRank }: GroupRangsViewProps) {
     setEditingRankId(null)
   }
 
-  const canManage = group.myRole.canManage
+  const canManage = group.myRole.permissions.canManageRanks
+  const canEditPermissions = group.myRole.isLeader
+
+  const togglePermission = (rank: GroupRankDetail, key: GroupPermissionKey) => {
+    onUpdatePermissions(rank.id, { ...rank.permissions, [key]: !rank.permissions[key] })
+  }
 
   return (
     <div className="space-y-6">
@@ -85,9 +94,9 @@ export function GroupRangsView({ group, onRenameRank }: GroupRangsViewProps) {
                   </div>
                 )}
                 <span className="text-[11px] text-zinc-400">
-                  {rank.level === 5
+                  {rank.id === 0
                     ? 'Niveau Suprême (Chef)'
-                    : rank.level === 4
+                    : rank.level === (group.ranks[0]?.level ?? 0) - 1
                     ? 'Commandement Secondaire'
                     : 'Grade Opérationnel'}
                 </span>
@@ -95,26 +104,14 @@ export function GroupRangsView({ group, onRenameRank }: GroupRangsViewProps) {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <PermissionBadge
-                label="Inviter"
-                enabled={rank.permissions.canInvite}
-              />
-              <PermissionBadge
-                label="Exclure"
-                enabled={rank.permissions.canKick}
-              />
-              <PermissionBadge
-                label="Promouvoir"
-                enabled={rank.permissions.canPromote}
-              />
-              <PermissionBadge
-                label="Éditer Devise"
-                enabled={rank.permissions.canEditDevise}
-              />
-              <PermissionBadge
-                label="Coffre Faction"
-                enabled={rank.permissions.canAccessVault}
-              />
+              {GROUP_PERMISSION_KEYS.map((key) => (
+                <PermissionBadge
+                  key={key}
+                  label={t(`group_perm_${key}`)}
+                  enabled={rank.permissions[key]}
+                  onToggle={canEditPermissions && rank.id !== 0 ? () => togglePermission(rank, key) : undefined}
+                />
+              ))}
             </div>
           </motion.div>
         ))}
@@ -123,10 +120,13 @@ export function GroupRangsView({ group, onRenameRank }: GroupRangsViewProps) {
   )
 }
 
-function PermissionBadge({ label, enabled }: { label: string; enabled: boolean }) {
+function PermissionBadge({ label, enabled, onToggle }: { label: string; enabled: boolean; onToggle?: () => void }) {
   return (
-    <span
-      className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold ${
+    <button
+      type="button"
+      disabled={!onToggle}
+      onClick={onToggle}
+      className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition enabled:cursor-pointer enabled:hover:brightness-125 ${
         enabled
           ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
           : 'border-zinc-800 bg-zinc-950/60 text-zinc-600'
@@ -134,6 +134,6 @@ function PermissionBadge({ label, enabled }: { label: string; enabled: boolean }
     >
       {enabled ? <ShieldCheck className="h-3 w-3" /> : <ShieldAlert className="h-3 w-3" />}
       {label}
-    </span>
+    </button>
   )
 }

@@ -11,17 +11,17 @@ export interface GroupMemberDetail {
   contributions: number
 }
 
+export type GroupPermissionKey = 'canInvite' | 'canKick' | 'canPromote' | 'canEditDevise' | 'canManageRanks'
+
+export type GroupPermissions = Record<GroupPermissionKey, boolean>
+
+export const GROUP_PERMISSION_KEYS: GroupPermissionKey[] = ['canInvite', 'canKick', 'canPromote', 'canEditDevise', 'canManageRanks']
+
 export interface GroupRankDetail {
   id: number
   name: string
   level: number
-  permissions: {
-    canInvite: boolean
-    canKick: boolean
-    canPromote: boolean
-    canEditDevise: boolean
-    canAccessVault: boolean
-  }
+  permissions: GroupPermissions
 }
 
 export interface GroupActivity {
@@ -30,7 +30,7 @@ export interface GroupActivity {
   actor: string
   title: string
   description: string
-  type: 'member' | 'rank' | 'vault' | 'influence'
+  type: 'member' | 'rank' | 'territory' | 'influence' | 'lab' | 'alert'
 }
 
 export interface GroupSalesPoint {
@@ -46,7 +46,7 @@ export interface MemberContribution {
 }
 
 export interface GroupDetail {
-  id: number
+  id: string | number
   name: string
   devise: string
   rgb: { r: number; g: number; b: number }
@@ -57,12 +57,20 @@ export interface GroupDetail {
   myRole: {
     rank: string
     level: number
+    grade: number
     isLeader: boolean
     canManage: boolean
+    permissions: GroupPermissions
   }
   members: GroupMemberDetail[]
   ranks: GroupRankDetail[]
   activities: GroupActivity[]
   salesHistory: GroupSalesPoint[]
   topContributors: MemberContribution[]
+}
+
+export interface GroupActionResult {
+  ok: boolean
+  error?: string
+  group?: GroupDetail | null
 }

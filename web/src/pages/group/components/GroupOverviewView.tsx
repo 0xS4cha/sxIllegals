@@ -85,7 +85,7 @@ export function GroupOverviewView({
             </div>
           </div>
 
-          {group.myRole.canManage && (
+          {group.myRole.permissions.canEditDevise && (
             <button
               type="button"
               onClick={onOpenEditDeviseModal}

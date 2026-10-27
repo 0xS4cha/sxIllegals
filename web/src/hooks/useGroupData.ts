@@ -1,29 +1,27 @@
 import { useCallback, useEffect, useState } from 'react'
 import { INITIAL_MOCK_GROUP_DETAIL } from '../data/mockGroupData'
-import type { GroupDetail, GroupMemberDetail } from '../types/group'
+import type { GroupActionResult, GroupDetail, GroupPermissions } from '../types/group'
 
 import { useNuiEvent } from './useNuiEvent'
 import { fetchNui } from '../utils/fetchNui'
 import { isEnvBrowser } from '../utils/nui'
 
 export function useGroupData() {
-  const [group, setGroup] = useState<GroupDetail>(INITIAL_MOCK_GROUP_DETAIL)
+  const [group, setGroup] = useState<GroupDetail | null>(isEnvBrowser() ? INITIAL_MOCK_GROUP_DETAIL : null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  useNuiEvent<GroupDetail>('setMyGroupData', (data) => {
-    if (data && data.name) setGroup(data)
+  useNuiEvent<GroupDetail | null>('setMyGroupData', (data) => {
+    setGroup(data && data.name ? data : null)
   })
 
   const refreshGroupData = useCallback(async () => {
+    if (isEnvBrowser()) return
+
     setLoading(true)
     try {
-      if (isEnvBrowser()) {
-        setLoading(false)
-        return
-      }
-
-      const res = await fetchNui<GroupDetail>('getMyGroupData')
-      if (res && res.name) setGroup(res)
+      const res = await fetchNui<GroupActionResult>('getMyGroupData')
+      setGroup(res?.group ?? null)
     } catch (err) {
       console.error('Failed to fetch player group data via NUI:', err)
     } finally {
@@ -35,110 +33,65 @@ export function useGroupData() {
     void refreshGroupData()
   }, [refreshGroupData])
 
-  const promoteMember = useCallback(async (identifier: string) => {
-    setGroup((prev) => {
-      const updatedMembers = prev.members.map((m) => {
-        if (m.identifier === identifier) {
-          const nextLevel = Math.min(5, m.rankLevel + 1)
-          const matchedRank = prev.ranks.find((r) => r.level === nextLevel)
-          return {
-            ...m,
-            rankLevel: nextLevel,
-            rank: matchedRank ? matchedRank.name : m.rank,
-          }
-        }
-        return m
-      })
-      return { ...prev, members: updatedMembers }
-    })
+  const runAction = useCallback(async (event: string, data: unknown, mockUpdate?: (prev: GroupDetail) => GroupDetail | null) => {
+    setError(null)
 
-    if (!isEnvBrowser()) {
-      await fetchNui('promoteGroupMember', { identifier })
+    if (isEnvBrowser()) {
+      if (mockUpdate) setGroup((prev) => (prev ? mockUpdate(prev) : prev))
+      return true
     }
-  }, [])
 
-  const demoteMember = useCallback(async (identifier: string) => {
-    setGroup((prev) => {
-      const updatedMembers = prev.members.map((m) => {
-        if (m.identifier === identifier) {
-          const nextLevel = Math.max(1, m.rankLevel - 1)
-          const matchedRank = prev.ranks.find((r) => r.level === nextLevel)
-          return {
-            ...m,
-            rankLevel: nextLevel,
-            rank: matchedRank ? matchedRank.name : m.rank,
-          }
-        }
-        return m
-      })
-      return { ...prev, members: updatedMembers }
-    })
-
-    if (!isEnvBrowser()) {
-      await fetchNui('demoteGroupMember', { identifier })
+    try {
+      const res = await fetchNui<GroupActionResult>(event, data)
+      setGroup(res?.group ?? null)
+      return true
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'unknown')
+      await refreshGroupData()
+      return false
     }
-  }, [])
+  }, [refreshGroupData])
 
-  const kickMember = useCallback(async (identifier: string) => {
-    setGroup((prev) => ({
+  const promoteMember = useCallback((identifier: string) => runAction('promoteGroupMember', { identifier }), [runAction])
+
+  const demoteMember = useCallback((identifier: string) => runAction('demoteGroupMember', { identifier }), [runAction])
+
+  const kickMember = useCallback((identifier: string) =>
+    runAction('kickGroupMember', { identifier }, (prev) => ({
       ...prev,
       members: prev.members.filter((m) => m.identifier !== identifier),
-    }))
+    })), [runAction])
 
-    if (!isEnvBrowser()) {
-      await fetchNui('kickGroupMember', { identifier })
-    }
-  }, [])
+  const leaveGroup = useCallback(() => runAction('leaveGroup', {}, () => null), [runAction])
 
-  const inviteMember = useCallback(async (targetId: string) => {
-    const newMember: GroupMemberDetail = {
-      identifier: `license:invited_${Date.now()}`,
-      name: `Joueur #${targetId}`,
-      rank: 'Prospect',
-      rankLevel: 1,
-      isOnline: true,
-      joinedAt: new Date().toISOString().split('T')[0],
-      contributions: 0,
-    }
+  const updateDevise = useCallback((devise: string) =>
+    runAction('updateGroupDevise', { devise }, (prev) => ({ ...prev, devise })), [runAction])
 
-    setGroup((prev) => ({
-      ...prev,
-      members: [...prev.members, newMember],
-    }))
-
-    if (!isEnvBrowser()) {
-      await fetchNui('invitePlayerToGroup', { targetId })
-    }
-  }, [])
-
-  const updateDevise = useCallback(async (newDevise: string) => {
-    setGroup((prev) => ({ ...prev, devise: newDevise }))
-
-    if (!isEnvBrowser()) {
-      await fetchNui('updateGroupDevise', { devise: newDevise })
-    }
-  }, [])
-
-  const updateRankName = useCallback(async (rankId: number, newName: string) => {
-    setGroup((prev) => ({
+  const updateRankName = useCallback((rankId: number, newName: string) =>
+    runAction('renameGroupRank', { rankId, newName }, (prev) => ({
       ...prev,
       ranks: prev.ranks.map((r) => (r.id === rankId ? { ...r, name: newName } : r)),
-    }))
+    })), [runAction])
 
-    if (!isEnvBrowser()) {
-      await fetchNui('renameGroupRank', { rankId, newName })
-    }
-  }, [])
+  const updateRankPermissions = useCallback((rankId: number, permissions: GroupPermissions) =>
+    runAction('setGroupRankPermissions', { rankId, permissions }, (prev) => ({
+      ...prev,
+      ranks: prev.ranks.map((r) => (r.id === rankId ? { ...r, permissions } : r)),
+    })), [runAction])
 
   return {
     group,
     loading,
+    error,
+    clearError: () => setError(null),
     refreshGroupData,
+    runAction,
     promoteMember,
     demoteMember,
     kickMember,
-    inviteMember,
+    leaveGroup,
     updateDevise,
     updateRankName,
+    updateRankPermissions,
   }
 }

@@ -12,8 +12,10 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
   myRole: {
     rank: 'Boss',
     level: 5,
+    grade: 0,
     isLeader: true,
     canManage: true,
+    permissions: { canInvite: true, canKick: true, canPromote: true, canEditDevise: true, canManageRanks: true },
   },
   members: [
     {
@@ -82,7 +84,7 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
         canKick: true,
         canPromote: true,
         canEditDevise: true,
-        canAccessVault: true,
+        canManageRanks: true,
       },
     },
     {
@@ -94,7 +96,7 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
         canKick: true,
         canPromote: true,
         canEditDevise: true,
-        canAccessVault: true,
+        canManageRanks: true,
       },
     },
     {
@@ -106,7 +108,7 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
         canKick: false,
         canPromote: false,
         canEditDevise: false,
-        canAccessVault: true,
+        canManageRanks: true,
       },
     },
     {
@@ -118,7 +120,7 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
         canKick: false,
         canPromote: false,
         canEditDevise: false,
-        canAccessVault: true,
+        canManageRanks: true,
       },
     },
     {
@@ -130,7 +132,7 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
         canKick: false,
         canPromote: false,
         canEditDevise: false,
-        canAccessVault: false,
+        canManageRanks: false,
       },
     },
   ],
@@ -141,7 +143,7 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
       actor: 'Marcus Vance',
       title: 'Vente de Cocaïne effectuée',
       description: '45 pochons vendus à Rancho (+900 $ au coffre).',
-      type: 'vault',
+      type: 'lab',
     },
     {
       id: 'gact-2',
