@@ -435,9 +435,58 @@ RegisterServerCallback('sxIllegals:canEnterLab', function(source, labId)
     return { ok = ok, reason = reason }
 end)
 
+function CreateEmptyLabState(labType)
+    local tab = {}
+    if labType == 'coke' then
+        for i = 1, #_LABS.Shell[labType].spots do
+            table.insert(tab, { kerosene = { start = 0 }, coca = { start = 0 }, whitewash = { start = 0 } })
+        end
+    elseif labType == 'meth' then
+        for i = 1, #_LABS.Shell[labType].Synthesis do
+            table.insert(tab, { reduction = { working = false, plates = 0, start = 0, availablePlates = 0 }, synthesis = { working = false, methylamine = 0, phenylacetone = 0 } })
+        end
+    elseif labType == 'weed' then
+        for i = 1, #_LABS.Shell[labType].spots do
+            table.insert(tab, { pickable = false, state = 0, previousState = -1, planted = false, fertilized = false })
+        end
+    end
+    return tab
+end
+
+function ResetLabProduction(labId)
+    local lab = GetLabFromId(labId)
+    if not lab then return false end
+
+    local storage = ({ weed = Labs.WeedsServer, meth = Labs.CircuitsServer, coke = Labs.TraysServer })[lab.type]
+    local current = storage and storage[labId]
+    if not current then return false end
+
+    for key in pairs(current) do
+        current[key] = nil
+    end
+    for index, value in ipairs(CreateEmptyLabState(lab.type)) do
+        current[index] = value
+    end
+    return true
+end
+
+function GetPlayersInLab(labId)
+    local result = {}
+    for source, id in pairs(PlayerLabs) do
+        if id == labId then
+            result[#result + 1] = source
+        end
+    end
+    return result
+end
+
 function AddLabInfluence(source, interaction)
     local lab = GetLabFromId(PlayerLabs[source])
     if not lab or not lab.coords then return end
+
+    if TriggerPoliceAlert then
+        TriggerPoliceAlert(lab, interaction)
+    end
 
     local territoryId = GetTerritoryFromCoords(lab.coords)
     if territoryId then
@@ -493,20 +542,7 @@ AddEventHandler("sxGroup:RegisterLaboratory", function(data)
     local src = source
     if not IsPlayerAdmin(src) then return end
 
-    local tab = {}
-    if data.type == 'coke' then
-        for i = 1, #_LABS.Shell[data.type].spots do
-            table.insert(tab, { kerosene = { start = 0 }, coca = { start = 0 }, whitewash = { start = 0 } })
-        end
-    elseif data.type == 'meth' then
-        for i = 1, #_LABS.Shell[data.type].Synthesis do
-            table.insert(tab, { reduction = { working = false, plates = 0, start = 0, availablePlates = 0 }, synthesis = { working = false, methylamine = 0, phenylacetone = 0 } })
-        end
-    elseif data.type == 'weed' then
-        for i = 1, #_LABS.Shell[data.type].spots do
-            table.insert(tab, { pickable = false, state = 0, previousState = -1, planted = false, fertilized = false })
-        end
-    end
+    local tab = CreateEmptyLabState(data.type)
     
     local weeds    = (data.type == 'weed') and json.encode(tab) or json.encode({})
     local circuits = (data.type == 'meth') and json.encode(tab) or json.encode({})

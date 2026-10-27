@@ -329,7 +329,30 @@ local my_language = {
     decay_title = "Influence fading",
     decay_desc = "Without activity, your influence dropped by %d%% on ~o~%d~s~ territories.",
     decay_lost_title = "Territory lost",
-    decay_lost_desc = "You lost the control of ~r~%s~s~ because of your inactivity."
+    decay_lost_desc = "You lost the control of ~r~%s~s~ because of your inactivity.",
+
+    keymap_raid_lab = "Raid a laboratory (police)",
+    enter_in_lab_police = "Press ~INPUT_CONTEXT~ to enter or %s to ~r~raid~s~ the laboratory.",
+    raid_progress = "Breaching the door... %ds~n~~INPUT_CELLPHONE_CANCEL~ Cancel",
+    raid_cancelled = "Raid ~r~cancelled~s~.",
+    raid_success = "Laboratory ~g~%s~s~ sealed.",
+    raid_error_not_police = "Only the police can raid a laboratory.",
+    raid_error_not_found = "This laboratory no longer exists.",
+    raid_error_already_sealed = "This laboratory is already sealed.",
+    raid_error_too_far = "You are too far from a laboratory entrance.",
+    raid_error_denied = "The raid failed.",
+    raid_started_title = "Police raid",
+    raid_started_owner = "The police are breaching ~r~%s~s~!",
+    raid_sealed_title = "Laboratory sealed",
+    raid_sealed_owner = "The police sealed ~r~%s~s~ for %d minutes.",
+    raid_sealed_admin = "%s was sealed by %s.",
+    raid_dispatch_title = "Dispatch",
+    raid_dispatch_weed = "Strong smell of cannabis reported in the area.",
+    raid_dispatch_coke = "Suspicious chemical activity reported in the area.",
+    raid_dispatch_meth = "Toxic fumes reported in the area.",
+    raid_dispatch_admin = "Police alerted near %s (%s).",
+    lab_sealed_for = "Sealed by the police for {minutes} min",
+    lab_unseal = "Unseal"
 }
 
 AddLanguage("en", my_language)

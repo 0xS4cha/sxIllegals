@@ -126,12 +126,14 @@ export interface LaboratoryItem {
   ownerId?: string | null
   ownerName?: string | null
   maxLevel?: number
+  sealedFor?: number
 }
 
 export interface UpdateLaboratoryPayload {
   labId: string | number
   ownerId: string | null
   level: number
+  unseal?: boolean
 }
 
 export interface CreateLaboratoryPayload {

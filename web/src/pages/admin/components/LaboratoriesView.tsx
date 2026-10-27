@@ -191,6 +191,19 @@ export function LaboratoriesView({ labs, groups, onUpdateLab, onOpenCreateModal 
                   </div>
                 </div>
 
+                {(lab.sealedFor ?? 0) > 0 && (
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-[11px] text-rose-300">
+                    <span>{t('lab_sealed_for', { minutes: Math.ceil((lab.sealedFor ?? 0) / 60) })}</span>
+                    <button
+                      type="button"
+                      onClick={() => onUpdateLab({ labId: lab.id, ownerId: lab.ownerId ?? null, level: lab.level, unseal: true })}
+                      className="rounded-md border border-rose-500/30 px-2 py-0.5 font-semibold text-rose-200 transition hover:bg-rose-500/20"
+                    >
+                      {t('lab_unseal')}
+                    </button>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between gap-3 text-[11px]">
                   <span className="text-zinc-500">{t('lab_owner')}</span>
                   <select

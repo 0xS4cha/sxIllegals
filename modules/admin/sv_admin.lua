@@ -274,6 +274,7 @@ RegisterServerCallback('sxAdmin:getLabs', function(source)
             territoryName = territoryLabel,
             productionPercentage = percentage,
             productionStatus = status,
+            sealedFor = GetLabSealRemaining and GetLabSealRemaining(l.id) or 0,
             ownerId = l.owner,
             ownerName = l.owner and GetGroupFromId(l.owner) and GetGroupFromId(l.owner).name or nil,
             maxLevel = _LABS.MaxLevel
@@ -566,6 +567,10 @@ RegisterServerCallback('sxAdmin:updateLaboratory', function(source, data)
 
     if data.level and tonumber(data.level) ~= lab.level and not SetLabLevel(lab.id, data.level) then
         return { ok = false, error = 'invalid_level' }
+    end
+
+    if data.unseal then
+        UnsealLab(lab.id)
     end
 
     AddAdminActivity({

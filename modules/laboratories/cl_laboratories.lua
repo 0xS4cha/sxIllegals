@@ -140,7 +140,11 @@ Citizen.CreateThread(function()
                             1.0, 1.0, 46, 204, 113, 100, false, false, 2, false, nil, nil, false)
 
                          if dist < 1.5 then
-                            ShowHelpNotification(GetPhrase('enter_in_lab'))
+                            if Raids and Raids.IsPolice then
+                                ShowHelpNotification(GetPhrase('enter_in_lab_police', Raids:GetKeyToken()))
+                            else
+                                ShowHelpNotification(GetPhrase('enter_in_lab'))
+                            end
                             if IsControlJustReleased(0, 38) then
                                 local access = TriggerServerCallback('sxIllegals:canEnterLab', lab.id)
                                 if access and access.ok then

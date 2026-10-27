@@ -329,7 +329,30 @@ local my_language = {
     decay_title = "Influence en baisse",
     decay_desc = "Faute d'activité, votre influence a baissé de %d%% sur ~o~%d~s~ territoires.",
     decay_lost_title = "Territoire perdu",
-    decay_lost_desc = "Vous avez perdu le contrôle de ~r~%s~s~ par inactivité."
+    decay_lost_desc = "Vous avez perdu le contrôle de ~r~%s~s~ par inactivité.",
+
+    keymap_raid_lab = "Perquisitionner un laboratoire (police)",
+    enter_in_lab_police = "Appuyez sur ~INPUT_CONTEXT~ pour entrer ou %s pour ~r~perquisitionner~s~ le laboratoire.",
+    raid_progress = "Ouverture en cours... %ds~n~~INPUT_CELLPHONE_CANCEL~ Annuler",
+    raid_cancelled = "Perquisition ~r~annulée~s~.",
+    raid_success = "Laboratoire ~g~%s~s~ scellé.",
+    raid_error_not_police = "Seule la police peut perquisitionner un laboratoire.",
+    raid_error_not_found = "Ce laboratoire n'existe plus.",
+    raid_error_already_sealed = "Ce laboratoire est déjà scellé.",
+    raid_error_too_far = "Vous êtes trop loin de l'entrée d'un laboratoire.",
+    raid_error_denied = "La perquisition a échoué.",
+    raid_started_title = "Descente de police",
+    raid_started_owner = "La police force l'entrée de ~r~%s~s~ !",
+    raid_sealed_title = "Laboratoire scellé",
+    raid_sealed_owner = "La police a scellé ~r~%s~s~ pour %d minutes.",
+    raid_sealed_admin = "%s a été scellé par %s.",
+    raid_dispatch_title = "Central",
+    raid_dispatch_weed = "Forte odeur de cannabis signalée dans le secteur.",
+    raid_dispatch_coke = "Activité chimique suspecte signalée dans le secteur.",
+    raid_dispatch_meth = "Émanations toxiques signalées dans le secteur.",
+    raid_dispatch_admin = "Police alertée près de %s (%s).",
+    lab_sealed_for = "Scellé par la police pendant {minutes} min",
+    lab_unseal = "Lever les scellés"
 }
 
 AddLanguage("fr", my_language)

@@ -277,6 +277,7 @@ export function useAdminData() {
               ...lab,
               level: payload.level,
               ownerId: payload.ownerId,
+              sealedFor: payload.unseal ? 0 : lab.sealedFor,
               ownerName: groups.find((g) => g.id === payload.ownerId)?.name ?? null,
             }
           : lab,
