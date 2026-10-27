@@ -422,6 +422,45 @@ function CreateGroup(data, leaderSource)
     return newGroup
 end
 
+function DeleteGroup(groupId)
+    local target = GetGroupFromId(groupId)
+    if not target then return false end
+
+    MySQL.Async.execute("DELETE FROM group_members WHERE groupId = ?", { groupId })
+    MySQL.Async.execute("DELETE FROM group_grades WHERE groupId = ?", { groupId })
+    MySQL.Async.execute("DELETE FROM group_list WHERE id = ?", { groupId })
+    RemoveGroup(groupId)
+
+    for _, lab in ipairs(Labs and Labs.Table or {}) do
+        if lab.owner == groupId then
+            SetLabOwner(lab.id, nil)
+        end
+    end
+
+    if ClearGroupActivities then
+        ClearGroupActivities(groupId)
+    end
+
+    TriggerEvent('sxIllegals:groupDeleted', groupId)
+    return true
+end
+
+function SetGroupMemberGrade(groupId, identifier, grade)
+    local target = GetGroupFromId(groupId)
+    grade = tonumber(grade)
+    if not target or not grade or not target:getRankExistFromId(grade) then return false end
+
+    for _, member in ipairs(target.members) do
+        if member.identifier == identifier then
+            member.id_grade = grade
+            target:setNeedSave(true)
+            target:saveGroup()
+            return true
+        end
+    end
+    return false
+end
+
 local function SaveGroups()
     for _, data in pairs(GetAllGroup()) do
         if data:getNeedSave() then

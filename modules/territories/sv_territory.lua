@@ -232,6 +232,46 @@ function GetTerritoryFromCoords(coords)
     return nil
 end
 
+function ResetTerritoryInfluence(territoryId)
+    local target = TerritoriesList[territoryId]
+    if not target then return false end
+
+    target:setInfluence({})
+    target.totalInfluence = 0
+    target.influenceChanged = true
+    target:setNeedSave(true)
+    target:refreshZoneData()
+    return true
+end
+
+function SetTerritoryGroupInfluence(territoryId, groupId, points)
+    local target = TerritoriesList[territoryId]
+    points = math.floor(tonumber(points) or -1)
+    if not target or not GetGroupFromId(groupId) or points < 0 then return false end
+
+    local kept = {}
+    local found = false
+    for _, influence in pairs(target.influence) do
+        if influence.id == groupId then
+            found = true
+            influence.points = points
+            influence.lastActivity = os.time()
+        end
+        if influence.points > 0 then
+            kept[#kept + 1] = influence
+        end
+    end
+    if not found and points > 0 then
+        kept[#kept + 1] = { id = groupId, points = points, lastActivity = os.time() }
+    end
+
+    target:setInfluence(kept)
+    target.influenceChanged = true
+    target:setNeedSave(true)
+    target:refreshZoneData()
+    return true
+end
+
 function territory:getInfluence()
     return self.influence
 end

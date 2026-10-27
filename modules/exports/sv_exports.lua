@@ -58,7 +58,8 @@ local function SerializeTerritory(data)
         influence = influence,
         totalInfluence = data.totalInfluence or 0,
         controlledSince = data.start,
-        controlledDays = data.date or 0
+        controlledDays = data.date or 0,
+        attackState = data.attackState or 0
     }
 end
 
@@ -70,7 +71,9 @@ local function SerializeLaboratory(data)
         label = data.label,
         type = data.type,
         level = data.level,
-        coords = data.coords
+        coords = data.coords,
+        owner = data.owner,
+        sealed = IsLabSealed(data.id)
     }
 end
 
@@ -215,4 +218,125 @@ exports("GetLaboratory", function(labId)
         end
     end
     return nil
+end)
+
+local function ResolveIdentifier(target)
+    if type(target) == "number" then
+        return Bridge.GetIdentifier(target)
+    end
+    return target
+end
+
+exports("CreateGroup", function(data, leaderSource)
+    local created, err = CreateGroup(data, leaderSource)
+    return created and created.id or nil, err
+end)
+
+exports("DeleteGroup", function(groupId)
+    return DeleteGroup(groupId)
+end)
+
+exports("UpdateGroup", function(groupId, data)
+    local target = GetGroupFromId(groupId)
+    if not target or type(data) ~= "table" then return false end
+
+    if type(data.name) == "string" and data.name ~= target.name then
+        if IsGroupNameTaken(data.name) then return false, "name_taken" end
+        target.name = data.name:sub(1, 50)
+    end
+    if type(data.devise) == "string" then target.devise = data.devise:sub(1, 120) end
+    if type(data.rgb) == "table" then target.rgb = data.rgb end
+    if data.is_official ~= nil then target.is_official = data.is_official == true end
+    if data.slots ~= nil then target.slots = tonumber(data.slots) end
+
+    target:setNeedSave(true)
+    target:saveGroup()
+    return true
+end)
+
+exports("SetGroupOfficial", function(groupId, official)
+    local target = GetGroupFromId(groupId)
+    if not target then return false end
+    target:setOfficial(official == true)
+    target:setNeedSave(true)
+    target:saveGroup()
+    return true
+end)
+
+exports("AddGroupMember", function(groupId, target, grade)
+    local group = GetGroupFromId(groupId)
+    local identifier = ResolveIdentifier(target)
+    if not group or not identifier then return false, "invalid_data" end
+    if GetGroupFromLicense(identifier) then return false, "already_in_group" end
+    if grade ~= nil and not group:getRankExistFromId(tonumber(grade)) then return false, "invalid_grade" end
+
+    local name = group:recruitPlayer(identifier, grade ~= nil and tonumber(grade) or nil)
+    if not name then return false, "group_full" end
+
+    TriggerEvent("sxIllegals:groupMemberAdded", group.id, identifier, name)
+    return true
+end)
+
+exports("RemoveGroupMember", function(groupId, target)
+    local group = GetGroupFromId(groupId)
+    local identifier = ResolveIdentifier(target)
+    if not group or not identifier then return false end
+    if not group:kickPlayer(identifier) then return false end
+
+    TriggerEvent("sxIllegals:groupMemberRemoved", group.id, identifier, "export")
+    return true
+end)
+
+exports("SetMemberGrade", function(groupId, target, grade)
+    return SetGroupMemberGrade(groupId, ResolveIdentifier(target), grade)
+end)
+
+exports("InvitePlayer", function(groupId, targetSource)
+    local group = GetGroupFromId(groupId)
+    if not group then return false, "invalid_data" end
+    return InvitePlayerToGroup(group, nil, tonumber(targetSource))
+end)
+
+exports("SendGroupAlert", function(groupId, title, message, coords)
+    if not GetGroupFromId(groupId) then return false end
+    SendGroupAlert(groupId, "alert", title, message, coords)
+    return true
+end)
+
+exports("SetGroupInfluence", function(territoryId, groupId, points)
+    return SetTerritoryGroupInfluence(territoryId, groupId, points)
+end)
+
+exports("ResetTerritoryInfluence", function(territoryId)
+    return ResetTerritoryInfluence(territoryId)
+end)
+
+exports("GetTerritoryWar", function(territoryId)
+    return GetTerritoryWar(territoryId)
+end)
+
+exports("SetLaboratoryOwner", function(labId, groupId)
+    return SetLabOwner(labId, groupId)
+end)
+
+exports("SetLaboratoryLevel", function(labId, level)
+    return SetLabLevel(labId, level)
+end)
+
+exports("SealLaboratory", function(labId, source)
+    local lab = GetLabFromId(labId)
+    if not lab or IsLabSealed(labId) then return false end
+    return SealLab(lab, source)
+end)
+
+exports("UnsealLaboratory", function(labId)
+    return UnsealLab(labId)
+end)
+
+exports("IsLaboratorySealed", function(labId)
+    return IsLabSealed(labId)
+end)
+
+exports("IsPlayerPolice", function(source)
+    return IsPlayerPolice(source)
 end)

@@ -479,10 +479,7 @@ RegisterNetEvent('sxAdmin:deleteGroup', function(data)
             severity = 'warning'
         }, 'group_deleted')
 
-        MySQL.Async.execute("DELETE FROM group_members WHERE groupId = ?", { groupId })
-        MySQL.Async.execute("DELETE FROM group_grades WHERE groupId = ?", { groupId })
-        MySQL.Async.execute("DELETE FROM group_list WHERE id = ?", { groupId })
-        RemoveGroup(groupId)
+        DeleteGroup(groupId)
         Notify(src, GetPhrase('notify_group_deleted', groupName))
     end
 end)
@@ -593,11 +590,7 @@ RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)
     local territoryId = data.territoryId
     local territory = GetTerritoriesFromId(territoryId)
     if territory then
-        territory:setInfluence({})
-        territory.totalInfluence = 0
-        territory.influenceChanged = true
-        territory:setNeedSave(true)
-        territory:refreshZoneData()
+        ResetTerritoryInfluence(territoryId)
 
         AddAdminActivity({
             id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
