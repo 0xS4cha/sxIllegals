@@ -1,7 +1,5 @@
 local function GetIdentifierFromSource(source)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    if not xPlayer then return nil end
-    return xPlayer.getIdentifier()
+    return Bridge.GetIdentifier(source)
 end
 
 local function SerializeGroup(data)

@@ -1,10 +1,8 @@
 local influenceCooldown = {}
 
 function AddInfluence(source, id, interaction, value)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    if not xPlayer then return end
-
-    local license = xPlayer.getIdentifier()
+    local license = Bridge.GetIdentifier(source)
+    if not license then return end
     local group = GetGroupFromLicense(license)
     local territory = GetTerritoriesFromId(id)
     local point = _TERRITORY.InfluencePoint[interaction]

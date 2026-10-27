@@ -19,10 +19,7 @@ AdminStatsCounters = {
 }
 
 function IsPlayerAdmin(source)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    if not xPlayer then return false end
-    local group = xPlayer.getGroup()
-    return group == 'admin' or group == 'superadmin'
+    return Bridge.IsAdmin(source)
 end
 
 RegisterServerCallback('sxAdmin:isAdmin', function(source)

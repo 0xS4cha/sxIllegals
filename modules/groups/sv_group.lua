@@ -271,13 +271,9 @@ end
 function group:recruitPlayer(identifier, rank)
     local maxSlots = self.slots or _GROUP.Slots[self.is_official]
     if #self.members < maxSlots then
-        local pResult = MySQL.Sync.fetchAll("SELECT * FROM users WHERE identifier = @identifier", {
-            ["@identifier"] = identifier
-        })
+        local source = Bridge.GetSourceFromIdentifier(identifier)
         local pName = {}
-        pName.Firstname = pResult[1].firstname
-        pName.Lastname = pResult[1].lastname
-        pName.Name = pName.Firstname .. ' ' .. pName.Lastname
+        pName.Name = source and Bridge.GetName(source) or Bridge.GetOfflineName(identifier)
         pName.rank = rank or self:getLastRank()
         local id = MySQL.Sync.insert(
             "INSERT INTO group_members (identifier, label, id_grade, groupId) VALUES (?, ?, ?, ?)"

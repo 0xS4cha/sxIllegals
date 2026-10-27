@@ -9,12 +9,10 @@ version '1.0.0'
 lua54 'yes'
 
 dependencies {
-    'es_extended',
     'oxmysql',
 }
 
 shared_scripts {
-    '@es_extended/imports.lua',
     'core/sh_logger.lua',
     'core/sh_translation.lua',
     'translations/*.lua',
@@ -37,6 +35,7 @@ client_scripts {
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
+    'bridge/sv_bridge.lua',
     'modules/**/sv_*.lua',
     'core/sh_init.lua',
 }

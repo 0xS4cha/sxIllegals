@@ -86,11 +86,11 @@ end
 
 if IsDuplicityVersion() then
     function Notify(source, message)
-        TriggerClientEvent("esx:showNotification", source, message)
+        TriggerClientEvent("sxIllegals:notify", source, message)
     end
 
     function GetItemLabel(item)
-        return ESX.GetItemLabel(item) or item
+        return Bridge and Bridge.GetItemLabel(item) or item
     end
 else
     function ShowNotification(message)
@@ -104,4 +104,8 @@ else
         AddTextComponentSubstringPlayerName(message)
         EndTextCommandDisplayHelp(0, false, true, -1)
     end
+
+    RegisterNetEvent("sxIllegals:notify", function(message)
+        ShowNotification(message)
+    end)
 end

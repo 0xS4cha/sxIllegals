@@ -22,7 +22,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckPlant")
 AddEventHandler("core:labs:CheckPlant", function(labo, weed)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemGraine)
 
@@ -40,7 +40,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckFertilize")
 AddEventHandler("core:labs:CheckFertilize", function(labo, weed, timer)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFerti)
 
@@ -66,7 +66,7 @@ end)
 
 RegisterServerEvent("core:labs:WeedToJoint")
 AddEventHandler("core:labs:WeedToJoint", function()
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFeuille)
 
@@ -83,7 +83,7 @@ end)
 
 RegisterServerEvent("core:labs:WeedToPack")
 AddEventHandler("core:labs:WeedToPack", function()
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Weed.ItemFeuille)
     local Required2 = xPlayer.getInventoryItem(_LABS.Weed.ItemBags)
@@ -107,7 +107,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckGet")
 AddEventHandler("core:labs:CheckGet", function(labo, weed)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
     if Labs.WeedsServer[labo][weed].state == 7 then
         Labs.WeedsServer[labo][weed] = { planted = false, fertilized = false, pickable = false, state = 0, previousState = -1, start = nil }
         TriggerClientEvent("core:labs:GetWeed", -1, labo, weed)
@@ -120,7 +120,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckKerozen")
 AddEventHandler("core:labs:CheckKerozen", function(labo, tray, timer)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemKerozen)
     if Required.count >= _LABS.Coke.CountRequiredKerozen then
         Labs.TraysServer[labo][tray].kerosene.start = timer
@@ -137,7 +137,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckCoca")
 AddEventHandler("core:labs:CheckCoca", function(labo, tray, timer)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemCoca)
 
@@ -156,7 +156,7 @@ end)
 
 RegisterServerEvent("core:labs:CheckWhitewash")
 AddEventHandler("core:labs:CheckWhitewash", function(labo, tray, timer)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemWhitewash)
 
@@ -175,7 +175,7 @@ end)
 
 RegisterServerEvent("core:labs:takeCokeTray")
 AddEventHandler("core:labs:takeCokeTray", function(labo, tray)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     Labs.TraysServer[labo][tray].whitewash.start = 0
     Labs.TraysServer[labo][tray].coca.start = 0
@@ -189,7 +189,7 @@ end)
 
 RegisterServerEvent("core:labs:GetEmpocheCoke")
 AddEventHandler("core:labs:GetEmpocheCoke", function()
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Coke.ItemRecip)
 
@@ -207,7 +207,7 @@ end)
 
 RegisterServerEvent("core:labs:addComponents")
 AddEventHandler("core:labs:addComponents", function(labo, spot)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemMethylamine)
     local Required2 = xPlayer.getInventoryItem(_LABS.Meth.ItemPhenylacetone)
@@ -242,7 +242,7 @@ end)
 
 RegisterServerEvent("core:labs:startSynthesis")
 AddEventHandler("core:labs:startSynthesis", function(labo, spot, timer)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     if not Labs.CircuitsServer[labo][spot].synthesis.start then
         if Labs.CircuitsServer[labo][spot].synthesis.phenylacetone >= _LABS.Meth.Tanks[2] then
@@ -267,7 +267,7 @@ end)
 
 RegisterServerEvent("core:labs:sendToReduction")
 AddEventHandler("core:labs:sendToReduction", function(labo, spot, timer)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     if xPlayer and Labs.CircuitsServer[labo][spot].reduction.plates == 0 then
         if Labs.CircuitsServer[labo][spot].synthesis.phenylacetone >= _LABS.Meth.Tanks[2] then
@@ -297,7 +297,7 @@ end)
 
 RegisterServerEvent("core:labs:startReduction")
 AddEventHandler("core:labs:startReduction", function(labo, spot, timer)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     if xPlayer and not Labs.CircuitsServer[labo][spot].reduction.start then
         if Labs.CircuitsServer[labo][spot].reduction.plates > 0 then
@@ -315,7 +315,7 @@ AddEventHandler("core:labs:startReduction", function(labo, spot, timer)
 end)
 
 RegisterServerCallback("core:labs:TakePlateMeth", function(source, labo, spot)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     if Labs.CircuitsServer[labo][spot].reduction.plates > 0 then
         Labs.CircuitsServer[labo][spot].reduction.plates = Labs.CircuitsServer[labo][spot].reduction.plates - 1
@@ -339,7 +339,7 @@ end)
 
 RegisterServerEvent("core:labs:GetBrisseMeth")
 AddEventHandler("core:labs:GetBrisseMeth", function()
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemRecip)
 
@@ -355,7 +355,7 @@ end)
 
 RegisterServerEvent("core:labs:GetEmpocheMeth")
 AddEventHandler("core:labs:GetEmpocheMeth", function()
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local xPlayer = Bridge.GetPlayer(source)
 
     local Required = xPlayer.getInventoryItem(_LABS.Meth.ItemBack)
 
