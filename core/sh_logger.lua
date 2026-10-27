@@ -16,7 +16,7 @@ local function parseArguments(...)
 
     for _,v in pairs(arguments) do
         if type(v) == "table" then
-            parsedArguments[#parsedArguments + 1] = table.ToString(v)
+            parsedArguments[#parsedArguments + 1] = json.encode(v)
         else
             parsedArguments[#parsedArguments + 1] = tostring(v)
         end
@@ -47,6 +47,8 @@ function Logger:warn(module, ...)
 end
 
 function Logger:trace(module, ...)
+    if not self.Enabled then return end
+    if self.LogLevel < LOG_LEVELS.TRACE then return end
 
     print("^8[TRACE] ^6[" .. string.upper(module) .. "] > ^5" .. table.concat(parseArguments(...), " ") .. "^0")
 end
