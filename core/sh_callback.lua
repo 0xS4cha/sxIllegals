@@ -1,6 +1,9 @@
 local isServer = IsDuplicityVersion();
 local currentRequestId = 0;
 local handlers = {};
+local resourceName = GetCurrentResourceName();
+local REQUEST_EVENT = resourceName .. ":callback:request";
+local RESPONSE_EVENT = resourceName .. ":callback:response";
 ---@type table<number, PendingRPC>
 local pendings = {};
 
@@ -69,7 +72,7 @@ local function trigger(eventName, source, ...)
         eventName = eventName,
     };
     createTimeout(currentRequestId);
-    triggerNet("kpz:callback:request", source, eventName, currentRequestId, ...);
+    triggerNet(REQUEST_EVENT, source, eventName, currentRequestId, ...);
     local resolved = Citizen.Await(p);
     if resolved == nil then
         return nil;
@@ -77,16 +80,16 @@ local function trigger(eventName, source, ...)
     return table.unpack(resolved);
 end
 
-RegisterNetEvent('kpz:callback:request', function(eventName, requestId, ...)
+RegisterNetEvent(REQUEST_EVENT, function(eventName, requestId, ...)
     local src = source;
     if (handlers[eventName]) then
         local result = { handlers[eventName](src, ...) }
-        triggerNet('kpz:callback:response', src, requestId, table.unpack(result));
+        triggerNet(RESPONSE_EVENT, src, requestId, table.unpack(result));
         return;
     end
 end);
 
-RegisterNetEvent('kpz:callback:response', function(requestId, ...)
+RegisterNetEvent(RESPONSE_EVENT, function(requestId, ...)
     local src = source;
     if (type(pendings[requestId]) == "table") then
         if (pendings[requestId].promise) then
