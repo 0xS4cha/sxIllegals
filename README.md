@@ -35,7 +35,7 @@ The framework is detected at runtime: without ESX the resource runs **standalone
    git clone https://github.com/0xS4cha/sxIllegals.git
    ```
 
-2. Import `db.sql` into your database. On existing databases, the `statistics_logs` table and the `group_list.slots`, `group_list.created_at`, `labs.owner` and `labs.sealed_until` columns are created automatically on first start.
+2. Import `db.sql` into your database. On existing databases, the `statistics_logs` table and the `group_list.slots`, `group_list.created_at`, `labs.owner`, `labs.sealed_until`, `statistics_logs.group_id` and `statistics_logs.identifier` columns are created automatically on first start.
 
 3. Build the interface.
 
@@ -188,6 +188,8 @@ Groups are created from the admin panel, or by players from the group panel when
 The leader has every permission and is the only one who can edit the rank permissions, by clicking them in the ranks view. A leader can leave only after naming another leader.
 
 **Invitations.** Invited players receive a notification and accept or decline from the group panel, or with `/groupaccept` and `/groupdecline`. Invitations expire after `_GROUP.InvitationDuration` seconds and respect the group slots.
+
+**Statistics.** The statistics tab shows the sales, the influence gained and the laboratory steps of the group over the last 7 days, and its top contributors by influence. Every logged action records the group and the player, so the tab only counts activity recorded after this update.
 
 **Alerts.** Members online receive a notification, a sound and, when relevant, a flashing blip when someone joins or leaves, when one of their territories is contested, attacked, captured or lost, and when one of their laboratories is raided. Alerts also appear in the group activity.
 
