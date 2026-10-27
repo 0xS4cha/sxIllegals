@@ -22,7 +22,7 @@ function AddInfluence(source, id, interaction, value)
     territory:addInfluence(group:getId(), point)
 
     if TrackAdminActivity then
-        TrackAdminActivity(group, territory, interaction, point, value)
+        TrackAdminActivity(group, territory, interaction, point, value, license)
     end
 
     influenceCooldown[license][interaction] = currentTime

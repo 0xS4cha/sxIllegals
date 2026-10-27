@@ -533,6 +533,10 @@ MySQL.ready(function()
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ]])
 
+    MySQL.Sync.execute("ALTER TABLE `statistics_logs` ADD COLUMN IF NOT EXISTS `group_id` VARCHAR(50) DEFAULT NULL")
+    MySQL.Sync.execute("ALTER TABLE `statistics_logs` ADD COLUMN IF NOT EXISTS `identifier` VARCHAR(80) DEFAULT NULL")
+    pcall(MySQL.Sync.execute, "CREATE INDEX IF NOT EXISTS `idx_statistics_logs_group` ON `statistics_logs` (`group_id`, `timestamp`)")
+
     MySQL.Sync.execute("ALTER TABLE `group_list` ADD COLUMN IF NOT EXISTS `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP")
 
     MySQL.query("ALTER TABLE `group_list` ADD COLUMN IF NOT EXISTS `slots` INT DEFAULT NULL", {}, function()

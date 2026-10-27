@@ -60,6 +60,7 @@ function SerializeGroupForPlayer(group, identifier)
     end
 
     local leaderName = GetPhrase('admin_no_leader')
+    local contributions = GetGroupContributions(group.id)
     local members = {}
     for _, member in ipairs(group.members) do
         if member.id_grade == 0 then
@@ -73,7 +74,7 @@ function SerializeGroupForPlayer(group, identifier)
             isOnline = Bridge.GetSourceFromIdentifier(member.identifier) ~= nil,
             isLeader = member.id_grade == 0,
             joinedAt = '',
-            contributions = 0
+            contributions = contributions[member.identifier] or 0
         }
     end
     table.sort(members, function(a, b) return a.rankLevel > b.rankLevel end)
@@ -127,9 +128,7 @@ function SerializeGroupForPlayer(group, identifier)
         },
         members = members,
         ranks = ranks,
-        activities = activities,
-        salesHistory = {},
-        topContributors = {}
+        activities = activities
     }
 end
 

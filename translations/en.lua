@@ -352,7 +352,26 @@ local my_language = {
     raid_dispatch_meth = "Toxic fumes reported in the area.",
     raid_dispatch_admin = "Police alerted near %s (%s).",
     lab_sealed_for = "Sealed by the police for {minutes} min",
-    lab_unseal = "Unseal"
+    lab_unseal = "Unseal",
+
+    group_points = "{points} pts",
+    group_stats_title = "Group statistics",
+    group_stats_subtitle = "Sales, influence and production of {name} over the last 7 days",
+    group_stats_money = "${amount}",
+    group_stats_sales = "Sales",
+    group_stats_units = "{count} sales",
+    group_stats_influence = "Influence gained",
+    group_stats_influence_sub = "On every territory",
+    group_stats_production = "Production",
+    group_stats_production_sub = "Laboratory steps completed",
+    group_stats_chart_sales = "Sales per day",
+    group_stats_chart_influence = "Influence per day",
+    group_stats_chart_production = "Production per day",
+    group_stats_loading = "Loading...",
+    group_stats_empty = "No activity recorded over the last 7 days.",
+    group_stats_contributors = "Top contributors",
+    group_stats_contributors_sub = "Influence earned over 7 days",
+    group_stats_contributors_empty = "No contribution yet."
 }
 
 AddLanguage("en", my_language)

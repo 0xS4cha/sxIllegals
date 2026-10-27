@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { INITIAL_MOCK_GROUP_DETAIL } from '../data/mockGroupData'
-import type { CreateGroupPayload, GroupActionResult, GroupCreationSettings, GroupDetail, GroupInvitation, GroupPermissions } from '../types/group'
+import { INITIAL_MOCK_GROUP_DETAIL, INITIAL_MOCK_GROUP_STATS } from '../data/mockGroupData'
+import type { CreateGroupPayload, GroupActionResult, GroupCreationSettings, GroupDetail, GroupInvitation, GroupPermissions, GroupStats } from '../types/group'
 
 import { useNuiEvent } from './useNuiEvent'
 import { fetchNui } from '../utils/fetchNui'
@@ -12,6 +12,8 @@ export function useGroupData() {
   const [error, setError] = useState<string | null>(null)
   const [invitations, setInvitations] = useState<GroupInvitation[]>([])
   const [creation, setCreation] = useState<GroupCreationSettings | null>(null)
+  const [stats, setStats] = useState<GroupStats | null>(isEnvBrowser() ? INITIAL_MOCK_GROUP_STATS : null)
+  const [statsLoading, setStatsLoading] = useState(false)
 
   useNuiEvent<GroupDetail | null>('setMyGroupData', (data) => {
     setGroup(data && data.name ? data : null)
@@ -36,6 +38,20 @@ export function useGroupData() {
   useEffect(() => {
     void refreshGroupData()
   }, [refreshGroupData])
+
+  const loadStats = useCallback(async () => {
+    if (isEnvBrowser()) return
+
+    setStatsLoading(true)
+    try {
+      const res = await fetchNui<GroupActionResult>('getMyGroupStats')
+      setStats(res?.stats ?? null)
+    } catch (err) {
+      console.error('Failed to fetch group statistics via NUI:', err)
+    } finally {
+      setStatsLoading(false)
+    }
+  }, [])
 
   const runAction = useCallback(async (event: string, data: unknown, mockUpdate?: (prev: GroupDetail) => GroupDetail | null) => {
     setError(null)
@@ -95,6 +111,9 @@ export function useGroupData() {
     group,
     invitations,
     creation,
+    stats,
+    statsLoading,
+    loadStats,
     loading,
     error,
     clearError: () => setError(null),

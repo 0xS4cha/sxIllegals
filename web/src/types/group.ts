@@ -33,16 +33,24 @@ export interface GroupActivity {
   type: 'member' | 'rank' | 'territory' | 'influence' | 'lab' | 'alert'
 }
 
-export interface GroupSalesPoint {
-  label: string
+export interface GroupStatsDay {
+  date: string
   sales: number
   units: number
+  production: number
+  influence: number
 }
 
 export interface MemberContribution {
   name: string
   amount: number
   percentage: number
+}
+
+export interface GroupStats {
+  days: GroupStatsDay[]
+  totals: Omit<GroupStatsDay, 'date'>
+  contributors: MemberContribution[]
 }
 
 export interface GroupDetail {
@@ -65,8 +73,6 @@ export interface GroupDetail {
   members: GroupMemberDetail[]
   ranks: GroupRankDetail[]
   activities: GroupActivity[]
-  salesHistory: GroupSalesPoint[]
-  topContributors: MemberContribution[]
 }
 
 export interface GroupInvitation {
@@ -96,4 +102,5 @@ export interface GroupActionResult {
   group?: GroupDetail | null
   invitations?: GroupInvitation[]
   creation?: GroupCreationSettings
+  stats?: GroupStats
 }

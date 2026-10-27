@@ -33,6 +33,9 @@ export function GroupPanel() {
     group,
     invitations,
     creation,
+    stats,
+    statsLoading,
+    loadStats,
     loading,
     error,
     clearError,
@@ -116,7 +119,10 @@ export function GroupPanel() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => void refreshGroupData()}
+              onClick={() => {
+                void refreshGroupData()
+                if (activeCategory === 'stats') void loadStats()
+              }}
               disabled={loading}
               className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white disabled:opacity-50"
               title="Rafraîchir les données de groupe"
@@ -177,7 +183,7 @@ export function GroupPanel() {
               )}
 
               {activeCategory === 'stats' && (
-                <GroupStatsView group={group} />
+                <GroupStatsView group={group} stats={stats} loading={statsLoading} onLoad={loadStats} />
               )}
             </motion.div>
           </AnimatePresence>

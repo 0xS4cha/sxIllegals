@@ -10,6 +10,10 @@ function SX.Group:Initialize()
         cb(GroupCall('sxGroup:getMyGroup'))
     end)
 
+    RegisterNUICallback('getMyGroupStats', function(_, cb)
+        cb(GroupCall('sxGroup:getStats'))
+    end)
+
     RegisterNUICallback('promoteGroupMember', function(data, cb)
         cb(GroupCall('sxGroup:promoteMember', data and data.identifier))
     end)

@@ -352,7 +352,26 @@ local my_language = {
     raid_dispatch_meth = "Émanations toxiques signalées dans le secteur.",
     raid_dispatch_admin = "Police alertée près de %s (%s).",
     lab_sealed_for = "Scellé par la police pendant {minutes} min",
-    lab_unseal = "Lever les scellés"
+    lab_unseal = "Lever les scellés",
+
+    group_points = "{points} pts",
+    group_stats_title = "Statistiques du groupe",
+    group_stats_subtitle = "Ventes, influence et production de {name} sur les 7 derniers jours",
+    group_stats_money = "{amount} $",
+    group_stats_sales = "Ventes",
+    group_stats_units = "{count} ventes",
+    group_stats_influence = "Influence gagnée",
+    group_stats_influence_sub = "Sur tous les territoires",
+    group_stats_production = "Production",
+    group_stats_production_sub = "Étapes de laboratoire réalisées",
+    group_stats_chart_sales = "Ventes par jour",
+    group_stats_chart_influence = "Influence par jour",
+    group_stats_chart_production = "Production par jour",
+    group_stats_loading = "Chargement...",
+    group_stats_empty = "Aucune activité enregistrée sur les 7 derniers jours.",
+    group_stats_contributors = "Meilleurs contributeurs",
+    group_stats_contributors_sub = "Influence gagnée sur 7 jours",
+    group_stats_contributors_empty = "Aucune contribution pour le moment."
 }
 
 RegisterDefaultPhrases(my_language)

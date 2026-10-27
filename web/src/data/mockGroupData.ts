@@ -1,9 +1,9 @@
-import type { GroupDetail } from '../types/group'
+import type { GroupDetail, GroupStats } from '../types/group'
 
 export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
   id: 1,
   name: 'Ballas',
-  devise: 'Purple till we die — Respect & Loyauté',
+  devise: 'Purple till we die',
   rgb: { r: 147, g: 51, b: 234 },
   is_official: true,
   slots: 15,
@@ -139,52 +139,59 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
   activities: [
     {
       id: 'gact-1',
-      timestamp: 'Il y a 10 min',
+      timestamp: '10 min ago',
       actor: 'Marcus Vance',
-      title: 'Vente de Cocaïne effectuée',
-      description: '45 pochons vendus à Rancho (+900 $ au coffre).',
+      title: 'Cocaine sold',
+      description: '45 bags sold in Rancho.',
       type: 'lab',
     },
     {
       id: 'gact-2',
-      timestamp: 'Il y a 45 min',
+      timestamp: '45 min ago',
       actor: 'Marcus Vance',
-      title: 'Promotion de membre',
-      description: 'Tyrone King a été nommé au rang d\'Underboss.',
+      title: 'Promotion',
+      description: 'Tyrone King was promoted to Underboss.',
       type: 'rank',
     },
     {
       id: 'gact-3',
-      timestamp: 'Il y a 2h 10m',
+      timestamp: '2 h ago',
       actor: 'Malik Reed',
-      title: 'Influence acquise',
-      description: 'Mission terminée dans le secteur sud (+150 pts influence).',
+      title: 'Influence gained',
+      description: 'Mission completed in the south (+150 influence).',
       type: 'influence',
     },
     {
       id: 'gact-4',
-      timestamp: 'Il y a 5h 30m',
+      timestamp: '5 h ago',
       actor: 'Tyrone King',
-      title: 'Nouveau membre recruté',
-      description: 'Treyvon Smith a rejoint la faction en tant que Soldier.',
+      title: 'New member',
+      description: 'Treyvon Smith joined the group as Soldier.',
       type: 'member',
     },
   ],
-  salesHistory: [
-    { label: 'Lun', sales: 18500, units: 42 },
-    { label: 'Mar', sales: 24200, units: 58 },
-    { label: 'Mer', sales: 31000, units: 75 },
-    { label: 'Jeu', sales: 28900, units: 66 },
-    { label: 'Ven', sales: 45600, units: 104 },
-    { label: 'Sam', sales: 62400, units: 142 },
-    { label: 'Dim', sales: 51200, units: 118 },
-  ],
-  topContributors: [
-    { name: 'Marcus Vance', amount: 64500, percentage: 35 },
-    { name: 'Tyrone King', amount: 48200, percentage: 26 },
-    { name: 'Darnell Carter', amount: 31000, percentage: 17 },
-    { name: 'Malik Reed', amount: 19400, percentage: 11 },
-    { name: 'Treyvon Smith', amount: 12900, percentage: 7 },
-    { name: 'Lamar Davis', amount: 8500, percentage: 4 },
+}
+
+const today = new Date()
+
+export const INITIAL_MOCK_GROUP_STATS: GroupStats = {
+  days: [18500, 24200, 0, 28900, 45600, 62400, 51200].map((sales, i) => {
+    const date = new Date(today)
+    date.setDate(today.getDate() - (6 - i))
+    return {
+      date: date.toISOString().slice(0, 10),
+      sales,
+      units: Math.round(sales / 450),
+      production: Math.round(sales / 2000),
+      influence: Math.round(sales / 120),
+    }
+  }),
+  totals: { sales: 230800, units: 512, production: 115, influence: 1923 },
+  contributors: [
+    { name: 'Marcus Vance', amount: 640, percentage: 33 },
+    { name: 'Tyrone King', amount: 482, percentage: 25 },
+    { name: 'Darnell Carter', amount: 310, percentage: 16 },
+    { name: 'Malik Reed', amount: 194, percentage: 10 },
+    { name: 'Lamar Davis', amount: 85, percentage: 4 },
   ],
 }

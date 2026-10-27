@@ -605,7 +605,7 @@ RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)
     end
 end)
 
-function TrackAdminActivity(group, territory, interaction, point, value)
+function TrackAdminActivity(group, territory, interaction, point, value, identifier)
     local logType = interaction
     local amount = 1
 
@@ -628,7 +628,11 @@ function TrackAdminActivity(group, territory, interaction, point, value)
         logType = "missions"
     end
 
-    MySQL.Async.execute("INSERT INTO statistics_logs (type, amount) VALUES (?, ?), (?, ?)", { logType, amount, "influence", point })
+    local groupId = group and group:getId() or nil
+    MySQL.Async.execute("INSERT INTO statistics_logs (type, amount, group_id, identifier) VALUES (?, ?, ?, ?), (?, ?, ?, ?)", {
+        logType, amount, groupId, identifier,
+        "influence", point, groupId, identifier
+    })
 
     local desc = ""
     local title = GetPhrase('activity_crime_title')
