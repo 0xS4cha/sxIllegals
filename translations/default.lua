@@ -217,6 +217,10 @@ local my_language = {
     notify_group_created = "Le groupe %s a été créé.",
     notify_group_updated = "Groupe %s mis à jour avec succès.",
     notify_territory_reset = "Influence de la zone %s réinitialisée.",
+    notify_dev_no_group = "~r~Vous n'êtes dans aucun groupe.",
+    notify_dev_no_territory = "~r~Vous n'êtes dans aucun territoire.",
+    notify_dev_invalid_amount = "~r~Montant d'influence invalide.",
+    notify_dev_influence_given = "~g~+%d~s~ d'influence donnés à ~b~%s~s~ sur ~y~%s~s~.",
 
     time_days_ago = "il y a %d j",
     group_activity_promoted_title = "Promotion",

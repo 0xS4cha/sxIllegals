@@ -623,6 +623,36 @@ RegisterServerCallback('sxAdmin:deleteTerritory', function(source, territoryId)
     return { ok = true }
 end)
 
+RegisterCommand('giveinfluence', function(source, args)
+    if source == 0 or not IsPlayerAdmin(source) then return end
+
+    local license = Bridge.GetIdentifier(source)
+    local group = license and GetGroupFromLicense(license)
+    if not group then
+        Notify(source, GetPhrase('notify_dev_no_group'))
+        return
+    end
+
+    local ped = GetPlayerPed(source)
+    if ped == 0 then return end
+
+    local territoryId = GetTerritoryFromCoords(GetEntityCoords(ped))
+    local territory = territoryId and GetTerritoriesFromId(territoryId)
+    if not territory then
+        Notify(source, GetPhrase('notify_dev_no_territory'))
+        return
+    end
+
+    local amount = math.floor(tonumber(args[1]) or 100)
+    if amount <= 0 then
+        Notify(source, GetPhrase('notify_dev_invalid_amount'))
+        return
+    end
+
+    territory:addInfluence(group:getId(), amount)
+    Notify(source, GetPhrase('notify_dev_influence_given', amount, group:getName(), territory:getLabel()))
+end, false)
+
 RegisterNetEvent('sxAdmin:resetTerritoryInfluence', function(data)
     local src = source
     if not IsPlayerAdmin(src) then return end
