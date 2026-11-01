@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { Check, Edit2, Shield, ShieldAlert, ShieldCheck } from 'lucide-react'
 import { useTranslation } from '../../../hooks/useTranslation'
 import { GROUP_PERMISSION_KEYS } from '../../../types/group'
-import type { GroupDetail, GroupPermissionKey, GroupRankDetail } from '../../../types/group'
+import type { GroupDetail, GroupPermissionDefinition, GroupPermissionKey, GroupRankDetail } from '../../../types/group'
 
 interface GroupRangsViewProps {
   group: GroupDetail
@@ -32,7 +32,22 @@ export function GroupRangsView({ group, onRenameRank, onUpdatePermissions }: Gro
   const canEditPermissions = group.myRole.isLeader
 
   const togglePermission = (rank: GroupRankDetail, key: GroupPermissionKey) => {
-    onUpdatePermissions(rank.id, { ...rank.permissions, [key]: !rank.permissions[key] })
+    onUpdatePermissions(rank.id, { ...rank.permissions, [key]: rank.permissions[key] !== true })
+  }
+
+  const received: GroupPermissionDefinition[] = Array.isArray(group.permissionDefinitions) ? group.permissionDefinitions : Object.values(group.permissionDefinitions ?? {}) as GroupPermissionDefinition[]
+  const definitions: GroupPermissionDefinition[] = received.length > 0 ? received : GROUP_PERMISSION_KEYS.map((key) => ({ key }))
+  const sections = definitions.reduce<{ resource?: string; items: GroupPermissionDefinition[] }[]>((list, definition) => {
+    const last = list[list.length - 1]
+    if (last && last.resource === definition.resource) last.items.push(definition)
+    else list.push({ resource: definition.resource, items: [definition] })
+    return list
+  }, [])
+
+  const permissionLabel = (definition: GroupPermissionDefinition) => {
+    const key = `group_perm_${definition.key}`
+    const text = t(key)
+    return text === key && definition.label ? definition.label : text
   }
 
   return (
@@ -103,14 +118,19 @@ export function GroupRangsView({ group, onRenameRank, onUpdatePermissions }: Gro
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              {GROUP_PERMISSION_KEYS.map((key) => (
-                <PermissionBadge
-                  key={key}
-                  label={t(`group_perm_${key}`)}
-                  enabled={rank.permissions[key]}
-                  onToggle={canEditPermissions && rank.id !== 0 ? () => togglePermission(rank, key) : undefined}
-                />
+            <div className="space-y-2">
+              {sections.map((section) => (
+                <div key={section.resource ?? 'builtin'} className="flex flex-wrap items-center gap-2">
+                  {section.resource && <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{section.resource}</span>}
+                  {section.items.map((definition) => (
+                    <PermissionBadge
+                      key={definition.key}
+                      label={permissionLabel(definition)}
+                      enabled={rank.id === 0 || rank.permissions[definition.key] === true}
+                      onToggle={canEditPermissions && rank.id !== 0 ? () => togglePermission(rank, definition.key) : undefined}
+                    />
+                  ))}
+                </div>
               ))}
             </div>
           </motion.div>

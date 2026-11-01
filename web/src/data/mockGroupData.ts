@@ -97,6 +97,9 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
         canPromote: true,
         canEditDevise: true,
         canManageRanks: true,
+        canCreateScenes: true,
+        canEditScenes: true,
+        canPublishScenes: true,
       },
     },
     {
@@ -135,6 +138,17 @@ export const INITIAL_MOCK_GROUP_DETAIL: GroupDetail = {
         canManageRanks: false,
       },
     },
+  ],
+  permissionDefinitions: [
+    { key: 'canInvite' },
+    { key: 'canKick' },
+    { key: 'canPromote' },
+    { key: 'canEditDevise' },
+    { key: 'canManageRanks' },
+    { key: 'canCreateScenes', label: 'Create scenes', resource: 'sxScenes' },
+    { key: 'canEditScenes', label: 'Edit scenes', resource: 'sxScenes' },
+    { key: 'canPublishScenes', label: 'Publish scenes', resource: 'sxScenes' },
+    { key: 'canDeleteScenes', label: 'Delete scenes', resource: 'sxScenes' },
   ],
   activities: [
     {

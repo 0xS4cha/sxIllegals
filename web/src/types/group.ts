@@ -11,11 +11,19 @@ export interface GroupMemberDetail {
   contributions: number
 }
 
-export type GroupPermissionKey = 'canInvite' | 'canKick' | 'canPromote' | 'canEditDevise' | 'canManageRanks'
+export type BuiltinPermissionKey = 'canInvite' | 'canKick' | 'canPromote' | 'canEditDevise' | 'canManageRanks'
 
-export type GroupPermissions = Record<GroupPermissionKey, boolean>
+export type GroupPermissionKey = BuiltinPermissionKey | (string & {})
 
-export const GROUP_PERMISSION_KEYS: GroupPermissionKey[] = ['canInvite', 'canKick', 'canPromote', 'canEditDevise', 'canManageRanks']
+export type GroupPermissions = Record<BuiltinPermissionKey, boolean> & Record<string, boolean | undefined>
+
+export const GROUP_PERMISSION_KEYS: BuiltinPermissionKey[] = ['canInvite', 'canKick', 'canPromote', 'canEditDevise', 'canManageRanks']
+
+export interface GroupPermissionDefinition {
+  key: GroupPermissionKey
+  label?: string
+  resource?: string
+}
 
 export interface GroupRankDetail {
   id: number
@@ -72,6 +80,7 @@ export interface GroupDetail {
   }
   members: GroupMemberDetail[]
   ranks: GroupRankDetail[]
+  permissionDefinitions?: GroupPermissionDefinition[]
   activities: GroupActivity[]
 }
 
