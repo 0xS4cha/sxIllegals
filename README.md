@@ -185,6 +185,8 @@ Groups are created from the admin panel, or by players from the group panel when
 | `canEditDevise` | Edit the motto |
 | `canManageRanks` | Rename ranks |
 
+Other resources can add their own permissions with the `RegisterGroupPermission` export, for example sxScenes adds `canCreateScenes`, `canEditScenes`, `canPublishScenes` and `canDeleteScenes`. They show up in the ranks view under the name of their resource, are saved with the other permissions and disappear from the panel when the resource stops, without being erased from the ranks.
+
 The leader has every permission and is the only one who can edit the rank permissions, by clicking them in the ranks view. A leader can leave only after naming another leader.
 
 **Invitations.** Invited players receive a notification and accept or decline from the group panel, or with `/groupaccept` and `/groupdecline`. Invitations expire after `_GROUP.InvitationDuration` seconds and respect the group slots.
@@ -380,6 +382,32 @@ Returns `true` if the player holds the rank `0` of their group.
 local isLeader = exports.sxIllegals:IsPlayerGroupLeader(source)
 ```
 
+##### `RegisterGroupPermission(key, label)`
+
+Adds a rank permission to the group panel. `key` starts with a letter and only contains letters, digits and `_`, the built-in keys are reserved. `label` is shown when the interface has no `group_perm_<key>` phrase. The permission is removed from the panel when the calling resource stops.
+
+```lua
+exports.sxIllegals:RegisterGroupPermission("canUseGarage", "Use the garage")
+```
+
+##### `HasGroupPermission(source, key)`
+
+Returns `true` if the rank of the player has the permission. The leader has every registered permission.
+
+```lua
+if exports.sxIllegals:HasGroupPermission(source, "canUseGarage") then
+    TriggerClientEvent("myGarage:open", source)
+end
+```
+
+##### `GetPlayerPermissions(source)`
+
+Returns every registered permission of the player as `{ [key] = boolean }`, or an empty table outside of a group.
+
+##### `GetGroupPermissions()`
+
+Returns the registered permissions as `{ key, label?, resource? }`, built-in ones first.
+
 #### Territories
 
 ##### `GetTerritory(territoryId)`
@@ -415,6 +443,14 @@ Returns an array of every territory.
 
 ```lua
 local territories = exports.sxIllegals:GetTerritories()
+```
+
+##### `GetTerritoryAtCoords(coords)`
+
+Returns the id of the territory containing the position, or `nil`. Also available on the client.
+
+```lua
+local territoryId = exports.sxIllegals:GetTerritoryAtCoords(GetEntityCoords(GetPlayerPed(source)))
 ```
 
 ##### `GetTerritoryOwner(territoryId)`
@@ -533,6 +569,8 @@ Server events triggered with `TriggerEvent`, other resources can listen to them 
 | `sxIllegals:territoryAttackEnded` | `territoryId`, `attackerId`, `defenderId`, `reason` |
 | `sxIllegals:territoryCaptured` | `territoryId`, `attackerId`, `defenderId` |
 | `sxIllegals:territoryLostByDecay` | `territoryId`, `previousOwnerId`, `newOwnerId` |
+| `sxIllegals:territoryCreated` | `territoryId` |
+| `sxIllegals:territoryUpdated` | `territoryId` |
 | `sxIllegals:territoryDeleted` | `territoryId` |
 | `sxIllegals:labDeleted` | `labId` |
 | `sxIllegals:labRaided` | `labId`, `source`, `ownerId` |
