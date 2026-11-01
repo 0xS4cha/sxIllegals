@@ -1,5 +1,58 @@
 GROUP_PERMISSIONS = { 'canInvite', 'canKick', 'canPromote', 'canEditDevise', 'canManageRanks' }
 
+local builtinPermissions = {}
+for _, key in ipairs(GROUP_PERMISSIONS) do builtinPermissions[key] = true end
+
+local externalPermissions = {}
+
+function RegisterGroupPermission(key, label, resource)
+    if type(key) ~= 'string' or not key:match('^%a[%w_]*$') or #key > 40 then return false, 'invalid_key' end
+    if builtinPermissions[key] then return false, 'reserved_key' end
+
+    for _, entry in ipairs(externalPermissions) do
+        if entry.key == key then
+            entry.label = type(label) == 'string' and label or entry.label
+            entry.resource = resource or entry.resource
+            return true
+        end
+    end
+
+    externalPermissions[#externalPermissions + 1] = {
+        key = key,
+        label = type(label) == 'string' and label or key,
+        resource = resource,
+    }
+    return true
+end
+
+function UnregisterGroupPermissions(resource)
+    for i = #externalPermissions, 1, -1 do
+        if externalPermissions[i].resource == resource then
+            table.remove(externalPermissions, i)
+        end
+    end
+end
+
+function GetGroupPermissionKeys()
+    local keys = {}
+    for _, key in ipairs(GROUP_PERMISSIONS) do keys[#keys + 1] = key end
+    for _, entry in ipairs(externalPermissions) do keys[#keys + 1] = entry.key end
+    return keys
+end
+
+function GetGroupPermissionDefinitions()
+    local list = {}
+    for _, key in ipairs(GROUP_PERMISSIONS) do list[#list + 1] = { key = key } end
+    for _, entry in ipairs(externalPermissions) do
+        list[#list + 1] = { key = entry.key, label = entry.label, resource = entry.resource }
+    end
+    return list
+end
+
+AddEventHandler('onResourceStop', function(resource)
+    UnregisterGroupPermissions(resource)
+end)
+
 local function FindMember(group, identifier)
     for _, member in ipairs(group.members) do
         if member.identifier == identifier then
@@ -28,7 +81,7 @@ function GetMemberPermissions(group, identifier)
     if not member then return permissions end
 
     local rankPerms = group:getPermissionFromRank(member.id_grade) or {}
-    for _, key in ipairs(GROUP_PERMISSIONS) do
+    for _, key in ipairs(GetGroupPermissionKeys()) do
         permissions[key] = member.id_grade == 0 or rankPerms[key] == true
     end
     return permissions
@@ -83,7 +136,7 @@ function SerializeGroupForPlayer(group, identifier)
     for _, rank in ipairs(group.ranks) do
         local perms = rank.perms or {}
         local permissions = {}
-        for _, key in ipairs(GROUP_PERMISSIONS) do
+        for _, key in ipairs(GetGroupPermissionKeys()) do
             permissions[key] = rank.rank == 0 or perms[key] == true
         end
         ranks[#ranks + 1] = {
@@ -128,6 +181,7 @@ function SerializeGroupForPlayer(group, identifier)
         },
         members = members,
         ranks = ranks,
+        permissionDefinitions = GetGroupPermissionDefinitions(),
         activities = activities
     }
 end
@@ -287,7 +341,10 @@ RegisterServerCallback('sxGroup:setRankPermissions', function(source, rankId, pe
     if rankId == 0 or type(permissions) ~= 'table' then return Result(source, group, identifier, 'invalid_data') end
 
     local perms = {}
-    for _, key in ipairs(GROUP_PERMISSIONS) do
+    for key, value in pairs(group:getPermissionFromRank(rankId) or {}) do
+        perms[key] = value
+    end
+    for _, key in ipairs(GetGroupPermissionKeys()) do
         perms[key] = permissions[key] == true
     end
 

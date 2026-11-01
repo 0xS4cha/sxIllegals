@@ -345,6 +345,34 @@ exports("IsLaboratorySealed", function(labId)
     return IsLabSealed(labId)
 end)
 
+exports("RegisterGroupPermission", function(key, label)
+    return RegisterGroupPermission(key, label, GetInvokingResource())
+end)
+
+exports("GetGroupPermissions", function()
+    return GetGroupPermissionDefinitions()
+end)
+
+exports("HasGroupPermission", function(source, key)
+    local identifier = GetIdentifierFromSource(source)
+    if not identifier then return false end
+
+    local data = GetGroupFromLicense(identifier)
+    if not data then return false end
+
+    return HasGroupPermission(data, identifier, key)
+end)
+
+exports("GetPlayerPermissions", function(source)
+    local identifier = GetIdentifierFromSource(source)
+    if not identifier then return {} end
+
+    local data = GetGroupFromLicense(identifier)
+    if not data then return {} end
+
+    return GetMemberPermissions(data, identifier)
+end)
+
 exports("IsPlayerPolice", function(source)
     return IsPlayerPolice(source)
 end)
