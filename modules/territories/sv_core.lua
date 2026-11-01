@@ -78,6 +78,7 @@ AddEventHandler('sxGroup:RegisterTerritory', function(data)
     end
     
     TriggerClientEvent('sxGroup:RefreshTerritories', -1, GetTerritoriesFromId(data.id), data.id)
+    TriggerEvent('sxIllegals:territoryCreated', data.id)
 end)
 
 RegisterNetEvent("sxGroup:SaveTerritory")
@@ -105,6 +106,7 @@ AddEventHandler('sxGroup:SaveTerritory', function(data)
     end
     territory:setNeedSave(true)
     TriggerClientEvent('sxGroup:RefreshTerritories', -1, GetTerritoriesFromId(data.id), data.id)
+    TriggerEvent('sxIllegals:territoryUpdated', data.id)
 end)
 
 RegisterServerCallback('sxGroup:getTerritoriesList', function(source)
