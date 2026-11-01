@@ -150,6 +150,11 @@ exports("GetTerritories", function()
     return result
 end)
 
+exports("GetTerritoryAtCoords", function(coords)
+    if type(coords) ~= 'table' and type(coords) ~= 'vector3' and type(coords) ~= 'vector4' then return nil end
+    return GetTerritoryFromCoords(coords)
+end)
+
 exports("GetTerritoryOwner", function(territoryId)
     local data = GetTerritoriesFromId(territoryId)
     if not data or not data.influence or not data.influence[1] then return nil end
