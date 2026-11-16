@@ -74,6 +74,28 @@ function Territories.Draw(name, color, border)
     EndScaleformMovieMethod();
 end
 
+function Territories.AddOverlay(id, url, x, y, w, h, alpha)
+    if OverlayId == 0 then Territories.Load() end
+    CallMinimapScaleformFunction(OverlayId, "ADD_SIZED_OVERLAY")
+    ScaleformMovieMethodAddParamInt(id)
+    ScaleformMovieMethodAddParamTextureNameString(url)
+    ScaleformMovieMethodAddParamFloat(x)
+    ScaleformMovieMethodAddParamFloat(y)
+    ScaleformMovieMethodAddParamFloat(0.0)
+    ScaleformMovieMethodAddParamFloat(w)
+    ScaleformMovieMethodAddParamFloat(h)
+    ScaleformMovieMethodAddParamInt(alpha)
+    ScaleformMovieMethodAddParamBool(true)
+    EndScaleformMovieMethod()
+end
+
+function Territories.RemoveOverlay(id)
+    if OverlayId == 0 then Territories.Load() end
+    CallMinimapScaleformFunction(OverlayId, "REM_OVERLAY")
+    ScaleformMovieMethodAddParamInt(id)
+    EndScaleformMovieMethod()
+end
+
 Citizen.CreateThread(function()
     Territories.Load()
 end)

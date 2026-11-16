@@ -23,3 +23,12 @@ _GROUP.Alerts = {
     sound = true,
     blipDuration = 60,
 }
+
+_GROUP.Logo = {
+    Enabled = true,
+    AllowUpload = true,
+    AllowUrl = true,
+    UploadSize = 128,
+    MaxUploadLength = 48000,
+    MaxUrlLength = 512,
+}

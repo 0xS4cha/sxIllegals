@@ -10,6 +10,7 @@ function ShowTerritories(bool)
             ShowDisplayTerritory(false)
         end
     end
+    TerritoryLogos.SetVisible(bool)
     Citizen.CreateThread(function()
         while TerritoriesStates do
             local cursor = GetPauseMapPointerWorldPosition()
@@ -115,6 +116,7 @@ function InitializeTerritory(id, data)
         GetPhrase('territory_days', territory.date or 0))
         
     AddBlipInfoTextTerritory(territory.id, GetPhrase('territory_controlled'))
+    TerritoryLogos.Refresh()
 end
 
 RegisterNetEvent("sxGroup:RefreshTerritories")
@@ -178,6 +180,7 @@ AddEventHandler("sxGroup:RemoveTerritory", function(id)
         PlayerInTerritory = nil
     end
     TerritoriesList[id] = nil
+    TerritoryLogos.Refresh()
 end)
 
 Citizen.CreateThread(function()

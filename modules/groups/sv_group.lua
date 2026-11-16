@@ -11,7 +11,28 @@ function GetGroupInformationFromId(id)
     if not group then
         return false, nil, nil
     end
-    return true, group.name, group.rgb, group.is_official
+    return true, group.name, group.rgb, group.is_official, group:getLogoVersion()
+end
+
+local LOGO_UPLOAD_PATTERN = '^data:image/(%a+);base64,[%w%+/]+=*$'
+local LOGO_UPLOAD_TYPES = { png = true, jpeg = true, jpg = true, webp = true, gif = true }
+
+function NormalizeGroupLogo(value)
+    if value == nil or value == false or value == '' then return false end
+    if type(value) ~= 'string' or not _GROUP.Logo or not _GROUP.Logo.Enabled then return nil, 'invalid_logo' end
+
+    if value:sub(1, 5) == 'data:' then
+        if not _GROUP.Logo.AllowUpload then return nil, 'invalid_logo' end
+        if #value > _GROUP.Logo.MaxUploadLength then return nil, 'logo_too_large' end
+        local kind = value:match(LOGO_UPLOAD_PATTERN)
+        if not kind or not LOGO_UPLOAD_TYPES[kind:lower()] then return nil, 'invalid_logo' end
+        return value
+    end
+
+    if not _GROUP.Logo.AllowUrl then return nil, 'invalid_logo' end
+    if #value > _GROUP.Logo.MaxUrlLength then return nil, 'invalid_logo' end
+    if not value:match('^https?://[^%s"\'<>`]+$') then return nil, 'invalid_logo' end
+    return value
 end
 
 function GetGroupFromLicense(license)
@@ -54,6 +75,7 @@ function group:new(data)
     self.name = data.name or ''
     self.devise = data.devise or ''
     self.rgb = data.rgb or { r = 255, g = 255, b = 255 }
+    self:setLogo(data.logo)
     self.members = data.members or {}
     self.ranks = data.ranks or {}
     self.is_official = data.is_official or false
@@ -107,6 +129,24 @@ end
 
 function group:getRGB()
     return self.rgb
+end
+
+function group:getLogo()
+    return self.logo
+end
+
+function group:getLogoVersion()
+    return self.logoVersion
+end
+
+function group:setLogo(logo)
+    if type(logo) ~= 'string' or logo == '' then
+        self.logo, self.logoVersion = nil, nil
+    else
+        self.logo = logo
+        self.logoVersion = ('%x'):format(GetHashKey(logo) & 0xFFFFFFFF)
+    end
+    return true
 end
 
 function group:promotePlayer(identifier)
@@ -299,12 +339,13 @@ function group:saveGroup()
 
     MySQL.Async.execute([[
         UPDATE group_list
-        SET name = ?, devise = ?, rgb = ?, is_official = ?, slots = ?
+        SET name = ?, devise = ?, rgb = ?, logo = ?, is_official = ?, slots = ?
         WHERE id = ?
     ]], {
         self.name,
         self.devise,
         json.encode(self.rgb),
+        self.logo or '',
         self.is_official and 1 or 0,
         self.slots,
         self.id
@@ -377,12 +418,15 @@ function CreateGroup(data, leaderSource)
     local id = GenerateUniqueGroupId()
     local rgb = type(data.rgb) == 'table' and data.rgb or { r = 255, g = 255, b = 255 }
     local isOfficial = data.is_official == true
+    local logo, logoErr = NormalizeGroupLogo(data.logo)
+    if logo == nil then return nil, logoErr end
 
-    MySQL.Sync.execute("INSERT INTO group_list (id, name, devise, rgb, is_official, slots) VALUES (?, ?, ?, ?, ?, ?)", {
+    MySQL.Sync.execute("INSERT INTO group_list (id, name, devise, rgb, logo, is_official, slots) VALUES (?, ?, ?, ?, ?, ?, ?)", {
         id,
         name,
         (data.devise or ''):sub(1, 120),
         json.encode(rgb),
+        logo or '',
         isOfficial and 1 or 0,
         data.slots
     })
@@ -408,6 +452,7 @@ function CreateGroup(data, leaderSource)
         name = name,
         devise = (data.devise or ''):sub(1, 120),
         rgb = rgb,
+        logo = logo or nil,
         is_official = isOfficial,
         slots = data.slots,
         ranks = ranks,
@@ -538,6 +583,7 @@ MySQL.ready(function()
     pcall(MySQL.Sync.execute, "CREATE INDEX IF NOT EXISTS `idx_statistics_logs_group` ON `statistics_logs` (`group_id`, `timestamp`)")
 
     MySQL.Sync.execute("ALTER TABLE `group_list` ADD COLUMN IF NOT EXISTS `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP")
+    MySQL.Sync.execute("ALTER TABLE `group_list` ADD COLUMN IF NOT EXISTS `logo` MEDIUMTEXT DEFAULT NULL")
 
     MySQL.query("ALTER TABLE `group_list` ADD COLUMN IF NOT EXISTS `slots` INT DEFAULT NULL", {}, function()
         Wait(1000)
@@ -563,4 +609,10 @@ end)
 
 RegisterServerCallback('sxGroup:getGroupList', function(_)
     return GetAllGroup()
+end)
+
+RegisterServerCallback('sxIllegals:getGroupLogo', function(_, groupId)
+    local target = type(groupId) == 'string' and GetGroupFromId(groupId)
+    if not target then return nil end
+    return target:getLogo(), target:getLogoVersion()
 end)

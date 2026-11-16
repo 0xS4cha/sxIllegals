@@ -125,7 +125,8 @@ RegisterServerCallback('sxGroup:getTerritoriesList', function(source)
                 id = inf.id,
                 name = inf.name,
                 points = inf.points,
-                rgb = inf.rgb or { r = 255, g = 255, b = 255 }
+                rgb = inf.rgb or { r = 255, g = 255, b = 255 },
+                logo = inf.logo
             })
         end
         

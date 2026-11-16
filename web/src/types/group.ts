@@ -97,12 +97,22 @@ export interface GroupCreationSettings {
   price: number
   minLength: number
   maxLength: number
+  logo?: GroupLogoSettings
+}
+
+export interface GroupLogoSettings {
+  upload: boolean
+  url: boolean
+  uploadSize: number
+  maxUploadLength: number
+  maxUrlLength: number
 }
 
 export interface CreateGroupPayload {
   name: string
   devise: string
   rgb: { r: number; g: number; b: number }
+  logo?: string
 }
 
 export interface GroupActionResult {

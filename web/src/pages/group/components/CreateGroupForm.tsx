@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useTranslation } from '../../../hooks/useTranslation'
 import type { CreateGroupPayload, GroupCreationSettings } from '../../../types/group'
+import { GroupLogoField } from './GroupLogoField'
 
 const COLORS = [
   { r: 147, g: 51, b: 234 },
@@ -24,6 +25,7 @@ export function CreateGroupForm({ settings, onCreate }: CreateGroupFormProps) {
   const [name, setName] = useState('')
   const [devise, setDevise] = useState('')
   const [color, setColor] = useState(COLORS[0])
+  const [logo, setLogo] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   const nameLength = name.trim().length
@@ -33,7 +35,7 @@ export function CreateGroupForm({ settings, onCreate }: CreateGroupFormProps) {
     e.preventDefault()
     if (!valid || submitting) return
     setSubmitting(true)
-    await onCreate({ name: name.trim(), devise: devise.trim(), rgb: color })
+    await onCreate({ name: name.trim(), devise: devise.trim(), rgb: color, logo: logo || undefined })
     setSubmitting(false)
   }
 
@@ -93,6 +95,10 @@ export function CreateGroupForm({ settings, onCreate }: CreateGroupFormProps) {
             })}
           </div>
         </div>
+
+        {settings.logo && (settings.logo.upload || settings.logo.url) && (
+          <GroupLogoField settings={settings.logo} value={logo} onChange={setLogo} />
+        )}
 
         <div className="flex justify-end border-t border-zinc-800 pt-4">
           <button

@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS `group_list` (
   `name` varchar(50) NOT NULL,
   `devise` text DEFAULT NULL,
   `rgb` text DEFAULT NULL,
+  `logo` mediumtext DEFAULT NULL,
   `is_official` int(11) DEFAULT 0,
   `slots` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),

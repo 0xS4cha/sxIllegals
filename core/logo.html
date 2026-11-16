@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        html, body { margin: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; }
+        img { width: 100%; height: 100%; object-fit: contain; display: none; }
+    </style>
+</head>
+<body>
+    <img id="logo" alt="">
+    <script>
+        var img = document.getElementById('logo');
+        img.onload = function () { img.style.display = 'block'; };
+        img.onerror = function () { img.style.display = 'none'; };
+        function update() {
+            var src = '';
+            try { src = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+            if (!/^(https?:\/\/|data:image\/)/i.test(src)) { img.style.display = 'none'; return; }
+            img.src = src;
+        }
+        window.addEventListener('hashchange', update);
+        update();
+    </script>
+</body>
+</html>

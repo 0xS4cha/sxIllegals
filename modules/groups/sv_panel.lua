@@ -222,7 +222,19 @@ RegisterServerCallback('sxGroup:getMyGroup', function(source)
             ok = true,
             group = nil,
             invitations = GetPlayerInvitations(source),
-            creation = { enabled = _GROUP.PlayersCanCreate == true, price = _GROUP.CreationPrice, minLength = _GROUP.NameLength.min, maxLength = _GROUP.NameLength.max }
+            creation = {
+                enabled = _GROUP.PlayersCanCreate == true,
+                price = _GROUP.CreationPrice,
+                minLength = _GROUP.NameLength.min,
+                maxLength = _GROUP.NameLength.max,
+                logo = {
+                    upload = _GROUP.Logo.Enabled and _GROUP.Logo.AllowUpload or false,
+                    url = _GROUP.Logo.Enabled and _GROUP.Logo.AllowUrl or false,
+                    uploadSize = _GROUP.Logo.UploadSize,
+                    maxUploadLength = _GROUP.Logo.MaxUploadLength,
+                    maxUrlLength = _GROUP.Logo.MaxUrlLength
+                }
+            }
         }
     end
     return Result(source, group, identifier)
@@ -367,6 +379,9 @@ RegisterServerCallback('sxGroup:createGroup', function(source, data)
     if #name < _GROUP.NameLength.min or #name > _GROUP.NameLength.max then return { ok = false, error = 'invalid_name' } end
     if IsGroupNameTaken(name) then return { ok = false, error = 'name_taken' } end
 
+    local logo, logoErr = NormalizeGroupLogo(data.logo)
+    if logo == nil then return { ok = false, error = logoErr } end
+
     if _GROUP.CreationPrice > 0 then
         if Bridge.GetMoney(source) < _GROUP.CreationPrice then return { ok = false, error = 'not_enough_money' } end
         if not Bridge.RemoveMoney(source, _GROUP.CreationPrice) then return { ok = false, error = 'not_enough_money' } end
@@ -378,7 +393,7 @@ RegisterServerCallback('sxGroup:createGroup', function(source, data)
         b = math.min(255, math.max(0, math.floor(tonumber(data.rgb.b) or 255)))
     } or nil
 
-    local newGroup, err = CreateGroup({ name = name, devise = type(data.devise) == 'string' and data.devise or '', rgb = rgb, is_official = false }, source)
+    local newGroup, err = CreateGroup({ name = name, devise = type(data.devise) == 'string' and data.devise or '', rgb = rgb, logo = logo, is_official = false }, source)
     if not newGroup then return { ok = false, error = err } end
 
     AddGroupActivity(newGroup.id, 'member', GetPhrase('group_activity_created_title'), GetPhrase('group_activity_created_desc', Bridge.GetName(source)))

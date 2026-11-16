@@ -126,7 +126,7 @@ end
 function territory:getDataGroup()
     for i = 1, #self.influence do
         if self.influence[i] then
-            local status, name, rgb, is_official = GetGroupInformationFromId(self.influence[i].id)
+            local status, name, rgb, is_official, logo = GetGroupInformationFromId(self.influence[i].id)
 
             if not status then
                 Logger:warn('LOAD',
@@ -144,7 +144,7 @@ function territory:getDataGroup()
                 self:setNeedSave(true)
                 goto continue
             end
-            self.influence[i].name, self.influence[i].rgb = name, rgb
+            self.influence[i].name, self.influence[i].rgb, self.influence[i].logo = name, rgb, logo
             ::continue::
         end
     end

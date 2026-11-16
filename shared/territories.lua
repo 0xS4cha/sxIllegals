@@ -56,3 +56,10 @@ _TERRITORY.Decay = {
     idleTime = 24 * 3600,
     percent = 5,
 }
+
+_TERRITORY.Logo = {
+    SizeRatio = 0.5,
+    MinSize = 60.0,
+    MaxSize = 400.0,
+    Alpha = 90,
+}
