@@ -6,6 +6,10 @@ function SX.Admin:Initialize()
         cb(groups or {})
     end)
 
+    RegisterNUICallback('getAdminLogoSettings', function(_, cb)
+        cb(TriggerServerCallback('sxAdmin:getLogoSettings') or {})
+    end)
+
     RegisterNUICallback('getAdminTerritories', function(_, cb)
         local territories = TriggerServerCallback('sxAdmin:getTerritories')
         cb(territories or {})
