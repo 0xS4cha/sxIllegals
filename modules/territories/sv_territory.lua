@@ -124,31 +124,49 @@ function territory:refreshZoneData()
 end
 
 function territory:getDataGroup()
-    for i = 1, #self.influence do
-        if self.influence[i] then
-            local status, name, rgb, is_official, logo = GetGroupInformationFromId(self.influence[i].id)
+    for i = #self.influence, 1, -1 do
+        local entry = self.influence[i]
+        local status, name, rgb, is_official, logo = GetGroupInformationFromId(entry.id)
 
-            if not status then
-                Logger:warn('LOAD',
-                    'Group with ID ' .. self.influence[i].id .. ' has been removed because it does not exist')
-                self.influence[i] = nil
-                self.influenceChanged = true
-                self:setNeedSave(true)
-                goto continue
-            end
-            if not is_official and not _GROUP.Unofficial then
-                Logger:warn('LOAD',
-                    'Group with ID ' .. self.influence[i].id .. ' has been removed because it is not official group')
-                self.influence[i] = nil
-                self.influenceChanged = true
-                self:setNeedSave(true)
-                goto continue
-            end
-            self.influence[i].name, self.influence[i].rgb, self.influence[i].logo = name, rgb, logo
-            ::continue::
+        local reason = nil
+        if not status then
+            reason = 'it does not exist'
+        elseif not is_official and not _GROUP.Unofficial then
+            reason = 'it is not official group'
+        end
+
+        if reason then
+            Logger:warn('LOAD', 'Group with ID ' .. tostring(entry.id) .. ' has been removed because ' .. reason)
+            table.remove(self.influence, i)
+            self.influenceChanged = true
+            self:setNeedSave(true)
+        else
+            entry.name, entry.rgb, entry.logo = name, rgb, logo
         end
     end
 end
+
+function territory:removeGroupInfluence(groupId)
+    local removed = false
+    for i = #self.influence, 1, -1 do
+        if self.influence[i].id == groupId then
+            table.remove(self.influence, i)
+            removed = true
+        end
+    end
+    if not removed then return false end
+
+    self.influenceChanged = true
+    self:setNeedSave(true)
+    self:refreshZoneData()
+    return true
+end
+
+AddEventHandler('sxIllegals:groupDeleted', function(groupId)
+    for _, zone in pairs(TerritoriesList) do
+        zone:removeGroupInfluence(groupId)
+    end
+end)
 
 function territory:sortInfluence()
     table.sort(self.influence, function(a, b)
