@@ -227,13 +227,7 @@ RegisterServerCallback('sxGroup:getMyGroup', function(source)
                 price = _GROUP.CreationPrice,
                 minLength = _GROUP.NameLength.min,
                 maxLength = _GROUP.NameLength.max,
-                logo = {
-                    upload = _GROUP.Logo.Enabled and _GROUP.Logo.AllowUpload or false,
-                    url = _GROUP.Logo.Enabled and _GROUP.Logo.AllowUrl or false,
-                    uploadSize = _GROUP.Logo.UploadSize,
-                    maxUploadLength = _GROUP.Logo.MaxUploadLength,
-                    maxUrlLength = _GROUP.Logo.MaxUrlLength
-                }
+                logo = GetGroupLogoSettings()
             }
         }
     end

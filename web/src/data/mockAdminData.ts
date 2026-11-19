@@ -1,3 +1,4 @@
+import type { GroupLogoSettings } from '../types/group'
 import type { AdminStats, GroupItem, TerritoryItem } from '../types/admin'
 
 export const INITIAL_MOCK_GROUPS: GroupItem[] = [
@@ -256,4 +257,12 @@ export const INITIAL_MOCK_STATS: AdminStats = {
       severity: 'info',
     },
   ],
+}
+
+export const MOCK_LOGO_SETTINGS: GroupLogoSettings = {
+  upload: true,
+  url: true,
+  uploadSize: 128,
+  maxUploadLength: 48000,
+  maxUrlLength: 512,
 }

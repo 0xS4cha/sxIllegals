@@ -35,6 +35,17 @@ function NormalizeGroupLogo(value)
     return value
 end
 
+function GetGroupLogoSettings()
+    local cfg = _GROUP.Logo or {}
+    return {
+        upload = cfg.Enabled and cfg.AllowUpload or false,
+        url = cfg.Enabled and cfg.AllowUrl or false,
+        uploadSize = cfg.UploadSize,
+        maxUploadLength = cfg.MaxUploadLength,
+        maxUrlLength = cfg.MaxUrlLength
+    }
+end
+
 function GetGroupFromLicense(license)
     for _, group in pairs(GroupList) do
         for i = 1, #group.members do

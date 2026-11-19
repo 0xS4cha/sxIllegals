@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ShieldCheck, Plus, X, MapPin, Trash2, FlaskConical } from 'lucide-react'
 import type { CreateGroupPayload, CreateTerritoryPayload, CreateLaboratoryPayload } from '../../../types/admin'
+import type { GroupLogoSettings } from '../../../types/group'
+import { GroupLogoField } from '../../group/components/GroupLogoField'
 import { fetchNui } from '../../../utils/fetchNui'
 import { isEnvBrowser } from '../../../utils/nui'
 import { useTranslation } from '../../../hooks/useTranslation'
@@ -10,6 +12,7 @@ interface CreateGroupModalProps {
   isOpen: boolean
   onClose: () => void
   onCreate: (payload: CreateGroupPayload) => void
+  logoSettings?: GroupLogoSettings | null
 }
 
 const PRESET_COLORS = [
@@ -22,13 +25,14 @@ const PRESET_COLORS = [
   { r: 107, g: 114, b: 128, hex: '#6b7280', label: 'Gray' },
 ]
 
-export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModalProps) {
+export function CreateGroupModal({ isOpen, onClose, onCreate, logoSettings }: CreateGroupModalProps) {
   const { t } = useTranslation()
   const [name, setName] = useState('')
   const [devise, setDevise] = useState('')
   const [isOfficial, setIsOfficial] = useState(false)
   const [slots, setSlots] = useState(15)
   const [selectedRgb, setSelectedRgb] = useState(PRESET_COLORS[0])
+  const [logo, setLogo] = useState('')
 
   if (!isOpen) return null
 
@@ -42,12 +46,14 @@ export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModal
       rgb: { r: selectedRgb.r, g: selectedRgb.g, b: selectedRgb.b },
       is_official: isOfficial,
       slots: Number(slots),
+      logo: logo || undefined,
     })
 
     setName('')
     setDevise('')
     setIsOfficial(false)
     setSlots(15)
+    setLogo('')
     onClose()
   }
 
@@ -126,6 +132,10 @@ export function CreateGroupModal({ isOpen, onClose, onCreate }: CreateGroupModal
                 ))}
               </div>
             </div>
+
+            {logoSettings && (logoSettings.upload || logoSettings.url) && (
+              <GroupLogoField settings={logoSettings} value={logo} onChange={setLogo} />
+            )}
 
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div className="space-y-1.5">

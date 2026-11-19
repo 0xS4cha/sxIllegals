@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { INITIAL_MOCK_GROUPS, INITIAL_MOCK_STATS, INITIAL_MOCK_TERRITORIES } from '../data/mockAdminData'
+import { INITIAL_MOCK_GROUPS, INITIAL_MOCK_STATS, INITIAL_MOCK_TERRITORIES, MOCK_LOGO_SETTINGS } from '../data/mockAdminData'
+import type { GroupLogoSettings } from '../types/group'
 import type {
   AdminStats,
   CreateGroupPayload,
@@ -40,6 +41,7 @@ export function useAdminData() {
   const [territories, setTerritories] = useState<TerritoryItem[]>(isEnvBrowser() ? INITIAL_MOCK_TERRITORIES : [])
   const [labs, setLabs] = useState<LaboratoryItem[]>(isEnvBrowser() ? INITIAL_MOCK_LABS : [])
   const [stats, setStats] = useState<AdminStats>(isEnvBrowser() ? INITIAL_MOCK_STATS : EMPTY_STATS)
+  const [logoSettings, setLogoSettings] = useState<GroupLogoSettings | null>(isEnvBrowser() ? MOCK_LOGO_SETTINGS : null)
   const [timeFrame, setTimeFrame] = useState<'24h' | '7d' | '30d'>('24h')
   const [loading, setLoading] = useState(false)
   const [selectedGroup, setSelectedGroup] = useState<GroupItem | null>(null)
@@ -122,6 +124,9 @@ export function useAdminData() {
 
       const labsRes = await fetchNui<LaboratoryItem[]>('getAdminLabs')
       if (labsRes) setLabs(labsRes)
+
+      const logoRes = await fetchNui<GroupLogoSettings>('getAdminLogoSettings')
+      if (logoRes) setLogoSettings(logoRes)
 
       await fetchStats(timeFrame)
     } catch (err) {
@@ -325,6 +330,7 @@ export function useAdminData() {
     territories,
     labs,
     stats,
+    logoSettings,
     timeFrame,
     setTimeFrame,
     loading,

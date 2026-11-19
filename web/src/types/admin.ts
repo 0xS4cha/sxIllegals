@@ -97,6 +97,7 @@ export interface CreateGroupPayload {
   rgb: { r: number; g: number; b: number }
   is_official: boolean
   slots: number
+  logo?: string
 }
 
 export interface UpdateGroupPayload {

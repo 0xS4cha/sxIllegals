@@ -26,6 +26,11 @@ RegisterServerCallback('sxAdmin:isAdmin', function(source)
     return IsPlayerAdmin(source)
 end)
 
+RegisterServerCallback('sxAdmin:getLogoSettings', function(source)
+    if not IsPlayerAdmin(source) then return nil end
+    return GetGroupLogoSettings()
+end)
+
 RegisterServerCallback('sxAdmin:getGroups', function(source)
     if not IsPlayerAdmin(source) then return {} end
 
@@ -493,26 +498,30 @@ RegisterNetEvent('sxAdmin:createGroup', function(data)
         leader = src
     end
 
-    local newGroup = CreateGroup({
+    local newGroup, err = CreateGroup({
         name = data.name,
         devise = data.devise,
         rgb = data.rgb,
+        logo = data.logo,
         is_official = data.is_official,
         slots = tonumber(data.slots)
     }, leader)
 
-    if newGroup then
-        AddAdminActivity({
-            id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
-            time = os.time(),
-            title = GetPhrase('activity_group_created_title'),
-            description = GetPhrase('activity_group_created_desc', newGroup.name),
-            type = 'group',
-            severity = 'info'
-        }, 'group_created')
-
-        Notify(src, GetPhrase('notify_group_created', newGroup.name))
+    if not newGroup then
+        Notify(src, GetPhrase('group_error_' .. (err or 'unknown')))
+        return
     end
+
+    AddAdminActivity({
+        id = 'act-' .. os.time() .. '-' .. math.random(100, 999),
+        time = os.time(),
+        title = GetPhrase('activity_group_created_title'),
+        description = GetPhrase('activity_group_created_desc', newGroup.name),
+        type = 'group',
+        severity = 'info'
+    }, 'group_created')
+
+    Notify(src, GetPhrase('notify_group_created', newGroup.name))
 end)
 
 RegisterNetEvent('sxAdmin:updateGroup', function(data)

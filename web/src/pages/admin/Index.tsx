@@ -33,6 +33,7 @@ export function AdminPanel() {
     territories,
     labs,
     stats,
+    logoSettings,
     timeFrame,
     setTimeFrame,
     loading,
@@ -193,6 +194,7 @@ export function AdminPanel() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreate={createGroup}
+        logoSettings={logoSettings}
       />
       <CreateTerritoryModal
         isOpen={isCreateTerritoryModalOpen}
