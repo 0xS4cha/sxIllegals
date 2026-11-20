@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { ShieldCheck, Plus, X, MapPin, Trash2, FlaskConical } from 'lucide-react'
+import { ShieldCheck, Plus, MapPin, Trash2, FlaskConical } from 'lucide-react'
+import { Button, Field, Input, Modal, SectionLabel, Tabs, TextArea } from '../../../components/ui'
 import type { CreateGroupPayload, CreateTerritoryPayload, CreateLaboratoryPayload } from '../../../types/admin'
 import type { GroupLogoSettings } from '../../../types/group'
 import { GroupLogoField } from '../../group/components/GroupLogoField'
@@ -58,132 +58,90 @@ export function CreateGroupModal({ isOpen, onClose, onCreate, logoSettings }: Cr
   }
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4"
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 12 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 12 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl space-y-6"
-        >
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
-            <div className="flex items-center gap-2">
-              <Plus className="h-5 w-5 text-zinc-200" />
-              <h3 className="text-base font-bold text-zinc-100">{t('modal_group_title')}</h3>
-            </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      icon={Plus}
+      subtitle={t('admin_sidebar_groups')}
+      title={t('modal_group_title')}
+      footer={
+        <>
+          <Button variant="ghost" onClick={onClose}>
+            {t('btn_cancel')}
+          </Button>
+          <Button variant="primary" type="submit" form="create-group-form">
+            {t('groups_create')}
+          </Button>
+        </>
+      }
+    >
+      <form id="create-group-form" onSubmit={handleSubmit} className="space-y-4">
+        <Field label={t('modal_group_name')}>
+          <Input
+            type="text"
+            required
+            placeholder={t('modal_group_name_placeholder')}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </Field>
+
+        <Field label={t('group_devise_label')}>
+          <Input
+            type="text"
+            placeholder={t('modal_group_devise_placeholder')}
+            value={devise}
+            onChange={(e) => setDevise(e.target.value)}
+          />
+        </Field>
+
+        <Field label={t('modal_group_color')}>
+          <span className="flex flex-wrap gap-2">
+            {PRESET_COLORS.map((color) => (
+              <button
+                key={color.hex}
+                type="button"
+                onClick={() => setSelectedRgb(color)}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 text-[15px] font-semibold uppercase tracking-wide transition ${
+                  selectedRgb.hex === color.hex
+                    ? 'bg-white text-help-panel'
+                    : 'border border-help-line text-white/65 hover:text-white'
+                }`}
+              >
+                <span className="h-3 w-3" style={{ backgroundColor: color.hex }} />
+                <span>{color.label}</span>
+              </button>
+            ))}
+          </span>
+        </Field>
+
+        {logoSettings && (logoSettings.upload || logoSettings.url) && (
+          <GroupLogoField settings={logoSettings} value={logo} onChange={setLogo} />
+        )}
+
+        <div className="grid grid-cols-2 gap-4">
+          <Field label={t('modal_group_slots')}>
+            <Input type="number" min={1} max={50} value={slots} onChange={(e) => setSlots(Number(e.target.value))} />
+          </Field>
+
+          <Field label={t('group_official_badge')}>
             <button
               type="button"
-              onClick={onClose}
-              className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+              onClick={() => setIsOfficial((prev) => !prev)}
+              className={`flex h-[42px] w-full items-center justify-between px-3 text-[17px] font-semibold uppercase tracking-wide transition ${
+                isOfficial ? 'bg-help-safe text-help-panel' : 'border border-white/20 bg-help-panel/80 text-white/65'
+              }`}
             >
-              <X className="h-5 w-5" />
+              <span className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" />
+                {isOfficial ? t('group_official') : t('group_unofficial')}
+              </span>
+              <span className={`h-4 w-4 ${isOfficial ? 'bg-help-panel' : 'border border-white/40'}`} />
             </button>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">{t('modal_group_name')}</label>
-              <input
-                type="text"
-                required
-                placeholder={t('modal_group_name_placeholder')}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">{t('group_devise_label')}</label>
-              <input
-                type="text"
-                placeholder={t('modal_group_devise_placeholder')}
-                value={devise}
-                onChange={(e) => setDevise(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-300">{t('modal_group_color')}</label>
-              <div className="flex flex-wrap gap-2">
-                {PRESET_COLORS.map((color) => (
-                  <button
-                    key={color.hex}
-                    type="button"
-                    onClick={() => setSelectedRgb(color)}
-                    className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${selectedRgb.hex === color.hex
-                      ? 'border-white bg-zinc-800 text-zinc-100'
-                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
-                      }`}
-                  >
-                    <span
-                      className="h-3 w-3 rounded-full shadow-xs"
-                      style={{ backgroundColor: color.hex }}
-                    />
-                    <span>{color.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {logoSettings && (logoSettings.upload || logoSettings.url) && (
-              <GroupLogoField settings={logoSettings} value={logo} onChange={setLogo} />
-            )}
-
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">{t('modal_group_slots')}</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={50}
-                  value={slots}
-                  onChange={(e) => setSlots(Number(e.target.value))}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 focus:border-zinc-700 focus:outline-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/60 px-3.5 py-2">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                  <span className="text-xs font-semibold text-zinc-200">{t('group_official_badge')}</span>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={isOfficial}
-                  onChange={(e) => setIsOfficial(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-700 bg-zinc-950 text-emerald-500 focus:ring-0"
-                />
-              </div>
-            </div>
-
-
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition"
-              >
-                {t('btn_cancel')}
-              </button>
-              <button
-                type="submit"
-                className="rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 hover:bg-white transition"
-              >
-                {t('groups_create')}
-              </button>
-            </div>
-          </form>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+          </Field>
+        </div>
+      </form>
+    </Modal>
   )
 }
 
@@ -321,185 +279,109 @@ export function CreateTerritoryModal({ isOpen, onClose, onCreate }: CreateTerrit
   }
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4"
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 12 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 12 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl space-y-5"
-        >
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-zinc-200" />
-              <h3 className="text-base font-bold text-zinc-100">{t('modal_territory_title')}</h3>
-            </div>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
-            >
-              <X className="h-5 w-5" />
-            </button>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleCancel}
+      icon={MapPin}
+      subtitle={t('admin_sidebar_territories')}
+      title={t('modal_territory_title')}
+      footer={
+        <>
+          <Button variant="ghost" onClick={handleCancel}>
+            {t('btn_cancel')}
+          </Button>
+          <Button variant="primary" type="submit" form="create-territory-form" disabled={coords.length < 3 || !label.trim()}>
+            {t('territories_create')}
+          </Button>
+        </>
+      }
+    >
+      <form id="create-territory-form" onSubmit={handleSubmit} className="space-y-4">
+        <Field label={t('modal_territory_name')}>
+          <Input
+            type="text"
+            required
+            placeholder={t('modal_territory_name_placeholder')}
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+          />
+        </Field>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Field label={t('modal_territory_min_z')}>
+            <Input type="number" step="any" value={minZ} onChange={(e) => setMinZ(Number(e.target.value))} />
+          </Field>
+          <Field label={t('modal_territory_max_z')}>
+            <Input type="number" step="any" value={maxZ} onChange={(e) => setMaxZ(Number(e.target.value))} />
+          </Field>
+        </div>
+
+        <Field label={t('modal_coords_mode')}>
+          <Tabs
+            value={inputMode}
+            onChange={setInputMode}
+            options={[
+              { value: 'position', label: t('modal_coords_position') },
+              { value: 'manual', label: t('modal_coords_paste_vectors') },
+            ]}
+          />
+        </Field>
+
+        {inputMode === 'manual' && (
+          <Field label={t('modal_coords_paste')} hint={t('modal_coords_paste_hint')}>
+            <TextArea
+              rows={4}
+              value={rawText}
+              onChange={(e) => handleTextChange(e.target.value)}
+              placeholder={`vector2(-1586.36, 1146.97),\nvector2(-1295.45, 407.58),\nvector2(462.12, 498.48)`}
+              className="!text-[15px]"
+            />
+          </Field>
+        )}
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <SectionLabel>{t('modal_territory_points', { count: coords.length })}</SectionLabel>
+            {inputMode === 'position' && (
+              <Button size="sm" icon={MapPin} onClick={handleAddCurrentPosition} disabled={loading}>
+                {loading ? t('modal_coords_loading') : t('modal_coords_add_position')}
+              </Button>
+            )}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">{t('modal_territory_name')}</label>
-              <input
-                type="text"
-                required
-                placeholder={t('modal_territory_name_placeholder')}
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">{t('modal_territory_min_z')}</label>
-                <input
-                  type="number"
-                  step="any"
-                  value={minZ}
-                  onChange={(e) => setMinZ(Number(e.target.value))}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 focus:border-zinc-700 focus:outline-none"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">{t('modal_territory_max_z')}</label>
-                <input
-                  type="number"
-                  step="any"
-                  value={maxZ}
-                  onChange={(e) => setMaxZ(Number(e.target.value))}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 focus:border-zinc-700 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-300">{t('modal_coords_mode')}</label>
-              <div className="flex border border-zinc-800 bg-zinc-900/60 rounded-lg p-1">
-                <button
-                  type="button"
-                  onClick={() => setInputMode('position')}
-                  className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${inputMode === 'position'
-                    ? 'bg-zinc-800 text-zinc-100 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
+          <div className="max-h-40 overflow-y-auto bg-help-panel/60 px-3">
+            {coords.length === 0 ? (
+              <p className="py-4 text-center text-[15px] uppercase tracking-wide text-white/45">{t('modal_territory_no_points')}</p>
+            ) : (
+              coords.map((point, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center justify-between py-2 text-[15px] font-semibold uppercase tabular-nums text-white/80 ${
+                    index < coords.length - 1 ? 'border-b border-help-line' : ''
+                  }`}
                 >
-                  {t('modal_coords_position')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setInputMode('manual')}
-                  className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${inputMode === 'manual'
-                    ? 'bg-zinc-800 text-zinc-100 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
-                >
-                  {t('modal_coords_paste_vectors')}
-                </button>
-              </div>
-            </div>
-
-            {inputMode === 'manual' && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-400">{t('modal_coords_paste')}</label>
-                <textarea
-                  rows={4}
-                  value={rawText}
-                  onChange={(e) => handleTextChange(e.target.value)}
-                  placeholder={`vector2(-1586.36, 1146.97),\nvector2(-1295.45, 407.58),\nvector2(462.12, 498.48)`}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-mono text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
-                />
-                <p className="text-[10px] text-zinc-500">
-                  {t('modal_coords_paste_hint')}
-                </p>
-              </div>
-            )}
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-zinc-300 font-medium">
-                  {t('modal_territory_points', { count: coords.length })}
-                </label>
-                {inputMode === 'position' && (
-                  <button
-                    type="button"
-                    onClick={handleAddCurrentPosition}
-                    disabled={loading}
-                    className="flex items-center gap-1 rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-xs text-zinc-200 hover:bg-zinc-800 disabled:opacity-50"
-                  >
-                    <MapPin className="h-3.5 w-3.5 text-rose-400" />
-                    <span>{loading ? t('modal_coords_loading') : t('modal_coords_add_position')}</span>
-                  </button>
-                )}
-              </div>
-
-              <div className="max-h-40 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-900/40 p-2 space-y-1.5">
-                {coords.length === 0 ? (
-                  <p className="text-center py-4 text-xs text-zinc-500 italic">
-                    {t('modal_territory_no_points')}
-                  </p>
-                ) : (
-                  coords.map((point, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between rounded bg-zinc-900 px-3 py-1.5 text-xs text-zinc-300 font-mono"
+                  <span>
+                    #{index + 1} · X {point.x.toFixed(2)} · Y {point.y.toFixed(2)} · Z {point.z.toFixed(2)}
+                  </span>
+                  {inputMode === 'position' && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePoint(index)}
+                      className="text-white/50 transition hover:text-help-danger"
                     >
-                      <span>
-                        #{index + 1}: X: {point.x.toFixed(2)}, Y: {point.y.toFixed(2)}, Z: {point.z.toFixed(2)}
-                      </span>
-                      {inputMode === 'position' && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemovePoint(index)}
-                          className="text-zinc-500 hover:text-rose-400 transition"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-              {coords.length < 3 && coords.length > 0 && (
-                <p className="text-[11px] text-amber-400">
-                  {t('modal_territory_min_points')}
-                </p>
-              )}
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition"
-              >
-                {t('btn_cancel')}
-              </button>
-              <button
-                type="submit"
-                disabled={coords.length < 3 || !label.trim()}
-                className="rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 hover:bg-white transition disabled:opacity-50"
-              >
-                {t('territories_create')}
-              </button>
-            </div>
-          </form>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+          {coords.length < 3 && coords.length > 0 && (
+            <p className="text-[14px] font-semibold uppercase text-help-warning">{t('modal_territory_min_points')}</p>
+          )}
+        </div>
+      </form>
+    </Modal>
   )
 }
 
@@ -597,141 +479,82 @@ export function CreateLaboratoryModal({ isOpen, onClose, onCreate }: CreateLabor
   }
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 p-4 backdrop-blur-sm">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-md overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl"
-        >
-          <div className="flex items-center gap-3 border-b border-zinc-800 pb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
-              <FlaskConical className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-zinc-100">{t('labs_create')}</h3>
-              <p className="text-[10px] text-zinc-400">{t('modal_lab_subtitle')}</p>
-            </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleCancel}
+      icon={FlaskConical}
+      subtitle={t('modal_lab_subtitle')}
+      title={t('labs_create')}
+      width="max-w-md"
+      footer={
+        <>
+          <Button variant="ghost" onClick={handleCancel}>
+            {t('btn_cancel')}
+          </Button>
+          <Button variant="primary" type="submit" form="create-lab-form" disabled={!coords || !label.trim()}>
+            {t('labs_create')}
+          </Button>
+        </>
+      }
+    >
+      <form id="create-lab-form" onSubmit={handleSubmit} className="space-y-4">
+        <Field label={t('modal_lab_name')}>
+          <Input
+            type="text"
+            required
+            placeholder={t('modal_lab_name_placeholder')}
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+          />
+        </Field>
+
+        <Field label={t('modal_lab_type')}>
+          <Tabs
+            value={type}
+            onChange={setType}
+            options={(['weed', 'meth', 'coke'] as const).map((labType) => ({ value: labType, label: t(`lab_type_${labType}`) }))}
+          />
+        </Field>
+
+        <Field label={t('modal_coords_mode')}>
+          <Tabs
+            value={inputMode}
+            onChange={setInputMode}
+            options={[
+              { value: 'position', label: t('modal_coords_position') },
+              { value: 'manual', label: t('modal_coords_paste') },
+            ]}
+          />
+        </Field>
+
+        {inputMode === 'position' ? (
+          <Button className="w-full" icon={MapPin} onClick={handleGetCurrentPosition} disabled={loading}>
+            {coords ? t('modal_lab_update_position') : t('modal_lab_capture_position')}
+          </Button>
+        ) : (
+          <Field label={t('modal_coords_paste')}>
+            <TextArea
+              placeholder={t('modal_lab_coords_placeholder')}
+              value={rawText}
+              onChange={(e) => handleManualTextChange(e.target.value)}
+              className="h-16 resize-none !text-[15px]"
+            />
+          </Field>
+        )}
+
+        {coords ? (
+          <div className="flex items-center justify-between bg-help-panel/60 px-3 py-2.5 text-[15px] font-semibold uppercase">
+            <span className="text-white/60">{t('modal_lab_position_saved')}</span>
+            <span className="tabular-nums text-help-safe">
+              X {coords.x.toFixed(2)} · Y {coords.y.toFixed(2)} · Z {coords.z.toFixed(2)}
+            </span>
           </div>
-
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-            <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t('modal_lab_name')}</label>
-              <input
-                type="text"
-                required
-                placeholder={t('modal_lab_name_placeholder')}
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/60 px-3.5 py-2 text-xs text-zinc-200 placeholder-zinc-500 transition focus:border-zinc-700 focus:outline-none focus:ring-0"
-              />
-            </div>
-
-            <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t('modal_lab_type')}</label>
-              <div className="mt-1.5 grid grid-cols-3 gap-2">
-                {(['weed', 'meth', 'coke'] as const).map((labType) => (
-                  <button
-                    key={labType}
-                    type="button"
-                    onClick={() => setType(labType)}
-                    className={`flex flex-col items-center gap-1.5 rounded-lg border p-2.5 transition text-center ${type === labType
-                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-semibold'
-                      : 'border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                      }`}
-                  >
-                    <span className="text-xs capitalize">{t(`lab_type_${labType}`)}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t('modal_coords_mode')}</label>
-              <div className="mt-1.5 flex rounded-lg border border-zinc-800 bg-zinc-900/40 p-1">
-                <button
-                  type="button"
-                  onClick={() => setInputMode('position')}
-                  className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition ${inputMode === 'position'
-                    ? 'bg-zinc-800 text-zinc-100'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
-                >
-                  {t('modal_coords_position')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setInputMode('manual')}
-                  className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition ${inputMode === 'manual'
-                    ? 'bg-zinc-800 text-zinc-100'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
-                >
-                  {t('modal_coords_paste')}
-                </button>
-              </div>
-            </div>
-
-            {inputMode === 'position' ? (
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={handleGetCurrentPosition}
-                  disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/40 py-2.5 text-xs text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white"
-                >
-                  <MapPin className="h-4 w-4" />
-                  {coords ? t('modal_lab_update_position') : t('modal_lab_capture_position')}
-                </button>
-              </div>
-            ) : (
-              <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t('modal_coords_paste')}</label>
-                <textarea
-                  placeholder={t('modal_lab_coords_placeholder')}
-                  value={rawText}
-                  onChange={(e) => handleManualTextChange(e.target.value)}
-                  className="mt-1.5 h-16 w-full resize-none rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-xs text-zinc-200 placeholder-zinc-500 transition focus:border-zinc-700 focus:outline-none focus:ring-0"
-                />
-              </div>
-            )}
-
-            {coords ? (
-              <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/20 px-3.5 py-2.5">
-                <div className="flex items-center justify-between text-[11px] font-medium">
-                  <span className="text-zinc-400">{t('modal_lab_position_saved')}</span>
-                  <span className="font-mono text-emerald-400">
-                    X: {coords.x.toFixed(2)}, Y: {coords.y.toFixed(2)}, Z: {coords.z.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-lg border border-dashed border-zinc-800 bg-zinc-900/10 px-3.5 py-2.5 text-center">
-                <p className="text-[10px] text-zinc-500">{t('modal_lab_no_position')}</p>
-              </div>
-            )}
-
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition"
-              >
-                {t('btn_cancel')}
-              </button>
-              <button
-                type="submit"
-                disabled={!coords || !label.trim()}
-                className="rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 hover:bg-white transition disabled:opacity-50"
-              >
-                {t('labs_create')}
-              </button>
-            </div>
-          </form>
-        </motion.div>
-      </div>
-    </AnimatePresence>
+        ) : (
+          <p className="border border-dashed border-help-line px-3 py-2.5 text-center text-[14px] uppercase tracking-wide text-white/45">
+            {t('modal_lab_no_position')}
+          </p>
+        )}
+      </form>
+    </Modal>
   )
 }
