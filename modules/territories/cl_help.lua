@@ -222,7 +222,8 @@ function TerritoryHelp.ShowOnMap(territoryId)
         },
         rows = rows,
         footer = footer,
-        position = Settings.mapPosition or 'right',
+        position = Settings.mapPosition or 'top-left',
+        offset = Settings.mapOffset,
         pauseMenu = true,
     }) ~= nil
 end
