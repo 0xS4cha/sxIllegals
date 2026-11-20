@@ -46,5 +46,6 @@ _CONFIG.HelpMenu = {
     },
     territoryDuration = 6000,
     laboratoryRefresh = 5000,
-    mapPosition = 'right',
+    mapPosition = 'top-left',
+    mapOffset = { x = 2.5, y = 16.0 },
 }
