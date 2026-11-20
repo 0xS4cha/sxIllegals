@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom'
 
 export function AdminLayout() {
   return (
-    <div className="flex h-full w-full bg-zinc-950 text-zinc-100 selection:bg-zinc-700 selection:text-zinc-100 font-sans antialiased">
+    <div className="flex h-full w-full font-help text-white antialiased selection:bg-help-accent/40 selection:text-white">
       <Outlet />
     </div>
   )

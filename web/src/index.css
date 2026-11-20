@@ -1,53 +1,82 @@
 @import "tailwindcss";
+@import "@fontsource/barlow-condensed/500.css";
+@import "@fontsource/barlow-condensed/600.css";
+@import "@fontsource/barlow-condensed/700.css";
 
 @theme {
-  --color-zinc-50: #fafafa;
-  --color-zinc-100: #f4f4f5;
-  --color-zinc-200: #e4e4e7;
-  --color-zinc-300: #d4d4d8;
-  --color-zinc-400: #a1a1aa;
-  --color-zinc-500: #71717a;
-  --color-zinc-600: #52525b;
-  --color-zinc-700: #3f3f46;
-  --color-zinc-800: #27272a;
-  --color-zinc-900: #18181b;
-  --color-zinc-950: #09090b;
+  --font-help: "Barlow Condensed", system-ui, sans-serif;
+  --font-sans: "Barlow Condensed", system-ui, sans-serif;
+  --font-mono: "Barlow Condensed", ui-monospace, monospace;
 
-  --color-amber-50: #fffbeb;
-  --color-amber-100: #fef3c7;
-  --color-amber-200: #fde68a;
-  --color-amber-300: #fcd34d;
-  --color-amber-400: #fbbf24;
-  --color-amber-500: #f59e0b;
-  --color-amber-600: #d97706;
-  --color-amber-700: #b45309;
-  --color-amber-800: #92400e;
-  --color-amber-900: #78350f;
-  --color-amber-950: #451a03;
+  --color-help-panel: #1b1e2e;
+  --color-help-glass: rgba(74, 79, 96, 0.72);
+  --color-help-glass-solid: rgba(58, 62, 78, 0.97);
+  --color-help-line: rgba(255, 255, 255, 0.25);
+  --color-help-accent: #3ee6ff;
+  --color-help-danger: #ff5a4f;
+  --color-help-safe: #5ef0a4;
+  --color-help-warning: #ffc94d;
 
-  --color-emerald-50: #ecfdf5;
-  --color-emerald-100: #d1fae5;
-  --color-emerald-200: #a7f3d0;
-  --color-emerald-300: #6ee7b7;
-  --color-emerald-400: #34d399;
-  --color-emerald-500: #10b981;
-  --color-emerald-600: #059669;
-  --color-emerald-700: #047857;
-  --color-emerald-800: #065f46;
-  --color-emerald-900: #064e3b;
-  --color-emerald-950: #022c22;
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
 
-  --color-rose-50: #fff1f2;
-  --color-rose-100: #ffe4e6;
-  --color-rose-200: #fecdd3;
-  --color-rose-300: #fda4af;
-  --color-rose-400: #fb7185;
-  --color-rose-500: #f43f5e;
-  --color-rose-600: #e11d48;
-  --color-rose-700: #be123c;
-  --color-rose-800: #9f1239;
-  --color-rose-900: #881337;
-  --color-rose-950: #4c0519;
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.15rem;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.3rem;
+  --text-base: 1.125rem;
+  --text-base--line-height: 1.45rem;
+  --text-lg: 1.3rem;
+  --text-lg--line-height: 1.6rem;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.8rem;
+  --text-2xl: 1.85rem;
+  --text-2xl--line-height: 2.1rem;
+
+  --color-zinc-50: #f5f6f8;
+  --color-zinc-100: #eceef2;
+  --color-zinc-200: #d9dce4;
+  --color-zinc-300: #b9bdc9;
+  --color-zinc-400: #9499a8;
+  --color-zinc-500: #6e7385;
+  --color-zinc-600: #4a4f60;
+  --color-zinc-700: #3a3e50;
+  --color-zinc-800: #2a2d3f;
+  --color-zinc-900: #1b1e2e;
+  --color-zinc-950: #131522;
+
+  --color-emerald-300: #8ff5c2;
+  --color-emerald-400: #5ef0a4;
+  --color-emerald-500: #5ef0a4;
+  --color-emerald-600: #34d98a;
+  --color-emerald-700: #22b06e;
+
+  --color-amber-300: #ffd97f;
+  --color-amber-400: #ffc94d;
+  --color-amber-500: #ffc94d;
+  --color-amber-600: #f5b52a;
+  --color-amber-700: #d99a14;
+
+  --color-rose-100: #ffe1de;
+  --color-rose-200: #ffc0ba;
+  --color-rose-300: #ff9a92;
+  --color-rose-400: #ff5a4f;
+  --color-rose-500: #ff5a4f;
+  --color-rose-600: #f0453a;
+  --color-rose-700: #d43328;
+
+  --color-red-400: #ff5a4f;
+
+  --color-sky-400: #3ee6ff;
+  --color-sky-500: #3ee6ff;
+
+  --color-purple-400: #3ee6ff;
+  --color-purple-500: #3ee6ff;
 }
 
 html,
@@ -59,24 +88,23 @@ body,
   padding: 0;
   overflow: hidden;
   background: transparent;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-help);
+  letter-spacing: 0.02em;
 }
 
 ::-webkit-scrollbar {
-  width: 3px;
-  height: 7px;
+  width: 4px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(29,29,29,.75);
-  border-radius: 5px;
+  background: rgba(27, 30, 46, 0.6);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(49, 49, 49, 0.75);
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.35);
 }
 
 ::-webkit-scrollbar-corner {
-  background: rgba(29, 29, 29, 0.75);
+  background: transparent;
 }

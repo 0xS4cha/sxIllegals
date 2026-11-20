@@ -1,11 +1,11 @@
 import { useState } from 'react'
+import { PageHeader } from '../../components/ui/PageHeader'
 import { motion, AnimatePresence } from 'motion/react'
 import {
   BarChart3,
   FlaskConical,
   LayoutDashboard,
   MapPin,
-  RefreshCw,
   Users,
 } from 'lucide-react'
 
@@ -84,10 +84,9 @@ export function AdminPanel() {
   }
 
   const currentHeader = categoryHeaders[activeCategory]
-  const CategoryIcon = currentHeader.icon
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-zinc-950">
+    <div className="flex h-full w-full overflow-hidden">
       <AdminSidebar
         activeCategory={activeCategory}
         onSelectCategory={setActiveCategory}
@@ -100,32 +99,16 @@ export function AdminPanel() {
       />
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-16 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-zinc-950/60 px-6 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300">
-              <CategoryIcon className="h-4 w-4" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-zinc-100">{currentHeader.title}</h2>
-              <p className="text-[11px] text-zinc-400">{currentHeader.subtitle}</p>
-            </div>
-          </div>
+        <PageHeader
+          title={currentHeader.title}
+          subtitle={currentHeader.subtitle}
+          icon={currentHeader.icon}
+          refreshLabel={t('btn_refresh')}
+          loading={loading}
+          onRefresh={() => void refreshData()}
+        />
 
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => void refreshData()}
-              disabled={loading}
-              className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white disabled:opacity-50"
-              title={t('btn_refresh')}
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">{t('btn_refresh')}</span>
-            </button>
-          </div>
-        </header>
-
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto border-l border-help-line p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeCategory}
