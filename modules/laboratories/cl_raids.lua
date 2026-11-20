@@ -25,10 +25,13 @@ function Raids:Start(lab)
         TaskStartScenarioInPlace(ped, 'WORLD_HUMAN_HAMMERING', 0, true)
 
         local endTime = GetGameTimer() + result.duration * 1000
+        local menu = Raids:ShowMenu(lab, endTime)
         local cancelled = false
         while GetGameTimer() < endTime do
-            local remaining = math.ceil((endTime - GetGameTimer()) / 1000)
-            ShowHelpNotification(GetPhrase('raid_progress', remaining))
+            if not menu then
+                local remaining = math.ceil((endTime - GetGameTimer()) / 1000)
+                ShowHelpNotification(GetPhrase('raid_progress', remaining))
+            end
             if #(GetEntityCoords(ped) - origin) > 2.0 or IsPedRagdoll(ped) or IsEntityDead(ped) or IsControlJustPressed(0, 177) then
                 cancelled = true
                 break
@@ -37,6 +40,7 @@ function Raids:Start(lab)
         end
 
         ClearPedTasks(ped)
+        HelpUI.Hide('raid')
 
         if cancelled then
             TriggerServerEvent('sxIllegals:cancelRaid')
@@ -52,6 +56,35 @@ function Raids:Start(lab)
 
         Raids.InProgress = false
     end)
+end
+
+function Raids:ShowMenu(lab, endTime)
+    return HelpUI.Show('raid', 'raid', {
+        header = {
+            subtitle = GetPhrase('help_raid_subtitle'),
+            title = lab.label or lab.id,
+        },
+        rows = {
+            {
+                type = 'text',
+                label = GetPhrase('help_lab_type'),
+                value = GetPhrase('lab_type_' .. tostring(lab.type)),
+                icon = 'flask-conical',
+            },
+            {
+                type = 'countdown',
+                label = GetPhrase('help_raid_remaining'),
+                endsAt = endTime,
+                tone = 'warning',
+                done = GetPhrase('help_raid_done'),
+                doneTone = 'safe',
+            },
+            {
+                type = 'keys',
+                keys = { { key = HelpUI.KeyLabel(177, 'BACKSPACE'), label = GetPhrase('help_cancel') } },
+            },
+        },
+    })
 end
 
 function Raids:GetKeyToken()

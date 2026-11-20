@@ -730,3 +730,99 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
+-- Production status of a laboratory, shown in the admin panel and the sxHelpMenu widget.
+function GetLabProductionStatus(l)
+    local percentage = 0
+    local status = GetPhrase('lab_status_inactive')
+
+    if l.type == 'weed' then
+        local pots = (Labs.WeedsServer and Labs.WeedsServer[l.id]) or {}
+        local totalPots = 0
+        local grownPots = 0
+        local plantedPots = 0
+
+        for _, pot in ipairs(pots) do
+            totalPots = totalPots + 1
+            if pot.planted then
+                plantedPots = plantedPots + 1
+                if pot.state and pot.state >= 4 then
+                    grownPots = grownPots + 1
+                end
+            end
+        end
+
+        if totalPots > 0 then
+            percentage = math.floor((plantedPots / totalPots) * 100)
+            if grownPots > 0 then
+                status = GetPhrase('lab_status_weed_ready', grownPots, totalPots)
+            elseif plantedPots > 0 then
+                status = GetPhrase('lab_status_weed_growing', plantedPots, totalPots)
+            else
+                status = GetPhrase('lab_status_weed_waiting')
+            end
+        else
+            status = GetPhrase('lab_status_empty')
+        end
+    elseif l.type == 'meth' then
+        local benches = (Labs.CircuitsServer and Labs.CircuitsServer[l.id]) or {}
+        local activeBenches = 0
+        local totalBenches = 0
+
+        for _, b in ipairs(benches) do
+            totalBenches = totalBenches + 1
+            if (b.synthesis and b.synthesis.working) or (b.reduction and b.reduction.working) then
+                activeBenches = activeBenches + 1
+            end
+        end
+
+        if activeBenches > 0 then
+            status = GetPhrase('lab_status_meth_active', activeBenches, totalBenches)
+            percentage = 50
+        else
+            status = GetPhrase('lab_status_meth_waiting')
+        end
+    elseif l.type == 'coke' then
+        local trays = (Labs.TraysServer and Labs.TraysServer[l.id]) or {}
+        local activeTrays = 0
+        local totalTrays = 0
+
+        for _, t in ipairs(trays) do
+            totalTrays = totalTrays + 1
+            if (t.kerosene and t.kerosene.start ~= 0) or (t.coca and t.coca.start ~= 0) or (t.whitewash and t.whitewash.start ~= 0) then
+                activeTrays = activeTrays + 1
+            end
+        end
+
+        if activeTrays > 0 then
+            status = GetPhrase('lab_status_coke_active', activeTrays, totalTrays)
+            percentage = 65
+        else
+            status = GetPhrase('lab_status_coke_waiting')
+        end
+    end
+
+    return status, percentage
+end
+
+-- Data of the sxHelpMenu widget, only for the laboratory the player is in.
+RegisterServerCallback('sxIllegals:getLabStatus', function(source)
+    local lab = GetLabFromId(PlayerLabs[source])
+    if not lab then return nil end
+
+    local status, percentage = GetLabProductionStatus(lab)
+    local owner = lab.owner and GetGroupFromId(lab.owner)
+    local level = lab.level or 1
+
+    return {
+        id = lab.id,
+        label = lab.label or GetPhrase('lab_default_label', lab.id),
+        type = lab.type,
+        level = level,
+        maxLevel = _LABS.MaxLevel,
+        multiplier = _LABS.OutputMultiplier[level] or 1.0,
+        owner = owner and owner.name or nil,
+        status = status,
+        active = percentage > 0,
+    }
+end)

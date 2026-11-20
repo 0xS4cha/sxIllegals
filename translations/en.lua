@@ -547,7 +547,32 @@ local my_language = {
     activity_territory_deleted_title = "Territory deleted",
     activity_territory_deleted_desc = "The territory %s was deleted by %s.",
     notify_territory_deleted = "Territory ~r~%s~s~ deleted.",
-    territories_delete = "Delete"
+    territories_delete = "Delete",
+
+    help_cancel = "Cancel",
+    help_lab_type = "Laboratory",
+    help_lab_title = "Laboratory",
+    help_lab_status = "Production",
+    help_lab_output = "Output",
+    help_raid_subtitle = "Raid",
+    help_raid_remaining = "Breaching",
+    help_raid_done = "Open",
+    help_territory_subtitle = "Territory",
+    help_territory_state = "Status",
+    help_territory_my_influence = "Your influence",
+    help_territory_held_for = "Held for",
+    help_territory_attacked_by = "Attacked by %s",
+    help_war_attack = "Attack",
+    help_war_defense = "Defense",
+    help_war_capture = "Capture",
+    help_war_holding_attacker = "Capturing",
+    help_war_holding_defender = "Retake the zone",
+    help_war_blocked_attacker = "Defenders in the zone",
+    help_war_blocked_defender = "Capture blocked",
+    help_war_captured = "Territory captured",
+    help_war_lost = "Territory lost",
+    help_war_defended = "Territory defended",
+    help_war_failed = "Attack failed"
 }
 
 AddLanguage("en", my_language)

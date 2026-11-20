@@ -32,3 +32,19 @@ _CONFIG.Webhook = {
         police_alert = false,
     },
 }
+
+-- Optional widgets drawn with sxHelpMenu (https://github.com/0xS4cha/sxHelpMenu).
+-- Ignored when sxHelpMenu is not started, the native help texts are used instead.
+_CONFIG.HelpMenu = {
+    enabled = true,
+    position = 'bottom-right',
+    offset = nil,
+    features = {
+        raid = true,
+        war = true,
+        territory = true,
+        laboratory = true,
+    },
+    territoryDuration = 6000,
+    laboratoryRefresh = 5000,
+}

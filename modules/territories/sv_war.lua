@@ -140,6 +140,31 @@ local function UpdateContest(territory, owner)
     end
 end
 
+-- Sends the war state to the members of both groups standing in the zone, for the sxHelpMenu widget.
+local function SendWarState(territory, war, presence, ended)
+    local attackers = presence[war.attacker]
+    local defenders = presence[war.defender]
+    local state = {
+        territoryId = territory.id,
+        label = territory:getLabel(),
+        attacker = GroupName(war.attacker),
+        defender = GroupName(war.defender),
+        attackers = attackers and attackers.count or 0,
+        defenders = defenders and defenders.count or 0,
+        required = _TERRITORY.War.minAttackers,
+        progress = war.progress,
+        captureTime = _TERRITORY.War.captureTime,
+        interval = _TERRITORY.War.checkInterval,
+        ended = ended,
+    }
+
+    for role, entry in pairs({ attacker = attackers, defender = defenders }) do
+        for _, target in ipairs(entry.sources) do
+            TriggerClientEvent('sxIllegals:warState', target, state, role)
+        end
+    end
+end
+
 local function UpdateWar(territory, presence)
     local owner = GetOwner(territory)
     local interval = _TERRITORY.War.checkInterval
@@ -151,10 +176,12 @@ local function UpdateWar(territory, presence)
 
         if not owner or owner.id ~= war.defender or attackers < _TERRITORY.War.minAttackers then
             StopAttack(territory, 'abandoned')
+            SendWarState(territory, war, presence, 'defended')
         elseif defenders == 0 then
             war.progress = war.progress + interval
             if war.progress >= _TERRITORY.War.captureTime then
                 Capture(territory)
+                SendWarState(territory, war, presence, 'captured')
             elseif war.progress - war.lastNotice >= 60 then
                 war.lastNotice = war.progress
                 local percent = math.floor(war.progress / _TERRITORY.War.captureTime * 100)
@@ -163,10 +190,15 @@ local function UpdateWar(territory, presence)
                 end
             end
         end
+
+        if territory.war then
+            SendWarState(territory, territory.war, presence)
+        end
     elseif owner and (not territory.warCooldown or territory.warCooldown < os.time()) then
         for groupId, entry in pairs(presence) do
             if groupId ~= owner.id and entry.count >= _TERRITORY.War.minAttackers and IsContender(territory, owner, groupId) then
                 StartAttack(territory, owner, groupId)
+                SendWarState(territory, territory.war, presence)
                 break
             end
         end
@@ -214,4 +246,18 @@ CreateThread(function()
             end
         end
     end
+end)
+
+-- Data of the sxHelpMenu widget shown when a player enters a territory.
+-- The client already has the influence list, it only misses its own group and the war.
+RegisterServerCallback('sxIllegals:getTerritoryInfo', function(source, territoryId)
+    local group = GetGroupFromLicense(Bridge.GetIdentifier(source))
+    local territory = GetTerritoriesFromId(territoryId)
+    local war = territory and territory.war
+
+    return {
+        groupId = group and group.id or nil,
+        war = GetTerritoryWar(territoryId),
+        attacker = war and GroupName(war.attacker) or nil,
+    }
 end)
