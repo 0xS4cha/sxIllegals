@@ -4,7 +4,7 @@ game 'gta5'
 name 'sxIllegals'
 description 'Illegal groups, territories and laboratories'
 author 'sxIllegals'
-version '1.0.0'
+version '1.1.0'
 
 lua54 'yes'
 
