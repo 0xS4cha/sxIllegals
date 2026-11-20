@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { motion } from 'motion/react'
 import { Check, Edit2, Shield, ShieldAlert, ShieldCheck } from 'lucide-react'
+import { Button, IconBadge, Input, Panel, SectionLabel, Tag } from '../../../components/ui'
 import { useTranslation } from '../../../hooks/useTranslation'
 import { GROUP_PERMISSION_KEYS } from '../../../types/group'
 import type { GroupDetail, GroupPermissionDefinition, GroupPermissionKey, GroupRankDetail } from '../../../types/group'
@@ -52,88 +52,72 @@ export function GroupRangsView({ group, onRenameRank, onUpdatePermissions }: Gro
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
-          <Shield className="h-5 w-5 text-zinc-300" />
-          {t('group_ranks_title')}
-        </h3>
-        <p className="text-xs text-zinc-400">
-          {canEditPermissions ? t('group_ranks_subtitle_leader') : t('group_ranks_subtitle')}
-        </p>
+      <div className="flex items-center gap-3">
+        <IconBadge icon={Shield} size={30} />
+        <div>
+          <div className="text-[21px] font-bold uppercase leading-tight tracking-wide text-white">{t('group_ranks_title')}</div>
+          <div className="text-[15px] font-semibold uppercase tracking-wide text-white/55">
+            {canEditPermissions ? t('group_ranks_subtitle_leader') : t('group_ranks_subtitle')}
+          </div>
+        </div>
       </div>
 
       <div className="space-y-4">
         {group.ranks.map((rank, idx) => (
-          <motion.div
+          <Panel
             key={rank.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.05 }}
-            className="flex flex-col md:flex-row md:items-center justify-between rounded-xl border border-zinc-800/80 bg-zinc-900/60 p-5 gap-4"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800 text-xs font-bold text-zinc-200">
-                {t('group_rank_level', { level: rank.level })}
-              </span>
-
-              <div>
-                {editingRankId === rank.id ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={tempRankName}
-                      onChange={(e) => setTempRankName(e.target.value)}
-                      className="rounded border border-zinc-700 bg-zinc-950 px-2.5 py-1 text-xs text-zinc-100 focus:outline-none"
-                    />
+            delay={idx * 0.05}
+            header={{
+              subtitle: rank.id === 0
+                ? t('group_rank_leader')
+                : rank.level === (group.ranks[0]?.level ?? 0) - 1
+                ? t('group_rank_officer')
+                : t('group_rank_member'),
+              title: editingRankId === rank.id ? (
+                <span className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    value={tempRankName}
+                    onChange={(e) => setTempRankName(e.target.value)}
+                    className="!w-56 !py-1 uppercase"
+                    autoFocus
+                  />
+                  <Button size="sm" variant="safe" icon={Check} onClick={() => handleSaveEdit(rank.id)} />
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  {rank.name}
+                  {canManage && (
                     <button
                       type="button"
-                      onClick={() => handleSaveEdit(rank.id)}
-                      className="rounded bg-emerald-500/20 p-1 text-emerald-400 hover:bg-emerald-500/30"
+                      onClick={() => handleStartEdit(rank.id, rank.name)}
+                      className="text-white/45 transition hover:text-white"
+                      title={t('group_rank_rename')}
                     >
-                      <Check className="h-4 w-4" />
+                      <Edit2 className="h-4 w-4" />
                     </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-zinc-100">{rank.name}</h4>
-                    {canManage && (
-                      <button
-                        type="button"
-                        onClick={() => handleStartEdit(rank.id, rank.name)}
-                        className="text-zinc-500 hover:text-zinc-300 transition"
-                        title={t('group_rank_rename')}
-                      >
-                        <Edit2 className="h-3.5 w-3.5" />
-                      </button>
-                    )}
-                  </div>
-                )}
-                <span className="text-[11px] text-zinc-400">
-                  {rank.id === 0
-                    ? t('group_rank_leader')
-                    : rank.level === (group.ranks[0]?.level ?? 0) - 1
-                    ? t('group_rank_officer')
-                    : t('group_rank_member')}
+                  )}
                 </span>
+              ),
+              watermark: rank.name,
+              actions: <Tag solid>{t('group_rank_level', { level: rank.level })}</Tag>,
+            }}
+            bodyClassName="space-y-2.5 px-4 py-3"
+          >
+            {sections.map((section) => (
+              <div key={section.resource ?? 'builtin'} className="flex flex-wrap items-center gap-2">
+                {section.resource && <SectionLabel>{section.resource}</SectionLabel>}
+                {section.items.map((definition) => (
+                  <PermissionBadge
+                    key={definition.key}
+                    label={permissionLabel(definition)}
+                    enabled={rank.id === 0 || rank.permissions[definition.key] === true}
+                    onToggle={canEditPermissions && rank.id !== 0 ? () => togglePermission(rank, definition.key) : undefined}
+                  />
+                ))}
               </div>
-            </div>
-
-            <div className="space-y-2">
-              {sections.map((section) => (
-                <div key={section.resource ?? 'builtin'} className="flex flex-wrap items-center gap-2">
-                  {section.resource && <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{section.resource}</span>}
-                  {section.items.map((definition) => (
-                    <PermissionBadge
-                      key={definition.key}
-                      label={permissionLabel(definition)}
-                      enabled={rank.id === 0 || rank.permissions[definition.key] === true}
-                      onToggle={canEditPermissions && rank.id !== 0 ? () => togglePermission(rank, definition.key) : undefined}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </motion.div>
+            ))}
+          </Panel>
         ))}
       </div>
     </div>
@@ -146,13 +130,11 @@ function PermissionBadge({ label, enabled, onToggle }: { label: string; enabled:
       type="button"
       disabled={!onToggle}
       onClick={onToggle}
-      className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition enabled:cursor-pointer enabled:hover:brightness-125 ${
-        enabled
-          ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
-          : 'border-zinc-800 bg-zinc-950/60 text-zinc-600'
+      className={`flex items-center gap-1.5 px-2.5 py-1 text-[15px] font-semibold uppercase tracking-wide transition enabled:cursor-pointer enabled:hover:brightness-110 ${
+        enabled ? 'bg-help-safe text-help-panel' : 'border border-help-line text-white/45'
       }`}
     >
-      {enabled ? <ShieldCheck className="h-3 w-3" /> : <ShieldAlert className="h-3 w-3" />}
+      {enabled ? <ShieldCheck className="h-3.5 w-3.5" /> : <ShieldAlert className="h-3.5 w-3.5" />}
       {label}
     </button>
   )

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
+import { Button, Field, Input, Panel, Tag } from '../../../components/ui'
 import { useTranslation } from '../../../hooks/useTranslation'
 import type { CreateGroupPayload, GroupCreationSettings } from '../../../types/group'
 import { GroupLogoField } from './GroupLogoField'
@@ -40,47 +41,42 @@ export function CreateGroupForm({ settings, onCreate }: CreateGroupFormProps) {
   }
 
   return (
-    <section className="rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5">
-      <div className="flex items-center justify-between border-b border-zinc-800/60 pb-4">
-        <div className="flex items-center gap-2">
-          <Plus className="h-4 w-4 text-zinc-300" />
-          <h3 className="text-sm font-semibold text-zinc-200">{t('group_create_title')}</h3>
-        </div>
-        {settings.price > 0 && (
-          <span className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-400">
-            {t('group_create_price', { price: settings.price.toLocaleString() })}
-          </span>
-        )}
-      </div>
-
-      <form onSubmit={(e) => void handleSubmit(e)} className="mt-4 space-y-4">
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-zinc-300">{t('group_create_name')}</label>
-          <input
+    <Panel
+      delay={0.1}
+      header={{
+        title: t('group_create_title'),
+        icon: Plus,
+        actions:
+          settings.price > 0 ? (
+            <Tag tone="warning">{t('group_create_price', { price: settings.price.toLocaleString() })}</Tag>
+          ) : undefined,
+      }}
+      footer={{
+        children: (
+          <Button variant="primary" type="submit" form="player-create-group-form" disabled={!valid || submitting}>
+            {t('group_create_submit')}
+          </Button>
+        ),
+      }}
+      bodyClassName="px-5 py-4"
+    >
+      <form id="player-create-group-form" onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
+        <Field label={t('group_create_name')} hint={t('group_create_name_hint', { min: settings.minLength, max: settings.maxLength })}>
+          <Input
             type="text"
             value={name}
             maxLength={settings.maxLength}
             onChange={(e) => setName(e.target.value)}
             placeholder={t('group_create_name_placeholder')}
-            className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
           />
-          <p className="text-[11px] text-zinc-500">{t('group_create_name_hint', { min: settings.minLength, max: settings.maxLength })}</p>
-        </div>
+        </Field>
 
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-zinc-300">{t('group_create_devise')}</label>
-          <input
-            type="text"
-            value={devise}
-            maxLength={120}
-            onChange={(e) => setDevise(e.target.value)}
-            className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none"
-          />
-        </div>
+        <Field label={t('group_create_devise')}>
+          <Input type="text" value={devise} maxLength={120} onChange={(e) => setDevise(e.target.value)} />
+        </Field>
 
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-zinc-300">{t('group_create_color')}</label>
-          <div className="flex flex-wrap gap-2">
+        <Field label={t('group_create_color')}>
+          <span className="flex flex-wrap gap-2">
             {COLORS.map((c) => {
               const active = c === color
               return (
@@ -88,28 +84,18 @@ export function CreateGroupForm({ settings, onCreate }: CreateGroupFormProps) {
                   key={`${c.r}-${c.g}-${c.b}`}
                   type="button"
                   onClick={() => setColor(c)}
-                  className={`h-7 w-7 rounded-full border-2 transition ${active ? 'border-white' : 'border-transparent hover:border-zinc-600'}`}
+                  className={`h-8 w-8 transition ${active ? 'ring-2 ring-white ring-offset-2 ring-offset-help-panel' : 'opacity-75 hover:opacity-100'}`}
                   style={{ backgroundColor: `rgb(${c.r}, ${c.g}, ${c.b})` }}
                 />
               )
             })}
-          </div>
-        </div>
+          </span>
+        </Field>
 
         {settings.logo && (settings.logo.upload || settings.logo.url) && (
           <GroupLogoField settings={settings.logo} value={logo} onChange={setLogo} />
         )}
-
-        <div className="flex justify-end border-t border-zinc-800 pt-4">
-          <button
-            type="submit"
-            disabled={!valid || submitting}
-            className="rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-900 transition hover:bg-white disabled:opacity-50"
-          >
-            {t('group_create_submit')}
-          </button>
-        </div>
       </form>
-    </section>
+    </Panel>
   )
 }

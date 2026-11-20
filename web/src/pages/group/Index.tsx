@@ -1,10 +1,10 @@
 import { useState } from 'react'
+import { PageHeader } from '../../components/ui/PageHeader'
 import { motion, AnimatePresence } from 'motion/react'
 import {
   AlertCircle,
   BarChart3,
   LayoutDashboard,
-  RefreshCw,
   ShieldHalf,
   Users,
   X,
@@ -92,10 +92,9 @@ export function GroupPanel() {
   }
 
   const currentHeader = categoryHeaders[activeCategory]
-  const CategoryIcon = currentHeader.icon
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-zinc-950">
+    <div className="flex h-full w-full overflow-hidden">
       <GroupSidebar
         group={group}
         activeCategory={activeCategory}
@@ -105,47 +104,31 @@ export function GroupPanel() {
       />
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-16 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-zinc-950/60 px-6 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300">
-              <CategoryIcon className="h-4 w-4" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-zinc-100">{currentHeader.title}</h2>
-              <p className="text-[11px] text-zinc-400">{currentHeader.subtitle}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => {
+        <PageHeader
+          title={currentHeader.title}
+          subtitle={currentHeader.subtitle}
+          icon={currentHeader.icon}
+          refreshLabel={t('btn_refresh')}
+          loading={loading}
+          onRefresh={() => {
                 void refreshGroupData()
                 if (activeCategory === 'stats') void loadStats()
               }}
-              disabled={loading}
-              className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white disabled:opacity-50"
-              title={t('btn_refresh')}
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">{t('btn_refresh')}</span>
-            </button>
-          </div>
-        </header>
+        />
 
         {error && (
-          <div className="flex items-center justify-between gap-3 border-b border-rose-500/20 bg-rose-500/10 px-6 py-2 text-xs text-rose-300">
+          <div className="flex items-center justify-between gap-3 border-l border-help-line bg-help-danger px-6 py-2 text-[15px] font-semibold uppercase tracking-wide text-help-panel">
             <span className="flex items-center gap-2">
-              <AlertCircle className="h-3.5 w-3.5" />
+              <AlertCircle className="h-4 w-4" />
               {t(`group_error_${error}`)}
             </span>
-            <button type="button" onClick={clearError} className="text-rose-300 hover:text-rose-100">
-              <X className="h-3.5 w-3.5" />
+            <button type="button" onClick={clearError} className="text-help-panel/70 hover:text-help-panel">
+              <X className="h-4 w-4" />
             </button>
           </div>
         )}
 
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto border-l border-help-line p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeCategory}
