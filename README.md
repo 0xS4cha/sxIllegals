@@ -14,7 +14,7 @@ A FiveM resource for ESX or standalone servers that brings together **criminal g
 - **Discord logs**: optional webhook for admin and gameplay events.
 - **Admin panel**: overview, statistics with timeframes, activity feed, group management, territory creation and influence reset, laboratory creation and teleportation.
 - **Group panel**: members, ranks, overview and statistics for players.
-- **sxHelpMenu widgets**: when [sxHelpMenu](https://github.com/0xS4cha/sxHelpMenu) is started, a raid countdown, a live territory war card, a card when entering a territory and a laboratory card are shown in the style of GTA 6.
+- **sxHelpMenu widgets**: when [sxHelpMenu](https://github.com/0xS4cha/sxHelpMenu) is started, a raid countdown, a live territory war card, a card when entering a territory, a laboratory card and a card when hovering a territory on the pause map are shown in the style of GTA 6.
 - **Translations**: English and French out of the box, easily extendable.
 - **Exports**: a server and client API to integrate the resource with your other scripts.
 
@@ -32,7 +32,7 @@ A FiveM resource for ESX or standalone servers that brings together **criminal g
 | [oxmysql](https://github.com/overextended/oxmysql) | Required. Database access |
 | [es_extended](https://github.com/esx-framework/esx_core) | Optional. Identifiers, character names, inventory, money, jobs and admin groups |
 | [ox_inventory](https://github.com/overextended/ox_inventory) | Optional. Inventory and money in standalone, used instead of the ESX inventory when started |
-| [sxHelpMenu](https://github.com/0xS4cha/sxHelpMenu) | Optional. Widgets for raids, territory wars, territories and laboratories, the native help texts are used without it |
+| [sxHelpMenu](https://github.com/0xS4cha/sxHelpMenu) | Optional. Widgets for raids, territory wars, territories, laboratories and the pause map, the native help texts are used without it. The pause map card needs version 1.3.0 or newer |
 
 The framework is detected at runtime: without ESX the resource runs **standalone**, using license identifiers, FiveM player names, ACE permissions and ox_inventory when it is started. Laboratory instances use FiveM routing buckets and notifications use the native feed. The server should run with OneSync so it can check player positions for territory wars and raids.
 
@@ -86,9 +86,10 @@ All gameplay values live in the `shared` folder.
 | `_CONFIG.Webhook` | Discord username and the events sent to the webhook |
 | `_CONFIG.HelpMenu.enabled` | Uses sxHelpMenu when it is started |
 | `_CONFIG.HelpMenu.position` / `offset` | Anchor and offset of the widgets, see the sxHelpMenu documentation |
-| `_CONFIG.HelpMenu.features` | Turns each widget on or off: `raid`, `war`, `territory` and `laboratory` |
+| `_CONFIG.HelpMenu.features` | Turns each widget on or off: `raid`, `war`, `territory`, `laboratory` and `mapHover` |
 | `_CONFIG.HelpMenu.territoryDuration` | Milliseconds the territory card stays on screen after entering a territory |
 | `_CONFIG.HelpMenu.laboratoryRefresh` | Milliseconds between two refreshes of the laboratory widget |
+| `_CONFIG.HelpMenu.mapPosition` | Anchor of the card shown when hovering a territory on the pause map, `right` by default |
 
 ### `shared/groups.lua`
 
