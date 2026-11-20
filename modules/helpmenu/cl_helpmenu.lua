@@ -61,3 +61,15 @@ function HelpUI.Duration(seconds)
     seconds = math.max(0, math.floor(seconds or 0))
     return ('%02d:%02d'):format(seconds // 60, seconds % 60)
 end
+
+local function ParseVersion(version)
+    local major, minor, patch = tostring(version or ''):match('^(%d+)%.(%d+)%.?(%d*)')
+    if not major then return nil end
+    return tonumber(major) * 1000000 + tonumber(minor) * 1000 + (tonumber(patch) or 0)
+end
+
+function HelpUI.AtLeast(version)
+    local current = ParseVersion(GetResourceMetadata('sxHelpMenu', 'version', 0))
+    local wanted = ParseVersion(version)
+    return current ~= nil and wanted ~= nil and current >= wanted
+end

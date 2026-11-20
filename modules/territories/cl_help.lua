@@ -2,6 +2,8 @@ TerritoryHelp = {}
 
 local WAR_MENU = 'war'
 local TERRITORY_MENU = 'territory'
+local MAP_MENU = 'map'
+local MAP_MAX_GROUPS = 4
 local Settings = _CONFIG.HelpMenu or {}
 
 local warUntil = 0
@@ -167,3 +169,64 @@ RegisterNetEvent('sxIllegals:warState', function(state, role)
 
     warUntil = shown and GetGameTimer() + duration or 0
 end)
+
+function TerritoryHelp.CanShowOnMap()
+    return HelpUI.IsEnabled('mapHover') and HelpUI.AtLeast('1.3.0')
+end
+
+function TerritoryHelp.ShowOnMap(territoryId)
+    if not TerritoryHelp.CanShowOnMap() then return false end
+
+    local territory = TerritoriesList[territoryId]
+    if not territory then return false end
+
+    local total = territory.totalInfluence or 0
+    local influence = territory.influence or {}
+    local owner = influence[1]
+    local rows = {
+        {
+            type = 'text',
+            label = GetPhrase('territory_domination'),
+            value = owner and owner.name or GetPhrase('none'),
+            icon = 'crown',
+            tone = owner and HelpUI.Color(owner.rgb) or 'neutral',
+        },
+    }
+
+    for i = 1, math.min(#influence, MAP_MAX_GROUPS) do
+        local entry = influence[i]
+        rows[#rows + 1] = {
+            type = 'bar',
+            label = entry.name or GetPhrase('none'),
+            value = Share(entry, total),
+            display = Percent(Share(entry, total)),
+            tone = HelpUI.Color(entry.rgb) or 'neutral',
+        }
+    end
+
+    rows[#rows + 1] = StateRow(territory.attackState or 0)
+
+    local footer = nil
+    if owner then
+        footer = {
+            label = GetPhrase('help_territory_held_for'),
+            items = { { value = GetPhrase('territory_days', territory.date or 0), icon = 'calendar' } },
+        }
+    end
+
+    return HelpUI.Show('mapHover', MAP_MENU, {
+        header = {
+            subtitle = GetPhrase('help_territory_subtitle'),
+            title = territory.label or territory.id,
+            watermark = territory.label or territory.id,
+        },
+        rows = rows,
+        footer = footer,
+        position = Settings.mapPosition or 'right',
+        pauseMenu = true,
+    }) ~= nil
+end
+
+function TerritoryHelp.HideOnMap()
+    HelpUI.Hide(MAP_MENU)
+end
