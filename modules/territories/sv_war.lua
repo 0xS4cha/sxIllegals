@@ -140,7 +140,6 @@ local function UpdateContest(territory, owner)
     end
 end
 
--- Sends the war state to the members of both groups standing in the zone, for the sxHelpMenu widget.
 local function SendWarState(territory, war, presence, ended)
     local attackers = presence[war.attacker]
     local defenders = presence[war.defender]
@@ -248,8 +247,6 @@ CreateThread(function()
     end
 end)
 
--- Data of the sxHelpMenu widget shown when a player enters a territory.
--- The client already has the influence list, it only misses its own group and the war.
 RegisterServerCallback('sxIllegals:getTerritoryInfo', function(source, territoryId)
     local group = GetGroupFromLicense(Bridge.GetIdentifier(source))
     local territory = GetTerritoriesFromId(territoryId)

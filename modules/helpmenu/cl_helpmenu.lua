@@ -1,6 +1,3 @@
--- Thin layer over sxHelpMenu. Every call is a no-op when the resource is not
--- started or the feature is disabled, so the callers keep their native fallback.
-
 HelpUI = {}
 
 local Settings = _CONFIG.HelpMenu or {}
@@ -28,7 +25,6 @@ function HelpUI.Id(name)
     return PREFIX .. name
 end
 
--- Shows or updates a menu. Returns the menu id, or nil when the feature is off.
 function HelpUI.Show(feature, name, menu)
     if not HelpUI.IsEnabled(feature) then return nil end
     menu.id = HelpUI.Id(name)
@@ -48,7 +44,6 @@ function HelpUI.Hide(name)
     call('Hide', HelpUI.Id(name))
 end
 
--- Label of the key bound to a control, like `E` or `BACKSPACE`.
 function HelpUI.KeyLabel(control, fallback)
     local button = GetControlInstructionalButton(0, control, true)
     if type(button) == 'string' and button:sub(1, 2) == 't_' then

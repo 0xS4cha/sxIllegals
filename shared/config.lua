@@ -33,8 +33,6 @@ _CONFIG.Webhook = {
     },
 }
 
--- Optional widgets drawn with sxHelpMenu (https://github.com/0xS4cha/sxHelpMenu).
--- Ignored when sxHelpMenu is not started, the native help texts are used instead.
 _CONFIG.HelpMenu = {
     enabled = true,
     position = 'bottom-right',

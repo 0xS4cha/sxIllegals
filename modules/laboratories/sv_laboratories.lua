@@ -731,7 +731,6 @@ Citizen.CreateThread(function()
     end
 end)
 
--- Production status of a laboratory, shown in the admin panel and the sxHelpMenu widget.
 function GetLabProductionStatus(l)
     local percentage = 0
     local status = GetPhrase('lab_status_inactive')
@@ -805,7 +804,6 @@ function GetLabProductionStatus(l)
     return status, percentage
 end
 
--- Data of the sxHelpMenu widget, only for the laboratory the player is in.
 RegisterServerCallback('sxIllegals:getLabStatus', function(source)
     local lab = GetLabFromId(PlayerLabs[source])
     if not lab then return nil end

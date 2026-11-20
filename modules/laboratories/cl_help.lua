@@ -1,6 +1,3 @@
--- sxHelpMenu widget shown while the player is inside a laboratory.
--- The native help texts of the workstations are kept, the widget shows the lab itself.
-
 LabHelp = {}
 
 local MENU = 'laboratory'
@@ -54,7 +51,6 @@ function LabHelp.Start()
     local token = session
 
     CreateThread(function()
-        -- Lets the server register the player in the laboratory first
         Wait(1000)
         while token == session and Labs.IsInLab do
             local data = TriggerServerCallback('sxIllegals:getLabStatus')

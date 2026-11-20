@@ -1,6 +1,3 @@
--- sxHelpMenu widgets of the territories: the info card shown when entering a
--- territory and the live state of a war for the members standing in the zone.
-
 TerritoryHelp = {}
 
 local WAR_MENU = 'war'
@@ -129,7 +126,6 @@ RegisterNetEvent('sxIllegals:warState', function(state, role)
     local status, statusTone = WarStatus(state, role)
     local enough = state.attackers >= state.required
 
-    -- The server sends a state every check, the menu hides itself when they stop
     local duration = state.ended and 6000 or (state.interval * 1000 + 3000)
 
     HelpUI.Hide(TERRITORY_MENU)
