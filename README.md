@@ -89,7 +89,8 @@ All gameplay values live in the `shared` folder.
 | `_CONFIG.HelpMenu.features` | Turns each widget on or off: `raid`, `war`, `territory`, `laboratory` and `mapHover` |
 | `_CONFIG.HelpMenu.territoryDuration` | Milliseconds the territory card stays on screen after entering a territory |
 | `_CONFIG.HelpMenu.laboratoryRefresh` | Milliseconds between two refreshes of the laboratory widget |
-| `_CONFIG.HelpMenu.mapPosition` | Anchor of the card shown when hovering a territory on the pause map, `right` by default |
+| `_CONFIG.HelpMenu.mapPosition` | Anchor of the card shown when hovering a territory on the pause map, `top-left` by default |
+| `_CONFIG.HelpMenu.mapOffset` | Offset of this card in `vw` / `vh`, below the pause menu tabs by default |
 
 ### `shared/groups.lua`
 
