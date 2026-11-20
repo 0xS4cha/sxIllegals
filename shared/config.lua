@@ -42,7 +42,9 @@ _CONFIG.HelpMenu = {
         war = true,
         territory = true,
         laboratory = true,
+        mapHover = true,
     },
     territoryDuration = 6000,
     laboratoryRefresh = 5000,
+    mapPosition = 'right',
 }

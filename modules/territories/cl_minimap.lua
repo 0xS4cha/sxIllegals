@@ -8,7 +8,11 @@ function ShowTerritories(bool)
         Territories.SetVisible(TerritoriesList[territoriesId].id, bool)
         if not bool then
             ShowDisplayTerritory(false)
+            TerritoriesList[territoriesId].isInside = false
         end
+    end
+    if not bool then
+        TerritoryHelp.HideOnMap()
     end
     TerritoryLogos.SetVisible(bool)
     Citizen.CreateThread(function()
@@ -21,31 +25,43 @@ function ShowTerritories(bool)
 
                     if isInside and not territory.isInside then
                         Territories.SetAlpha(territory.id, 75)
-                        local data = EnsureBlipInfoTerritory(TerritoriesList[territoriesId].id)
-                        N_0xec9264727eec0f28()
-                        ClearDisplayTerritory()
-                        SetTitleTerritory(data.title, data.rockstarVerified, data.rp, data.money, data.dict, data.tex)
-                        for _, info in next, data.info do
-                            if info[1] == 2 then
-                                AddIconTerritory(info[2], info[3], info[4], info[5], info[6])
-                            else
-                                AddTextTerritory(info[2], info[3], info[1])
+                        if not TerritoryHelp.ShowOnMap(territoriesId) then
+                            local data = EnsureBlipInfoTerritory(TerritoriesList[territoriesId].id)
+                            N_0xec9264727eec0f28()
+                            ClearDisplayTerritory()
+                            SetTitleTerritory(data.title, data.rockstarVerified, data.rp, data.money, data.dict, data.tex)
+                            for _, info in next, data.info do
+                                if info[1] == 2 then
+                                    AddIconTerritory(info[2], info[3], info[4], info[5], info[6])
+                                else
+                                    AddTextTerritory(info[2], info[3], info[1])
+                                end
                             end
+                            ShowDisplayTerritory(true)
+                            UpdateDisplayTerritory()
+                            N_0x14621bb1df14e2b2()
                         end
-                        ShowDisplayTerritory(true)
-                        UpdateDisplayTerritory()
-                        N_0x14621bb1df14e2b2()
                         territory.isInside = true
                     elseif not isInside and territory.isInside then
                         Territories.SetAlpha(territory.id, 50)
                         ShowDisplayTerritory(false)
                         territory.isInside = false
+                        if not HoveredTerritory() then
+                            TerritoryHelp.HideOnMap()
+                        end
                     end
                 end
             end
             Wait(100)
         end
     end)
+end
+
+function HoveredTerritory()
+    for territoriesId, territory in pairs(TerritoriesList) do
+        if territory.isInside then return territoriesId end
+    end
+    return nil
 end
 
 function InitializeTerritory(id, data)
