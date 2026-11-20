@@ -14,6 +14,7 @@ A FiveM resource for ESX or standalone servers that brings together **criminal g
 - **Discord logs**: optional webhook for admin and gameplay events.
 - **Admin panel**: overview, statistics with timeframes, activity feed, group management, territory creation and influence reset, laboratory creation and teleportation.
 - **Group panel**: members, ranks, overview and statistics for players.
+- **sxHelpMenu widgets**: when [sxHelpMenu](https://github.com/0xS4cha/sxHelpMenu) is started, a raid countdown, a live territory war card, a card when entering a territory and a laboratory card are shown in the style of GTA 6.
 - **Translations**: English and French out of the box, easily extendable.
 - **Exports**: a server and client API to integrate the resource with your other scripts.
 
@@ -31,6 +32,7 @@ A FiveM resource for ESX or standalone servers that brings together **criminal g
 | [oxmysql](https://github.com/overextended/oxmysql) | Required. Database access |
 | [es_extended](https://github.com/esx-framework/esx_core) | Optional. Identifiers, character names, inventory, money, jobs and admin groups |
 | [ox_inventory](https://github.com/overextended/ox_inventory) | Optional. Inventory and money in standalone, used instead of the ESX inventory when started |
+| [sxHelpMenu](https://github.com/0xS4cha/sxHelpMenu) | Optional. Widgets for raids, territory wars, territories and laboratories, the native help texts are used without it |
 
 The framework is detected at runtime: without ESX the resource runs **standalone**, using license identifiers, FiveM player names, ACE permissions and ox_inventory when it is started. Laboratory instances use FiveM routing buckets and notifications use the native feed. The server should run with OneSync so it can check player positions for territory wars and raids.
 
@@ -57,10 +59,11 @@ The framework is detected at runtime: without ESX the resource runs **standalone
    ```cfg
    ensure oxmysql
    ensure es_extended
+   ensure sxHelpMenu
    ensure sxIllegals
    ```
 
-   `es_extended` is optional. In standalone, give admin and police access with ACE permissions:
+   `es_extended` and `sxHelpMenu` are optional. In standalone, give admin and police access with ACE permissions:
 
    ```cfg
    add_ace group.admin sxillegals.admin allow
@@ -81,6 +84,11 @@ All gameplay values live in the `shared` folder.
 | `_CONFIG.Admin.ace` | ACE permission allowed to use the admin panel, works with every framework |
 | `_CONFIG.ActivityLimit` | Entries kept in the admin activity feed |
 | `_CONFIG.Webhook` | Discord username and the events sent to the webhook |
+| `_CONFIG.HelpMenu.enabled` | Uses sxHelpMenu when it is started |
+| `_CONFIG.HelpMenu.position` / `offset` | Anchor and offset of the widgets, see the sxHelpMenu documentation |
+| `_CONFIG.HelpMenu.features` | Turns each widget on or off: `raid`, `war`, `territory` and `laboratory` |
+| `_CONFIG.HelpMenu.territoryDuration` | Milliseconds the territory card stays on screen after entering a territory |
+| `_CONFIG.HelpMenu.laboratoryRefresh` | Milliseconds between two refreshes of the laboratory widget |
 
 ### `shared/groups.lua`
 
