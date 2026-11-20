@@ -230,9 +230,11 @@ Citizen.CreateThread(function()
             if currentTerritory and PlayerInTerritory ~= currentTerritory then
                 PlayerInTerritory = currentTerritory
                 Logger:info('SXGROUP', 'PLAYER JOIN ' .. currentTerritory .. ' TERRITORY')
+                TerritoryHelp.Enter(currentTerritory)
             elseif not currentTerritory and wasInTerritory then
                 Logger:info('SXGROUP', 'PLAYER LEFT ALL TERRITORY')
                 PlayerInTerritory = nil
+                TerritoryHelp.Leave()
             end
             Wait(wait)
         end

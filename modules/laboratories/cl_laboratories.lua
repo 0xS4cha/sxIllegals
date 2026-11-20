@@ -79,6 +79,7 @@ function Labs:enter()
     NetworkOverrideClockTime(23, 0, 0)
     SetEntityCoords(pPed, vector3(Labs.LabosIndex.exit.x, Labs.LabosIndex.exit.y, Labs.LabosIndex.exit.z))
     TriggerServerEvent("sxIllegals:enterLab", Labs.LabosIndex.id)
+    LabHelp.Start()
     -- Labs.LabosIndex.interact_temp[#Labs.LabosIndex.interact_temp + 1] = InteractAPI.addInteraction({
     --     coords = Labs.LabosIndex.exit,
     --     distance = 5.0,
@@ -108,6 +109,7 @@ function Labs:exit()
     DeleteObject(Labs.LabosIndex.model)
     DeleteEntity(Labs.LabosIndex.model)
     TriggerServerEvent("sxIllegals:exitLab")
+    LabHelp.Stop()
     for k, v in pairs(GetActivePlayers()) do
         if v ~= GetPlayerIndex() then
             NetworkConcealPlayer(v, false, false)

@@ -32,3 +32,17 @@ _CONFIG.Webhook = {
         police_alert = false,
     },
 }
+
+_CONFIG.HelpMenu = {
+    enabled = true,
+    position = 'bottom-right',
+    offset = nil,
+    features = {
+        raid = true,
+        war = true,
+        territory = true,
+        laboratory = true,
+    },
+    territoryDuration = 6000,
+    laboratoryRefresh = 5000,
+}
